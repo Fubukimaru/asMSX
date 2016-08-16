@@ -1,8 +1,8 @@
 # asMSX
-AsMSX, originally developed by Pitpan. More info: https://www.msx.org/wiki/AsMSX.
+AsMSX, originally developed by Pitpan. Thanks to cjv99 for releasing the source code. More info: https://www.msx.org/wiki/AsMSX.
 
 
-#ReadMe original
+#Original ReadMe
 Estructura de carpetas
 
 - BIN: versiones compiladas de asMSX para Windows y Linux (32 bits).
