@@ -5,12 +5,11 @@ AsMSX, originally developed by Pitpan. More info: https://www.msx.org/wiki/AsMSX
 #ReadMe original
 Estructura de carpetas
 
-BIN - versiones compiladas de asMSX para Windows y Linux (32 bits)
-      -> el archivo asMSX.WIN debe ser renombrado como asMSX.EXE - mi correo no me permite mandar EXEs
-SRC - código fuente del asMSX
-MAN - manual en castellano del asMSX
-REF - dos documentos de referencia, incluidos para tu consulta
-CODE- ejemplo de código fuente de dos juegos sencillos
+- BIN: versiones compiladas de asMSX para Windows y Linux (32 bits).
+- SRC: código fuente del asMSX
+- MAN: manual en castellano del asMSX
+- REF: dos documentos de referencia, incluidos para tu consulta
+- CODE: ejemplo de código fuente de dos juegos sencillos
 
 Instrucciones para compilar
 
