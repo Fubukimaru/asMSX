@@ -327,7 +327,7 @@ linea: pseudo_instruccion EOL
      | mnemo_rotate EOL
      | mnemo_bits EOL
      | mnemo_io EOL
-	     | mnemo_jump EOL
+	 | mnemo_jump EOL
      | mnemo_call EOL
      | PREPRO_FILE TEXTO EOL {strcpy(fuente,$2);}
      | PREPRO_LINE valor EOL {lineas=$2;}
