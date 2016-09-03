@@ -1094,28 +1094,29 @@ hacer_advertencia(codigo)
  }
 }
 
+//Generate byte
 guardar_byte(b)
 {
-if ((!conditional_level)||(conditional[conditional_level]))
-if (type!=MEGAROM)
-{
- if (PC>=0x10000) hacer_error(1);
- if ((type==ROM) && (PC>=0xC000)) hacer_error(28);
- if (dir_inicio>PC) dir_inicio=PC;
- if (dir_final<PC) dir_final=PC;
- if ((size)&&(PC>=dir_inicio+size*1024)&&(pass==2)) hacer_error(17);
- if ((size)&&(dir_inicio+size*1024>65536)&&(pass==2)) hacer_error(1);
- memory[PC++]=b;
- ePC++;
-}
-if (type==MEGAROM)
-{
- if (subpage==0x100) hacer_error(35);
- if (PC>=pageinit+1024*pagesize) hacer_error(31);
- memory[subpage*pagesize*1024+PC-pageinit]=b;
- PC++;
- ePC++;
-}
+	//If the condition of this block is fulfilled, create the code
+	if ((!conditional_level)||(conditional[conditional_level])) {
+		if (type!=MEGAROM) {
+			if (PC>=0x10000) hacer_error(1);
+			if ((type==ROM) && (PC>=0xC000)) hacer_error(28);
+			if (dir_inicio>PC) dir_inicio=PC;
+			if (dir_final<PC) dir_final=PC;
+			if ((size)&&(PC>=dir_inicio+size*1024)&&(pass==2)) hacer_error(17);
+			if ((size)&&(dir_inicio+size*1024>65536)&&(pass==2)) hacer_error(1);
+			memory[PC++]=b;
+			ePC++;
+		}
+		else {	//if (type==MEGAROM)			
+			if (subpage==0x100) hacer_error(35);
+			if (PC>=pageinit+1024*pagesize) hacer_error(31);
+			memory[subpage*pagesize*1024+PC-pageinit]=b;
+			PC++;
+			ePC++;
+		}
+	}
 }
 
 guardar_texto(char texto[])
