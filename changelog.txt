@@ -1,3 +1,4 @@
-19/12/2013: asMSX patched for working with additional files (thanks to
-utopian.rgba and samsaga2)
+19/12/2013: asMSX patched for working with additional files (thanks to utopian.rgba and samsaga2)
 
+03/09/2016: 
+	-Fixed not working IF clause bug when using MegaROM.
