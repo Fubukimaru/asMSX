@@ -762,8 +762,7 @@ INIT_GRAPHICS:
 ; -Ball
         ld      hl,SPRTBL+32
         ld      bc,4
-        ld      a,0
-f8h
+        ld      a,0f8h
         call    FILVRM
 ; Recover screen
         call    ENASCR
