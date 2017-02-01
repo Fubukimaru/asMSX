@@ -44,7 +44,8 @@
                      Overall improvement in pointer stability
 		     INCBIN now can SKIP and SIZE upto 32-bit 
 
-         v.0.16: [CANDIDATE]		     First version fully developed in Linux
+         v.0.16: [CANDIDATE]
+		     First version fully developed in Linux
 		     Fixed bug affecting filename extensions
 		     Removed the weird IM 0/1 - apparently it is just a plain undocumented IM 0 opcode
 		     FILENAME directive to set assembler output filenames
@@ -59,7 +60,9 @@
 			- R800/Z80/8080/Gameboy support
 			- Sinclair ZX Spectrum TAP/TZX file format supported
 			
-	 v.0.17: [19/12/2013] fixes crash on linux when including additional files
+	 v.0.17: [19/12/2013]
+		[FIX] Issue 1: Crash on Linux when including additional .asm files (by theNestruo)
+		[FIX] Issue 5: Non-zero exit code on errors (by theNestruo)
 	 
 */
 
@@ -1074,7 +1077,7 @@ hacer_error(codigo)
 
  remove("~tmppre.?");
 
- exit(0);
+ exit(codigo + 1);
 }
 
 hacer_advertencia(codigo)
