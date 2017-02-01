@@ -77,8 +77,8 @@
 #include<time.h>
 #include<math.h>
 
-#define VERSION "0.17 WiP"
-#define DATE "19/12/2013"
+#define VERSION "0.18"
+#define DATE "01/02/2017"
 
 #define Z80 0
 #define ROM 1
