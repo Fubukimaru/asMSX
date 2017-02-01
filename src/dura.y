@@ -63,6 +63,8 @@
 	 v.0.17: [19/12/2013]
 		[FIX] Issue 1: Crash on Linux when including additional .asm files (by theNestruo)
 		[FIX] Issue 5: Non-zero exit code on errors (by theNestruo)
+	 v.0.18: 
+	 	Fixed issue with .megaflashrom and the defines.
 	 
 */
 
