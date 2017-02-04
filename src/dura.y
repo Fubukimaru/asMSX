@@ -98,6 +98,8 @@
 #define FREQ_LO 0x8000
 #define SILENCE 0x0000
 
+extern FILE *yyin;	/* yyin is defined in Flex-generated lexer */
+
 unsigned char wav_header[44]={
 0x52,0x49,0x46,0x46,0x44,0x00,0x00,0x00,0x57,0x41,0x56,0x45,0x66,0x6D,0x74,0x20,
 0x10,0x00,0x00,0x00,0x01,0x00,0x02,0x00,0x44,0xAC,0x00,0x00,0x10,0xB1,0x02,0x00,
@@ -1898,3 +1900,47 @@ simbolo_definido(char *nombre)
 }
 
 
+int main(int argc, char *argv[])
+{
+ unsigned char i;
+ printf("-------------------------------------------------------------------------------\n");
+ printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
+ printf("-------------------------------------------------------------------------------\n");
+ if (argc!=2)
+ {
+  printf("Syntax: asMSX [file.asm]\n");
+  exit(0);
+ }
+ clock();
+ inicializar_sistema();
+ ensamblador=(unsigned char*)malloc(0x100);
+ fuente=(unsigned char*)malloc(0x100);
+ original=(unsigned char*)malloc(0x100);
+ binario=(char*)malloc(0x100);
+ simbolos=(char*)malloc(0x100);
+ salida=(char*)malloc(0x100);
+ filename=(char*)malloc(0x100);
+
+ strcpy(filename,argv[1]);
+ strcpy(ensamblador,filename);
+
+ for (i=strlen(filename)-1;(filename[i]!='.')&&i;i--);
+
+ if (i) filename[i]=0; else strcat(ensamblador,".asm");
+
+ preprocessor1(ensamblador);
+ preprocessor3();
+ sprintf(original,"~tmppre.%i",preprocessor2());
+ 
+ printf("Assembling source file %s\n",ensamblador);
+
+ conditional[0]=1;
+
+ archivo=fopen(original,"r");
+
+ yyin=archivo;
+
+ yyparse();
+
+ remove("~tmppre.?");
+}

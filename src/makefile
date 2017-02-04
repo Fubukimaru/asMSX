@@ -1,8 +1,7 @@
-asmsx:	parser1.o parser2.o parser3.o dura.y lex.l final.c 
+asmsx:	parser1.o parser2.o parser3.o dura.y lex.l
 	bison dura.y -odura.c -d
-	flex -i -olex.c lex.l 
-	cat dura.c lex.c final.c > prog.c
-	gcc prog.c parser1.o parser2.o parser3.o -oasmsx -Os -s -lm
+	flex -i -olex.c lex.l
+	gcc dura.c lex.c parser1.o parser2.o parser3.o -oasmsx -Os -s -lm
 	strip -s asmsx
 parser1.o: parser1.l
 	flex -i -Pparser1 -oparser1.c parser1.l

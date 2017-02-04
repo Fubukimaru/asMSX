@@ -1,5 +1,9 @@
 %{
 #include"dura.h"
+
+extern unsigned int ePC;
+extern unsigned char *original;
+extern unsigned char pass;
 %}
 
 %%
