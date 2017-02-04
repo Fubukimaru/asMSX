@@ -1,0 +1,22 @@
+# custom .gitignore file for asMSX project
+
+# asMSX compilation derivate files
+bin/
+asmsx.exe
+asmsx
+*.o
+*.tab.h
+*.tab.c
+lex.*.c
+
+# asMSX output files
+~*.*
+*.bin
+*.cas
+*.txt
+*.wav
+*.sym
+*.rom
+
+# add random junk that made it into repo here
+.Rhistory
