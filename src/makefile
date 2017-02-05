@@ -13,4 +13,4 @@ parser3.o: parser3.l
 	flex -i -Pparser3 -oparser3.c parser3.l
 	gcc parser3.c -c -oparser3.o -Os
 clean:
-	rm -f *.o dura.{c,h} lex.c prog.c parser{1,2,3}.c asmsx
+	rm -f *.o dura.{c,h} lex.c prog.c parser{1,2,3}.c asmsx*
