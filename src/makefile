@@ -1,6 +1,5 @@
 asmsx:	dura.o lex.o parser1.o parser2.o parser3.o
 	gcc dura.o lex.o parser1.o parser2.o parser3.o -oasmsx -Os -s -lm
-	strip -s asmsx
 dura.o:	dura.c
 	gcc -c -Os dura.c
 dura.c:	dura.y
