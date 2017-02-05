@@ -1326,6 +1326,8 @@ int yywrap()
 
 void yyerror(char *s)
 {
+ /* print bison error message */
+ fprintf(stderr, "Parsing error: %s\n", s);
  hacer_error(0);
 }
 
