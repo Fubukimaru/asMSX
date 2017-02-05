@@ -12,7 +12,8 @@
  FILE *output;
  char *text,*buffer,nested=0,level;
  unsigned int number,lines,i;
- extern prompt_error2(char);
+ int prompt_error2(char);
+ extern void hacer_error(int);
 %}
 
 %s rept
@@ -53,7 +54,7 @@
 
 %%
 
-prompt_error2(char c)
+int prompt_error2(char c)
 {
  printf(", line %d: ",lines);
  switch (c)
@@ -66,15 +67,16 @@ prompt_error2(char c)
  return 0;
 }
 
-yywrap()
+int yywrap()
 {
  return 1;
 }
 
-preprocessor2()
+int preprocessor2()
 {
  FILE *input;
- char *filename,loop=0;
+ char *filename;
+ int loop=0;
 
  filename=(char*)malloc(0x100);
  text=(char*)malloc(0x1000);

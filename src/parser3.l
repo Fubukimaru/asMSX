@@ -34,12 +34,12 @@
 
 %%
 
-yywrap()
+int yywrap()
 {
  return 1;
 }
 
-preprocessor3()
+int preprocessor3()
 {
  FILE *input;
 

@@ -24,7 +24,7 @@
   		char *name;
 	} include_stack[MAX_INCLUDE_LEVEL];
 
-extern prompt_error1(char);
+extern int prompt_error1(char);
 %}
 
 %option yylineno
@@ -106,7 +106,7 @@ extern prompt_error1(char);
 %%
 #define VERSION 
 
-prompt_error1(char c)
+int prompt_error1(char c)
 {
  printf("%s, line %d: ",name,yylineno-1);
  switch (c)
@@ -122,12 +122,12 @@ prompt_error1(char c)
  return 0;
 }
 
-yywrap()
+int yywrap()
 {
  return 1;
 }
 
-preprocessor1(char *input_name)
+int preprocessor1(char *input_name)
 {
 // Memory allocation for strings
  text=(char*)malloc(256);
