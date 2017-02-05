@@ -48,7 +48,7 @@ int preprocessor3()
 
  if ((input=fopen("~tmppre.0","r"))==NULL)
  {
-  printf("Fatal: cannot process file");
+  fprintf(stderr, "Fatal: cannot process file");
   exit(1);
  }
 

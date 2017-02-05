@@ -56,11 +56,11 @@
 
 int prompt_error2(char c)
 {
- printf(", line %d: ",lines);
+ fprintf(stderr, ", line %d: ",lines);
  switch (c)
  {
-  case 1:printf("number expected in REPT");break;
-  case 2:printf("REPT without ENDR");break;
+  case 1:fprintf(stderr, "number expected in REPT");break;
+  case 2:fprintf(stderr, "REPT without ENDR");break;
  }
  fclose(output);
  exit(c);
@@ -90,7 +90,7 @@ int preprocessor2()
 
  if ((input=fopen(filename,"r"))==NULL)
  {
-  printf("Fatal: cannot process file");
+  fprintf(stderr, "Fatal: cannot process file");
   exit(1);
  }
 

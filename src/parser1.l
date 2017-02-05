@@ -108,14 +108,14 @@ extern int prompt_error1(char);
 
 int prompt_error1(char c)
 {
- printf("%s, line %d: ",name,yylineno-1);
+ fprintf(stderr, "%s, line %d: ",name,yylineno-1);
  switch (c)
  {
-  case 1:printf("Unterminated string");break;
-  case 2:printf("Nested include level overflow");break;
-  case 3:printf("Include file not found");break;
-  case 4:printf("Recursive include");break;
-  case 5:printf("Wrong file name");break;
+  case 1:fprintf(stderr, "Unterminated string");break;
+  case 2:fprintf(stderr, "Nested include level overflow");break;
+  case 3:fprintf(stderr, "Include file not found");break;
+  case 4:fprintf(stderr, "Recursive include");break;
+  case 5:fprintf(stderr, "Wrong file name");break;
  }
  fclose(output_file);
  exit(c);
@@ -144,7 +144,7 @@ int preprocessor1(char *input_name)
 // Open original source file
  if ((input_file=fopen(name,"r"))==NULL)
  {
-  printf("Fatal: cannot open %s",input_name);
+  fprintf(stderr, "Fatal: cannot open %s",input_name);
   exit(1);
  }
 
