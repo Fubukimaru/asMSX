@@ -1,5 +1,5 @@
 %{
-#include"dura.h"
+#include "dura.tab.h"
 
 extern unsigned int ePC;
 extern unsigned char *original;
