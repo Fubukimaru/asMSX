@@ -15,14 +15,14 @@
 	#include <stdio.h>
 	#define MAX_INCLUDE_LEVEL 16
 
-	char *text,*tmpstr,*name,i,include_index=0;
-	FILE *output_file,*input_file;
+	char *p1_text,*p1_tmpstr,*p1_name,p1_i,p1_include_index=0;
+	FILE *p1_output_file,*p1_input_file;
  	struct
 	{
 		YY_BUFFER_STATE buffer;
 		unsigned int line;
   		char *name;
-	} include_stack[MAX_INCLUDE_LEVEL];
+	} p1_include_stack[MAX_INCLUDE_LEVEL];
 
 extern int prompt_error1(char);
 %}
@@ -36,44 +36,44 @@ extern int prompt_error1(char);
 
 %%
 
-<INITIAL>\42[^\42]*\42 strcat(text,yytext);
-<INITIAL>.?include/[ \042\t]+ tmpstr=NULL;BEGIN(inclusion);
+<INITIAL>\42[^\42]*\42 strcat(p1_text,yytext);
+<INITIAL>.?include/[ \042\t]+ p1_tmpstr=NULL;BEGIN(inclusion);
 <inclusion>[ \t]*      /* strip spaces */
-<inclusion>[^ \t\n]+   tmpstr=strtok(yytext,"\42");
+<inclusion>[^ \t\n]+   p1_tmpstr=strtok(yytext,"\42");
 <inclusion>\n {
-	if (tmpstr==NULL) prompt_error1(5);
-	if (tmpstr[strlen(tmpstr)-1]<=32) prompt_error1(1);
-	if (include_index>=MAX_INCLUDE_LEVEL) prompt_error1(2);
-	for (i=0;i<include_index;i++) if (!strcmp(tmpstr,include_stack[i].name)) prompt_error1(4);
-	include_stack[include_index].name=(char*)malloc(0x100);
-	strcpy(include_stack[include_index].name,name);
-	include_stack[include_index].line=yylineno;
-	include_stack[include_index++].buffer=YY_CURRENT_BUFFER;
-	yyin=fopen(tmpstr,"r");
+	if (p1_tmpstr==NULL) prompt_error1(5);
+	if (p1_tmpstr[strlen(p1_tmpstr)-1]<=32) prompt_error1(1);
+	if (p1_include_index>=MAX_INCLUDE_LEVEL) prompt_error1(2);
+	for (p1_i=0;p1_i<p1_include_index;p1_i++) if (!strcmp(p1_tmpstr,p1_include_stack[p1_i].name)) prompt_error1(4);
+	p1_include_stack[p1_include_index].name=(char*)malloc(0x100);
+	strcpy(p1_include_stack[p1_include_index].name,p1_name);
+	p1_include_stack[p1_include_index].line=yylineno;
+	p1_include_stack[p1_include_index++].buffer=YY_CURRENT_BUFFER;
+	yyin=fopen(p1_tmpstr,"r");
 	if (!yyin) prompt_error1(3);
-	printf("Including file %s\n",tmpstr);
+	printf("Including file %s\n",p1_tmpstr);
 	yylineno=1;
-	strcpy(name,tmpstr);
-	fprintf(output_file,"#file \042%s\042\n",name);
+	strcpy(p1_name,p1_tmpstr);
+	fprintf(p1_output_file,"#file \042%s\042\n",p1_name);
 	yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE));
 	BEGIN(INITIAL);
 	}
 
 <<EOF>> {
 	fclose(yyin);
-	if (--include_index>=0)
+	if (--p1_include_index>=0)
 	{
 		yy_delete_buffer(YY_CURRENT_BUFFER);
-		yy_switch_to_buffer(include_stack[include_index].buffer);
-		yylineno=include_stack[include_index].line;
-		strcpy(name,include_stack[include_index].name);
-		fprintf(output_file,"#file \042%s\042\n",name);
-		free(include_stack[include_index].name);
+		yy_switch_to_buffer(p1_include_stack[p1_include_index].buffer);
+		yylineno=p1_include_stack[p1_include_index].line;
+		strcpy(p1_name,p1_include_stack[p1_include_index].name);
+		fprintf(p1_output_file,"#file \042%s\042\n",p1_name);
+		free(p1_include_stack[p1_include_index].name);
 	}
 	else
         {
-		if (strlen(text)>0) fprintf(output_file,"#line %d\n%s\n",yylineno,text);
-		fprintf(output_file,"%s",yytext);
+		if (strlen(p1_text)>0) fprintf(p1_output_file,"#line %d\n%s\n",yylineno,p1_text);
+		fprintf(p1_output_file,"%s",yytext);
 		return 0;
 	}
 	}
@@ -92,23 +92,23 @@ extern int prompt_error1(char);
 <pascal_comment>[^}]* /* Skip all within */
 <pascal_comment>"}" BEGIN(INITIAL);
 
-<INITIAL>\42 strcat(text,yytext);BEGIN(chain);
-<chain>\42 strcat(text,yytext);BEGIN(INITIAL);
+<INITIAL>\42 strcat(p1_text,yytext);BEGIN(chain);
+<chain>\42 strcat(p1_text,yytext);BEGIN(INITIAL);
 <chain>\n prompt_error1(1);
-<chain>[^\42\n] strcat(text,yytext);
+<chain>[^\42\n] strcat(p1_text,yytext);
 
-<INITIAL>[ \t]+ if (strlen(text)>0) strcat(text," "); // Should be 0 for Windows
-<INITIAL>\n     { if (strlen(text)>0) fprintf(output_file,"#line %d\n%s\n",yylineno-1,text);  // Should be 0 for Windows?
-         text[0]=0;
+<INITIAL>[ \t]+ if (strlen(p1_text)>0) strcat(p1_text," "); // Should be 0 for Windows
+<INITIAL>\n     { if (strlen(p1_text)>0) fprintf(p1_output_file,"#line %d\n%s\n",yylineno-1,p1_text);  // Should be 0 for Windows?
+         p1_text[0]=0;
        }
-<INITIAL>.      strcat(text,yytext);
+<INITIAL>.      strcat(p1_text,yytext);
 
 %%
 #define VERSION 
 
 int prompt_error1(char c)
 {
- fprintf(stderr, "%s, line %d: ",name,yylineno-1);
+ fprintf(stderr, "%s, line %d: ",p1_name,yylineno-1);
  switch (c)
  {
   case 1:fprintf(stderr, "Unterminated string");break;
@@ -117,7 +117,7 @@ int prompt_error1(char c)
   case 4:fprintf(stderr, "Recursive include");break;
   case 5:fprintf(stderr, "Wrong file name");break;
  }
- fclose(output_file);
+ fclose(p1_output_file);
  exit(c);
  return 0;
 }
@@ -130,19 +130,18 @@ int yywrap()
 int preprocessor1(char *input_name)
 {
 // Memory allocation for strings
- text=(char*)malloc(256);
- name=(char*)malloc(256);
- tmpstr=(char*)malloc(256);
- char *tmpstr_ = tmpstr;
+ p1_text=(char*)malloc(256);
+ p1_name=(char*)malloc(256);
+ p1_tmpstr=(char*)malloc(256);
 
 // Strings initialization
- text[0]=0;
+ p1_text[0]=0;
 
 // Get source code name
- strcpy(name,input_name);
+ strcpy(p1_name,input_name);
 
 // Open original source file
- if ((input_file=fopen(name,"r"))==NULL)
+ if ((p1_input_file=fopen(p1_name,"r"))==NULL)
  {
   fprintf(stderr, "Fatal: cannot open %s",input_name);
   exit(1);
@@ -151,23 +150,22 @@ int preprocessor1(char *input_name)
 // Print parsing message
  printf("Parsing file %s\n",input_name);
 
-// Create output_file file
- output_file=fopen("~tmppre.0","w");
- fprintf(output_file,"#file \042%s\042\n",name);
+// Create p1_output_file file
+ p1_output_file=fopen("~tmppre.0","w");
+ fprintf(p1_output_file,"#file \042%s\042\n",p1_name);
  
 // Start lexical scanner
- yyin=input_file;
+ yyin=p1_input_file;
  yylex();
  
-// Close output_file file
- fclose(output_file);
+// Close p1_output_file file
+ fclose(p1_output_file);
 
 // Free string pointers
- free(text);
- free(name);
- free(tmpstr_);
+ free(p1_text);
+ free(p1_name);
+ free(p1_tmpstr);
 
 // Done
  return 0;
 }
-

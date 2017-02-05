@@ -10,8 +10,8 @@
 
 %{
  #include<stdio.h>
- FILE *output;
- char *text;
+ FILE *p3_output;
+ char *p3_text;
 %}
 
 %s line
@@ -19,18 +19,18 @@
 
 %%
 
-<INITIAL>"#"line[ \t]*[0-9]+\n strcat(text,yytext);BEGIN(line);
-<INITIAL>\n   fprintf(output,"%s%s",text,yytext);text[0]=0;
-<INITIAL>.    strcat(text,yytext);
-<line>.?zilog[ \t]*\n strcat(text,yytext);BEGIN(zilog);
-<line>. strcat(text,yytext);BEGIN(INITIAL);
-<zilog>\42[^\42\n]+\42 strcat(text,yytext);
-<zilog>"(" strcat(text,"[");
-<zilog>")" strcat(text,"]");
-<zilog>"[" strcat(text,"(");
-<zilog>"]" strcat(text,")");
-<zilog>. strcat(text,yytext);
-<zilog>\n fprintf(output,"%s%s",text,yytext);text[0]=0;
+<INITIAL>"#"line[ \t]*[0-9]+\n strcat(p3_text,yytext);BEGIN(line);
+<INITIAL>\n   fprintf(p3_output,"%s%s",p3_text,yytext);p3_text[0]=0;
+<INITIAL>.    strcat(p3_text,yytext);
+<line>.?zilog[ \t]*\n strcat(p3_text,yytext);BEGIN(zilog);
+<line>. strcat(p3_text,yytext);BEGIN(INITIAL);
+<zilog>\42[^\42\n]+\42 strcat(p3_text,yytext);
+<zilog>"(" strcat(p3_text,"[");
+<zilog>")" strcat(p3_text,"]");
+<zilog>"[" strcat(p3_text,"(");
+<zilog>"]" strcat(p3_text,")");
+<zilog>. strcat(p3_text,yytext);
+<zilog>\n fprintf(p3_output,"%s%s",p3_text,yytext);p3_text[0]=0;
 
 %%
 
@@ -43,8 +43,8 @@ int preprocessor3()
 {
  FILE *input;
 
- text=(char*)malloc(0x1000);
- text[0]=0;
+ p3_text=(char*)malloc(0x1000);
+ p3_text[0]=0;
 
  if ((input=fopen("~tmppre.0","r"))==NULL)
  {
@@ -54,15 +54,14 @@ int preprocessor3()
 
  yyin=input;
  
- output=fopen("~tmppre.1","w");
+ p3_output=fopen("~tmppre.1","w");
 
  yylex();
 
  fclose(input);
- fclose(output);
+ fclose(p3_output);
 
- free(text);
+ free(p3_text);
  
  return 0;
 }
-

@@ -9,9 +9,9 @@
 
 %{
  #include<stdio.h>
- FILE *output;
- char *text,*buffer,nested=0,level;
- unsigned int number,lines,i;
+ FILE *p2_output;
+ char *p2_text,*p2_buffer,p2_nested=0,p2_level;
+ unsigned int p2_number,p2_lines,p2_i;
  int prompt_error2(char);
  extern void hacer_error(int);
 %}
@@ -23,46 +23,46 @@
 
 %%
 
-<INITIAL>"#"line[ \t]*[0-9]+\n strcat(text,yytext);lines=atoi(&yytext[5]);BEGIN(line);
+<INITIAL>"#"line[ \t]*[0-9]+\n strcat(p2_text,yytext);p2_lines=atoi(&yytext[5]);BEGIN(line);
 <line>.?rept[ \t]+ BEGIN(repnum);
-<line>. strcat(text,yytext);BEGIN(INITIAL);
+<line>. strcat(p2_text,yytext);BEGIN(INITIAL);
 <repnum>[0-9]+[ \t]* {
-             number=atoi(yytext);
-             buffer[0]=0;
-             text[0]=0;
+             p2_number=atoi(yytext);
+             p2_buffer[0]=0;
+             p2_text[0]=0;
              BEGIN(rept); }
-<rept>.?rept[ \t]+[0-9]+[ \t]* buffer=strcat(buffer,yytext);nested++;level++;
+<rept>.?rept[ \t]+[0-9]+[ \t]* p2_buffer=strcat(p2_buffer,yytext);p2_nested++;p2_level++;
 <rept>"#"line[ \t]*[0-9]+\n[ \t]*.?endr[ \t]*\n {
-              if (nested)
+              if (p2_nested)
                {
-                nested--;
-                buffer=strcat(buffer,yytext);
+                p2_nested--;
+                p2_buffer=strcat(p2_buffer,yytext);
                } else
               {
-               for (i=0;i<number;i++)
-                fprintf(output,"%s",buffer);
-               buffer[0]=0;
+               for (p2_i=0;p2_i<p2_number;p2_i++)
+                fprintf(p2_output,"%s",p2_buffer);
+               p2_buffer[0]=0;
                BEGIN(INITIAL);
               }
              }
-<rept>. buffer=strcat(text,yytext);
-<rept>\n   buffer=strcat(buffer,yytext);
+<rept>. p2_buffer=strcat(p2_text,yytext);
+<rept>\n   p2_buffer=strcat(p2_buffer,yytext);
 <rept><<EOF>> hacer_error(2);
 <repnum>.     prompt_error2(1);
-<INITIAL>\n   fprintf(output,"%s%s",text,yytext);text[0]=0;
-<INITIAL>.    strcat(text,yytext);
+<INITIAL>\n   fprintf(p2_output,"%s%s",p2_text,yytext);p2_text[0]=0;
+<INITIAL>.    strcat(p2_text,yytext);
 
 %%
 
 int prompt_error2(char c)
 {
- fprintf(stderr, ", line %d: ",lines);
+ fprintf(stderr, ", line %d: ",p2_lines);
  switch (c)
  {
   case 1:fprintf(stderr, "number expected in REPT");break;
   case 2:fprintf(stderr, "REPT without ENDR");break;
  }
- fclose(output);
+ fclose(p2_output);
  exit(c);
  return 0;
 }
@@ -79,9 +79,9 @@ int preprocessor2()
  int loop=0;
 
  filename=(char*)malloc(0x100);
- text=(char*)malloc(0x1000);
- buffer=(char*)malloc(0x4000);
- text[0]=0;
+ p2_text=(char*)malloc(0x1000);
+ p2_buffer=(char*)malloc(0x4000);
+ p2_text[0]=0;
 
  printf("Expanding system macros\n");
  do
@@ -100,20 +100,19 @@ int preprocessor2()
 
  sprintf(filename,"~tmppre.%i",loop+1);
 
- output=fopen(filename,"w");
- level=0;
- nested=0;
+ p2_output=fopen(filename,"w");
+ p2_level=0;
+ p2_nested=0;
  yylex();
 
  fclose(input);
- fclose(output);
+ fclose(p2_output);
 
-} while (level);
+} while (p2_level);
 
 // free(filename);
-// free(text);
-// free(buffer);
+// free(p2_text);
+// free(p2_buffer);
 
  return loop+1;
 }
-
