@@ -135,6 +135,7 @@ unsigned int leer_local(char *);
 void guardar_binario();
 void generar_cassette();
 void generar_wav();
+int d_rand();
 
 unsigned char wav_header[44]={
 0x52,0x49,0x46,0x46,0x44,0x00,0x00,0x00,0x57,0x41,0x56,0x45,0x66,0x6D,0x74,0x20,
@@ -869,7 +870,7 @@ valor: NUMERO {$$=$1;}
      | valor OP_XOR valor {$$=$1^$3;}
      | valor SHIFT_L valor {$$=$1<<$3;}
      | valor SHIFT_R valor {$$=$1>>$3;}
-     | PSEUDO_RANDOM '(' valor ')' {for (;($$=rand()&0xff)>=$3;);}
+     | PSEUDO_RANDOM '(' valor ')' {for (;($$=d_rand()&0xff)>=$3;);}
      | PSEUDO_INT '(' valor_real ')' {$$=(int)$3;}
      | PSEUDO_FIX '(' valor_real ')' {$$=(int)($3*256);}
      | PSEUDO_FIXMUL '(' valor ',' valor ')' {$$=(int)((((float)$3/256)*((float)$5/256))*256);}
@@ -1936,6 +1937,21 @@ int simbolo_definido(char *nombre)
  unsigned int i;
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) return 1;
  return 0;
+}
+
+
+/*
+ Deterministic versions rand() and srand() to keep generated binary files
+ consistent across platforms and compilers. Code snippet is from here:
+ http://stackoverflow.com/questions/4768180/rand-implementation
+*/
+
+#define D_RAND_MAX 32767
+static unsigned long int rand_seed = 1;
+
+int d_rand() {
+    rand_seed = (rand_seed * 1103515245 + 12345);
+    return (unsigned int)(rand_seed/65536) % (D_RAND_MAX + 1);
 }
 
 
