@@ -98,7 +98,43 @@
 #define FREQ_LO 0x8000
 #define SILENCE 0x0000
 
-extern FILE *yyin;	/* yyin is defined in Flex-generated lexer */
+extern FILE *yyin;		/* yyin is defined in Flex-generated lexer */
+extern int yylex(void);
+int preprocessor1(char *);	/* defined in parser1.l */
+int preprocessor2();		/* defined in parser2.l */
+int preprocessor3();		/* defined in parser3.l */
+
+/* forward function declarations to address GCC -Wimplicit-function-declaration warnings */
+void yyerror(char *);
+void registrar_etiqueta(char *);
+void registrar_local(char *);
+void type_rom();
+void type_megarom(int);
+void type_basic();
+void type_msxdos();
+void type_sinclair();
+void msx_bios();
+void hacer_error(int);
+void localizar_32k();
+void establecer_subpagina(int, int);
+void seleccionar_pagina_directa(unsigned int, unsigned int);
+void seleccionar_pagina_registro(unsigned int, unsigned int);
+void guardar_byte(int);
+void guardar_word(int);	/* TODO: check if it should be unsigned */
+void registrar_simbolo(char *, int, int);
+void registrar_variable(char *, int);
+void incluir_binario(char *, unsigned int, unsigned int);
+void finalizar();
+void guardar_texto(char *);
+void salida_texto();
+int simbolo_definido(char *);
+void hacer_advertencia(int);
+void salto_relativo(int);
+unsigned int leer_etiqueta(char *);
+unsigned int leer_local(char *);
+void guardar_binario();
+void generar_cassette();
+void generar_wav();
 
 unsigned char wav_header[44]={
 0x52,0x49,0x46,0x46,0x44,0x00,0x00,0x00,0x57,0x41,0x56,0x45,0x66,0x6D,0x74,0x20,
@@ -895,7 +931,7 @@ listado_16bits : valor_16bits {guardar_word($1);}
 %%
 
 /* Funciones adicionales en C */
-msx_bios()
+void msx_bios()
 {
  bios=1;
 /* Rutinas de la BIOS */
@@ -1025,58 +1061,58 @@ msx_bios()
  registrar_simbolo("PCMREC",0x0189,0);
 }
 
-hacer_error(codigo)
+void hacer_error(int codigo)
 {
  printf("%s, line %d: ",strtok(fuente,"\042"),lineas);
  switch (codigo)
  {
-  case 0: printf("syntax error\n");break;
-  case 1: printf("memory overflow\n");break;
-  case 2: printf("wrong register combination\n");break;
-  case 3: printf("wrong interruption mode\n");break;
-  case 4: printf("destiny register should be A\n");break;
-  case 5: printf("source register should be A\n");break;
-  case 6: printf("value should be 0\n");break;
-  case 7: printf("missing condition\n");break;
-  case 8: printf("unreachable address\n");break;
-  case 9: printf("wrong condition\n");break;
-  case 10: printf("wrong restart address\n");break;
-  case 11: printf("symbol table overflow\n");break;
-  case 12: printf("undefined identifier\n");break;
-  case 13: printf("undefined local label\n");break;
-  case 14: printf("symbol redefinition\n");break;
-  case 15: printf("size redefinition\n");break;
-  case 16: printf("reserved word used as identifier\n");break;
-  case 17: printf("code size overflow\n");break;
-  case 18: printf("binary file not found\n");break;
-  case 19: printf("ROM directive should preceed any code\n");break;
-  case 20: printf("type previously defined\n");break;
-  case 21: printf("BASIC directive should preceed any code\n");break;
-  case 22: printf("page out of range\n");break;
-  case 23: printf("MSXDOS directive should preceed any code\n");break;
-  case 24: printf("no code in the whole file\n");break;
-  case 25: printf("only available for MSXDOS\n");break;
-  case 26: printf("machine not defined\n");break;
-  case 27: printf("MegaROM directive should preceed any code\n");break;
-  case 28: printf("cannot write ROM code/data to page 3\n");break;
-  case 29: printf("included binary shorter than expected\n");break;
-  case 30: printf("wrong number of bytes to skip/include\n");break;
-  case 31: printf("megaROM subpage overflow\n");break;
-  case 32: printf("subpage 0 can only be defined by megaROM directive\n");break;
-  case 33: printf("unsupported mapper type\n");break;
-  case 34: printf("megaROM code should be between 4000h and BFFFh\n");break;
-  case 35: printf("code/data without subpage\n");break;
-  case 36: printf("megaROM mapper subpage out of range\n");break;
-  case 37: printf("megaROM subpage already defined\n");break;
-  case 38: printf("Konami megaROM forces page 0 at 4000h\n");break;
-  case 39: printf("megaROM subpage not defined\n");break;
-  case 40: printf("megaROM-only macro used\n");break;
-  case 41: printf("only for ROMs and megaROMs\n");break;
-  case 42: printf("ELSE without IF\n");break;
-  case 43: printf("ENDIF without IF\n");break;
-  case 44: printf("Cannot nest more IF's\n");break;
-  case 45: printf("IF not closed\n");break;
-  case 46: printf("Sinclair directive should preceed any code\n");break;
+  case 0: fprintf(stderr, "syntax error\n");break;
+  case 1: fprintf(stderr, "memory overflow\n");break;
+  case 2: fprintf(stderr, "wrong register combination\n");break;
+  case 3: fprintf(stderr, "wrong interruption mode\n");break;
+  case 4: fprintf(stderr, "destiny register should be A\n");break;
+  case 5: fprintf(stderr, "source register should be A\n");break;
+  case 6: fprintf(stderr, "value should be 0\n");break;
+  case 7: fprintf(stderr, "missing condition\n");break;
+  case 8: fprintf(stderr, "unreachable address\n");break;
+  case 9: fprintf(stderr, "wrong condition\n");break;
+  case 10: fprintf(stderr, "wrong restart address\n");break;
+  case 11: fprintf(stderr, "symbol table overflow\n");break;
+  case 12: fprintf(stderr, "undefined identifier\n");break;
+  case 13: fprintf(stderr, "undefined local label\n");break;
+  case 14: fprintf(stderr, "symbol redefinition\n");break;
+  case 15: fprintf(stderr, "size redefinition\n");break;
+  case 16: fprintf(stderr, "reserved word used as identifier\n");break;
+  case 17: fprintf(stderr, "code size overflow\n");break;
+  case 18: fprintf(stderr, "binary file not found\n");break;
+  case 19: fprintf(stderr, "ROM directive should preceed any code\n");break;
+  case 20: fprintf(stderr, "type previously defined\n");break;
+  case 21: fprintf(stderr, "BASIC directive should preceed any code\n");break;
+  case 22: fprintf(stderr, "page out of range\n");break;
+  case 23: fprintf(stderr, "MSXDOS directive should preceed any code\n");break;
+  case 24: fprintf(stderr, "no code in the whole file\n");break;
+  case 25: fprintf(stderr, "only available for MSXDOS\n");break;
+  case 26: fprintf(stderr, "machine not defined\n");break;
+  case 27: fprintf(stderr, "MegaROM directive should preceed any code\n");break;
+  case 28: fprintf(stderr, "cannot write ROM code/data to page 3\n");break;
+  case 29: fprintf(stderr, "included binary shorter than expected\n");break;
+  case 30: fprintf(stderr, "wrong number of bytes to skip/include\n");break;
+  case 31: fprintf(stderr, "megaROM subpage overflow\n");break;
+  case 32: fprintf(stderr, "subpage 0 can only be defined by megaROM directive\n");break;
+  case 33: fprintf(stderr, "unsupported mapper type\n");break;
+  case 34: fprintf(stderr, "megaROM code should be between 4000h and BFFFh\n");break;
+  case 35: fprintf(stderr, "code/data without subpage\n");break;
+  case 36: fprintf(stderr, "megaROM mapper subpage out of range\n");break;
+  case 37: fprintf(stderr, "megaROM subpage already defined\n");break;
+  case 38: fprintf(stderr, "Konami megaROM forces page 0 at 4000h\n");break;
+  case 39: fprintf(stderr, "megaROM subpage not defined\n");break;
+  case 40: fprintf(stderr, "megaROM-only macro used\n");break;
+  case 41: fprintf(stderr, "only for ROMs and megaROMs\n");break;
+  case 42: fprintf(stderr, "ELSE without IF\n");break;
+  case 43: fprintf(stderr, "ENDIF without IF\n");break;
+  case 44: fprintf(stderr, "Cannot nest more IF's\n");break;
+  case 45: fprintf(stderr, "IF not closed\n");break;
+  case 46: fprintf(stderr, "Sinclair directive should preceed any code\n");break;
  }
 
  remove("~tmppre.?");
@@ -1084,25 +1120,26 @@ hacer_error(codigo)
  exit(codigo + 1);
 }
 
-hacer_advertencia(codigo)
+void hacer_advertencia(int codigo)
 {
  if (pass==2) {
  printf("%s, line %d: Warning: ",strtok(fuente,"\042"),lineas);
  switch (codigo)
  {
-  case 1: printf("16-bit overflow\n");break;
-  case 2: printf("8-bit overflow\n");break;
-  case 3: printf("3-bit overflow\n");break;
-  case 4: printf("output cannot be converted to CAS\n");break;
-  case 5: printf("non official Zilog syntax\n");break;
-  case 6: printf("undocumented Zilog instruction\n");break;
+  case 0: fprintf(stderr, "undefined error\n");break;
+  case 1: fprintf(stderr, "16-bit overflow\n");break;
+  case 2: fprintf(stderr, "8-bit overflow\n");break;
+  case 3: fprintf(stderr, "3-bit overflow\n");break;
+  case 4: fprintf(stderr, "output cannot be converted to CAS\n");break;
+  case 5: fprintf(stderr, "non official Zilog syntax\n");break;
+  case 6: fprintf(stderr, "undocumented Zilog instruction\n");break;
  }
  advertencias++;
  }
 }
 
 //Generate byte
-guardar_byte(b)
+void guardar_byte(int b)
 {
 	//If the condition of this block is fulfilled, create the code
 	if ((!conditional_level)||(conditional[conditional_level])) {
@@ -1126,19 +1163,19 @@ guardar_byte(b)
 	}
 }
 
-guardar_texto(char texto[])
+void guardar_texto(char *texto)
 {
  unsigned int i;
  for (i=0;i<strlen(texto);i++) guardar_byte(texto[i]);
 }
 
-guardar_word(w)
+void guardar_word(int w)
 {
  guardar_byte(w&0xff);
  guardar_byte((w>>8)&0xff);
 }
 
-salto_relativo(direccion)
+void salto_relativo(int direccion)
 {
  int salto;
 
@@ -1148,7 +1185,7 @@ salto_relativo(direccion)
 
 }
 
-registrar_etiqueta(char *nombre)
+void registrar_etiqueta(char *nombre)
 {
  signed int i;
  if (pass==2)
@@ -1164,7 +1201,7 @@ registrar_etiqueta(char *nombre)
  ultima_global=maxima-1;
 }
 
-registrar_local(char *nombre)
+void registrar_local(char *nombre)
 {
  signed int i;
  if (pass==2) return;
@@ -1177,7 +1214,7 @@ registrar_local(char *nombre)
  lista_identificadores[maxima-1].pagina=subpage;
 }
 
-registrar_simbolo(char *nombre,int numero,int type)
+void registrar_simbolo(char *nombre, int numero, int type)
 {
  unsigned int i;
  char *tmpstr;
@@ -1193,7 +1230,7 @@ registrar_simbolo(char *nombre,int numero,int type)
  lista_identificadores[maxima-1].type=type;
 }
 
-registrar_variable(char *nombre,int numero)
+void registrar_variable(char *nombre, int numero)
 {
  unsigned int i;
  for (i=0;i<maxima;i++) if ((!strcmp(nombre,lista_identificadores[i].nombre))&&(lista_identificadores[i].type==3)) {lista_identificadores[i].valor=numero;return;}
@@ -1205,7 +1242,7 @@ registrar_variable(char *nombre,int numero)
 }
 
 
-leer_etiqueta(char *nombre)
+unsigned int leer_etiqueta(char *nombre)
 {
  unsigned int i;
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) return lista_identificadores[i].valor;
@@ -1213,7 +1250,7 @@ leer_etiqueta(char *nombre)
  hacer_error(12);
 }
 
-leer_local(char *nombre)
+unsigned int leer_local(char *nombre)
 {
  unsigned int i;
  if (pass==1) return ePC;
@@ -1222,7 +1259,7 @@ leer_local(char *nombre)
  hacer_error(13);
 }
 
-salida_texto()
+void salida_texto()
 {
 
  // Obtener nombre del archivo de salida
@@ -1236,7 +1273,7 @@ salida_texto()
  printf("Output text file %s saved\n",salida);
 }
 
-salvar_simbolos()
+void salvar_simbolos()
 {
  unsigned int i,j;
  FILE *fichero;
@@ -1244,7 +1281,7 @@ salvar_simbolos()
  for (i=0;i<maxima;i++) j+=lista_identificadores[i].type;
  if (j>0)
  {
- if ((fichero=fopen(simbolos,"wt"))==NULL) hacer_error();
+ if ((fichero=fopen(simbolos,"wt"))==NULL) hacer_error(0);
  fprintf(fichero,"; Symbol table from %s\n",ensamblador);
  fprintf(fichero,"; generated by asMSX v.%s\n\n",VERSION);
  j=0;
@@ -1282,17 +1319,19 @@ salvar_simbolos()
  }
 }
 
-yywrap()
+int yywrap()
 {
  return 1;
 }
 
-yyerror()
+void yyerror(char *s)
 {
+ /* print bison error message */
+ fprintf(stderr, "Parsing error: %s\n", s);
  hacer_error(0);
 }
 
-incluir_binario(char* nombre,unsigned int skip,unsigned int n)
+void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
 {
  FILE *fichero;
  char k;
@@ -1332,13 +1371,13 @@ incluir_binario(char* nombre,unsigned int skip,unsigned int n)
 }
 
 
-write_zx_byte(unsigned char c)
+void write_zx_byte(unsigned char c)
 {
  putc(c,output);
  parity^=c;
 }
 
-write_zx_word(unsigned int c)
+void write_zx_word(unsigned int c)
 {
  write_zx_byte(c&0xff);
  write_zx_byte((c>>8)&0xff);
@@ -1362,7 +1401,7 @@ void write_zx_number(unsigned int i)
         write_zx_byte(i+48);
 }
 
-guardar_binario()
+void guardar_binario()
 {
   unsigned int i,j;
 
@@ -1395,7 +1434,7 @@ guardar_binario()
    for (i=1,j=0;i<=lastpage;i++) j+=usedpage[i];
    j>>=1;
    if (j<lastpage)
-     printf("Warning: %i out of %i megaROM pages are not defined\n",lastpage-j,lastpage);
+     fprintf(stderr, "Warning: %i out of %i megaROM pages are not defined\n",lastpage-j,lastpage);
   }
 
   printf("Binary file %s saved\n",binario);
@@ -1500,7 +1539,7 @@ guardar_binario()
 
 }
 
-finalizar()
+void finalizar()
 {
  unsigned int i;
  
@@ -1516,14 +1555,14 @@ finalizar()
  if (cassette&2) generar_wav();
  if (maxima>0) salvar_simbolos();
  printf("Completed in %.2f seconds",(float)clock()/(float)CLOCKS_PER_SEC);
- if (advertencias>1) printf(", %i warnings\n",advertencias);
-  else if (advertencias==1) printf(", 1 warning\n");
+ if (advertencias>1) fprintf(stderr, ", %i warnings\n",advertencias);
+  else if (advertencias==1) fprintf(stderr, ", 1 warning\n");
    else printf("\n");
  remove("~tmppre.*");
  exit(0);
 }
 
-inicializar_memory()
+void inicializar_memory()
 {
  unsigned int i;
  memory=(unsigned char*)malloc(0x1000000);
@@ -1532,7 +1571,7 @@ inicializar_memory()
 
 }
 
-inicializar_sistema()
+void inicializar_sistema()
 {
 
  inicializar_memory();
@@ -1544,14 +1583,14 @@ inicializar_sistema()
 
 }
 
-type_sinclair()
+void type_sinclair()
 {
  if ((type) && (type!=SINCLAIR)) hacer_error(46);
  type=SINCLAIR;
  if (!dir_inicio) {PC=0x8000;ePC=PC;}
 }
 
-type_rom()
+void type_rom()
 {
  if ((pass==1) && (!dir_inicio)) hacer_error(19);
  if ((type) && (type!=ROM)) hacer_error(20);
@@ -1563,7 +1602,7 @@ type_rom()
  if (!inicio) inicio=ePC;
 }
 
-type_megarom(int n)
+void type_megarom(int n)
 {
  unsigned int i;
 
@@ -1590,14 +1629,14 @@ type_megarom(int n)
 }
 
 
-type_basic()
+void type_basic()
 {
  if ((pass==1) && (!dir_inicio)) hacer_error(21);
  if ((type) && (type!=BASIC)) hacer_error(20);
  type=BASIC;
 }
 
-type_msxdos()
+void type_msxdos()
 {
  if ((pass==1) && (!dir_inicio)) hacer_error(23);
  if ((type) && (type!=MSXDOS)) hacer_error(20);
@@ -1606,7 +1645,7 @@ type_msxdos()
  ePC=0x0100;
 }
 
-establecer_subpagina(int n, int dir)
+void establecer_subpagina(int n, int dir)
 {
  if (n>lastpage) lastpage=n;
  if (!n) hacer_error(32);
@@ -1619,7 +1658,7 @@ establecer_subpagina(int n, int dir)
  ePC=PC;
 }
 
-localizar_32k()
+void localizar_32k()
 {
  unsigned int i;
  for (i=0;i<31;i++) guardar_byte(locate32[i]);
@@ -1636,7 +1675,7 @@ unsigned int selector(unsigned int dir)
 }
 
 
-seleccionar_pagina_directa(unsigned int n,unsigned int dir)
+void seleccionar_pagina_directa(unsigned int n, unsigned int dir)
 {
  unsigned int sel;
 
@@ -1652,7 +1691,7 @@ seleccionar_pagina_directa(unsigned int n,unsigned int dir)
 
 }
 
-seleccionar_pagina_registro(unsigned int r,unsigned int dir)
+void seleccionar_pagina_registro(unsigned int r, unsigned int dir)
 {
  unsigned int sel;
 
@@ -1669,7 +1708,7 @@ seleccionar_pagina_registro(unsigned int r,unsigned int dir)
 
 }
 
-generar_cassette()
+void generar_cassette()
 {
 
  unsigned char cas[8]={0x1F,0xA6,0xDE,0xBA,0xCC,0x13,0x7D,0x74};
@@ -1679,7 +1718,7 @@ generar_cassette()
 
  if ((type==MEGAROM)||((type=ROM)&&(dir_inicio<0x8000)))
  {
-  hacer_advertencia();
+  hacer_advertencia(0);
   return;
  }
 
@@ -1769,14 +1808,14 @@ void write_byte(unsigned char m)
 }
 
 
-generar_wav()
+void generar_wav()
 {
  int wav_size;
  unsigned int i;
 
  if ((type==MEGAROM)||((type=ROM)&&(dir_inicio<0x8000)))
  {
-  hacer_advertencia();
+  hacer_advertencia(0);
   return;
  }
 
@@ -1892,7 +1931,7 @@ generar_wav()
 }
 
 
-simbolo_definido(char *nombre)
+int simbolo_definido(char *nombre)
 {
  unsigned int i;
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) return 1;
