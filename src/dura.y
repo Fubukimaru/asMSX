@@ -1249,13 +1249,18 @@ void registrar_variable(char *nombre, int numero)
  lista_identificadores[maxima-1].type=3;
 }
 
-
 unsigned int leer_etiqueta(char *nombre)
 {
- unsigned int i;
- for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) return lista_identificadores[i].valor;
- if ((pass==1)&&(i==maxima)) return ePC;
- hacer_error(12);
+  unsigned int i;
+
+  for (i = 0; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      return lista_identificadores[i].valor;
+
+  if ((pass == 1) && (i == maxima))
+    return ePC;
+
+  hacer_error(12);
 }
 
 unsigned int leer_local(char *nombre)
