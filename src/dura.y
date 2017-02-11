@@ -63,9 +63,14 @@
 	 v.0.17: [19/12/2013]
 		[FIX] Issue 1: Crash on Linux when including additional .asm files (by theNestruo)
 		[FIX] Issue 5: Non-zero exit code on errors (by theNestruo)
-	 v.0.18: 
+
+	 v.0.18: [01/02/2017]
 	 	Fixed issue with .megaflashrom and the defines.
 	 
+	 v.0.18.1: [11/02/2017]
+	 	Fixed multiple compilation warnings by specifying function parameters and return type explicitly
+                Fixed a problem with cassette file name generation due to uninitialized variable 'binario'
+
 */
 
 /* Cabecera y definiciones para C */
@@ -76,9 +81,10 @@
 #include<string.h>
 #include<time.h>
 #include<math.h>
+#include<ctype.h>
 
-#define VERSION "0.18"
-#define DATE "01/02/2017"
+#define VERSION "0.18.1"
+#define DATE "11/02/2017"
 
 #define Z80 0
 #define ROM 1
@@ -1544,9 +1550,6 @@ void finalizar()
 {
  unsigned int i;
  
- // Obtener nombre de la salida binaria
- strcpy(binario,filename);
-
  // Obtener nombre del archivo de s�mbolos
  strcpy(simbolos,filename);
  simbolos=strcat(simbolos,".sym");
@@ -1737,7 +1740,7 @@ void generar_cassette()
   if (strlen(interno)<6)
    for (i=strlen(interno);i<6;i++) interno[i]=32;
 
-  for (i=0;i<6;i++) fputc(interno[i],salida);
+  for (i=0;i<6;i++) fputc(toupper(interno[i]),salida);
 
   for (i=0;i<8;i++) fputc(cas[i],salida);
 
@@ -1982,6 +1985,9 @@ int main(int argc, char *argv[])
  for (i=strlen(filename)-1;(filename[i]!='.')&&i;i--);
 
  if (i) filename[i]=0; else strcat(ensamblador,".asm");
+
+ // Obtener nombre de la salida binaria
+ strcpy(binario,filename);
 
  preprocessor1(ensamblador);
  preprocessor3();
