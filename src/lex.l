@@ -237,7 +237,15 @@ random return PSEUDO_RANDOM;
 ">>"            return SHIFT_R;
 "<<"            return SHIFT_L;
 
-<<EOF>> {unput('\n');pass++;if (pass==2) printf("Assembling labels, calls and jumps\n");yyin=fopen(original,"r");return PSEUDO_END;}           
+<<EOF>>		{
+                  unput('\n');
+                  pass++;
+                  if (pass == 2)
+                    printf("Assembling labels, calls and jumps\n");
+                  yyin = fopen(original,"r");
+                  return PSEUDO_END;
+		}
+
 \42[^\42\n]+\42 yylval.tex=strtok(yytext,"\42");yylval.tex=strtok(yytext,"\42");return TEXTO;
 [a-z_]+[a-z0-9_]* yylval.tex=yytext;return IDENTIFICADOR;
 "@@"[a-z0-9_]+ yylval.tex=yytext;return LOCAL_IDENTIFICADOR;
