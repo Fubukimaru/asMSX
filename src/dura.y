@@ -1546,6 +1546,7 @@ void guardar_binario()
   }
 
   if (type != SINCLAIR)
+  {
     if (!size)
     {
       if (type != MEGAROM)
@@ -1560,6 +1561,7 @@ void guardar_binario()
     else
       for (i = 0; i < size * 1024; i++)
         putc(memory[i], output);
+  }
 
   fclose(output);
 }
