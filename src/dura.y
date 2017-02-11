@@ -1852,124 +1852,109 @@ void write_byte(unsigned char m)
 
 void generar_wav()
 {
- int wav_size;
- unsigned int i;
+  int wav_size;
+  unsigned int i;
 
- if ((type==MEGAROM)||((type=ROM)&&(dir_inicio<0x8000)))
- {
-  hacer_advertencia(0);
-  return;
- }
+  if ((type == MEGAROM) || ((type = ROM) && (dir_inicio < 0x8000)))
+  {
+    hacer_advertencia(0);
+    return;
+  }
 
- binario[strlen(binario)-3]=0;
- binario=strcat(binario,"wav");
+  binario[strlen(binario) - 3] = 0;
+  binario = strcat(binario, "wav");
 
- wav=fopen(binario,"wb");
+  wav = fopen(binario, "wb");
 
- if ((type==BASIC)||(type==ROM))
- {
+  if ((type == BASIC) || (type == ROM))
+  {
+    wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + dir_final - dir_inicio + 1)) * 40;
+    wav_size = wav_size << 1;
 
-  wav_size=(3968*2+1500*2+11*(10+6+6+dir_final-dir_inicio+1))*40;
+    wav_header[4] = (wav_size + 36) & 0xff;
+    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+    wav_header[40] = wav_size & 0xff;
+    wav_header[41] = (wav_size >> 8) & 0xff;
+    wav_header[42] = (wav_size >> 16) & 0xff;
+    wav_header[43] = (wav_size >> 24) & 0xff;
 
-  wav_size=wav_size<<1;
+    /* Write WAV header */
+    for (i = 0; i < 44; i++)
+      fputc(wav_header[i], wav);
 
-  wav_header[4]=(wav_size+36)&0xff;
-  wav_header[5]=((wav_size+36)>>8) & 0xff;
-  wav_header[6]=((wav_size+36)>>16) & 0xff;
-  wav_header[7]=((wav_size+36)>>24) & 0xff;
-  wav_header[40]=wav_size & 0xff;
-  wav_header[41]=(wav_size >> 8) & 0xff;
-  wav_header[42]=(wav_size >> 16) & 0xff;
-  wav_header[43]=(wav_size >> 24) & 0xff;
+    /* Write long header */
+    for (i = 0; i < 3968; i++)
+      write_one();
 
+    /* Write file identifier */
+    for (i = 0; i < 10; i++)
+      write_byte(0xd0);
 
-// Write WAV header
+    /* Write MSX name */
+    if (strlen(interno) < 6)
+      for (i = strlen(interno); i < 6; i++)
+        interno[i] = 32; /* 32 is space character */
+    for (i = 0; i < 6; i++)
+      write_byte(interno[i]);
 
-  for (i=0;i<44;i++) fputc(wav_header[i],wav);
+    /* Write blank */
+    for (i = 0; i < 1500; i++)
+      write_nothing();
 
-// Write long header
+    /* Write short header */
+    for (i = 0; i < 3968; i++)
+      write_one();
 
- for (i=0;i<3968;i++) write_one();
+    /* Write init, end and start addresses */
+    write_byte(dir_inicio & 0xff);
+    write_byte((dir_inicio >> 8) & 0xff);
+    write_byte(dir_final & 0xff);
+    write_byte((dir_final >> 8) & 0xff);
+    write_byte(inicio & 0xff);
+    write_byte((inicio >> 8) & 0xff);
 
-// Write file identifier
+    /* Write data */
+    for (i = dir_inicio; i <= dir_final; i++)
+      write_byte(memory[i]);
+  }
 
- for (i=0;i<10;i++) write_byte(0xd0);
+  if (type == Z80)
+  {
+    wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - dir_inicio + 1)) * 36;
+    wav_size = wav_size << 1;
 
-// Write MSX name
+    wav_header[4] = (wav_size + 36) & 0xff;
+    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+    wav_header[40] = wav_size & 0xff;
+    wav_header[41] = (wav_size >> 8) & 0xff;
+    wav_header[42] = (wav_size >> 16) & 0xff;
+    wav_header[43] = (wav_size >> 24) & 0xff;
 
-  if (strlen(interno)<6)
-   for (i=strlen(interno);i<6;i++) interno[i]=32;
+    /* Write WAV header */
+    for (i = 0; i < 44; i++)
+      fputc(wav_header[i], wav);
 
-  for (i=0;i<6;i++) write_byte(interno[i]);
+    /* Write long header */
+    for (i = 0; i < 3968; i++)
+      write_one();
 
-// Write blank
+    /* Write data */
+    for (i = dir_inicio; i <= dir_final; i++)
+    write_byte(memory[i]);
+  }
 
- for (i=0;i<1500;i++) write_nothing();
+  /* Write blank */
+  for (i=0; i < 1500; i++)
+    write_nothing();
 
-// Write short header
-
- for (i=0;i<3968;i++) write_one();
-
-// Write init, end and start addresses
-
-  write_byte(dir_inicio & 0xff);
-  write_byte((dir_inicio>>8) & 0xff);
-  write_byte(dir_final & 0xff);
-  write_byte((dir_final>>8) & 0xff);
-  write_byte(inicio & 0xff);
-  write_byte((inicio>>8) & 0xff);
-
-
-// Write data
-
-  for (i=dir_inicio;i<=dir_final;i++)
-   write_byte(memory[i]);
-
- }
-
-
- if (type==Z80)
- {
-
-  wav_size=(3968*1+1500*1+11*(dir_final-dir_inicio+1))*36;
-
-  wav_size=wav_size<<1;
-
-  wav_header[4]=(wav_size+36)&0xff;
-  wav_header[5]=((wav_size+36)>>8) & 0xff;
-  wav_header[6]=((wav_size+36)>>16) & 0xff;
-  wav_header[7]=((wav_size+36)>>24) & 0xff;
-  wav_header[40]=wav_size & 0xff;
-  wav_header[41]=(wav_size >> 8) & 0xff;
-  wav_header[42]=(wav_size >> 16) & 0xff;
-  wav_header[43]=(wav_size >> 24) & 0xff;
-
-
-// Write WAV header
-
-  for (i=0;i<44;i++) fputc(wav_header[i],wav);
-
-// Write long header
-
- for (i=0;i<3968;i++) write_one();
-
-// Write data
-
-  for (i=dir_inicio;i<=dir_final;i++)
-   write_byte(memory[i]);
-
- }
-
-// Write blank
-
-  for (i=0;i<1500;i++) write_nothing();
-
-// Close file
-
+  /* Close file */
   fclose(wav);
 
-  printf("Audio file %s saved [%2.2f sec]\n",binario,(float)wav_size/176400);
-
+  printf("Audio file %s saved [%2.2f sec]\n", binario, (float)wav_size/176400);
 }
 
 
