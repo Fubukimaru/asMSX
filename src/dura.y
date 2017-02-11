@@ -1544,9 +1544,6 @@ void finalizar()
 {
  unsigned int i;
  
- // Obtener nombre de la salida binaria
- strcpy(binario,filename);
-
  // Obtener nombre del archivo de s�mbolos
  strcpy(simbolos,filename);
  simbolos=strcat(simbolos,".sym");
@@ -1982,6 +1979,9 @@ int main(int argc, char *argv[])
  for (i=strlen(filename)-1;(filename[i]!='.')&&i;i--);
 
  if (i) filename[i]=0; else strcat(ensamblador,".asm");
+
+ // Obtener nombre de la salida binaria
+ strcpy(binario,filename);
 
  preprocessor1(ensamblador);
  preprocessor3();
