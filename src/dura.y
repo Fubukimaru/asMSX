@@ -1200,7 +1200,7 @@ void registrar_etiqueta(char *nombre)
    for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) {ultima_global=i;return;}
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) hacer_error(14);
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+4);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+4);
  strcpy(lista_identificadores[maxima-1].nombre,nombre);
  lista_identificadores[maxima-1].valor=ePC;
  lista_identificadores[maxima-1].type=1;
@@ -1215,7 +1215,7 @@ void registrar_local(char *nombre)
  if (pass==2) return;
  for (i=ultima_global;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) hacer_error(14);
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+4);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+4);
  strcpy(lista_identificadores[maxima-1].nombre,nombre);
  lista_identificadores[maxima-1].valor=ePC;
  lista_identificadores[maxima-1].type=1;
@@ -1230,7 +1230,7 @@ void registrar_simbolo(char *nombre, int numero, int type)
  if (pass==2) return;
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) {hacer_error(14);return;}
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+1);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+1);
 
  tmpstr=strdup(nombre);
  strcpy(lista_identificadores[maxima-1].nombre,strtok(tmpstr," "));
@@ -1243,7 +1243,7 @@ void registrar_variable(char *nombre, int numero)
  unsigned int i;
  for (i=0;i<maxima;i++) if ((!strcmp(nombre,lista_identificadores[i].nombre))&&(lista_identificadores[i].type==3)) {lista_identificadores[i].valor=numero;return;}
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+1);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+1);
  strcpy(lista_identificadores[maxima-1].nombre,strtok(nombre," "));
  lista_identificadores[maxima-1].valor=numero;
  lista_identificadores[maxima-1].type=3;
