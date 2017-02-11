@@ -1296,15 +1296,15 @@ void salvar_simbolos()
  for (i=0;i<maxima;i++) if (lista_identificadores[i].type==1) j++;
  if (j>0)
  {
- fprintf(fichero,"; global and local labels\n");
- for (i=0;i<maxima;i++)
-  if (lista_identificadores[i].type==1)
-  {
-   if (type!=MEGAROM)
-    fprintf(fichero,"%4.4Xh %s\n",lista_identificadores[i].valor,lista_identificadores[i].nombre);
-   else
-    fprintf(fichero,"%2.2Xh:%4.4Xh %s\n",lista_identificadores[i].pagina&0xff,lista_identificadores[i].valor,lista_identificadores[i].nombre);
-  }
+  fprintf(fichero,"; global and local labels\n");
+  for (i=0;i<maxima;i++)
+   if (lista_identificadores[i].type==1)
+   {
+    if (type!=MEGAROM)
+     fprintf(fichero,"%4.4Xh %s\n",lista_identificadores[i].valor,lista_identificadores[i].nombre);
+    else
+     fprintf(fichero,"%2.2Xh:%4.4Xh %s\n",lista_identificadores[i].pagina&0xff,lista_identificadores[i].valor,lista_identificadores[i].nombre);
+   }
  }
  j=0;
  for (i=0;i<maxima;i++) if (lista_identificadores[i].type==2) j++;
