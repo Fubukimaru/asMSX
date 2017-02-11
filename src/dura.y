@@ -1549,8 +1549,6 @@ void guardar_binario()
 
 void finalizar()
 {
- unsigned int i;
- 
  // Obtener nombre del archivo de s�mbolos
  strcpy(simbolos,filename);
  simbolos=strcat(simbolos,".sym");
