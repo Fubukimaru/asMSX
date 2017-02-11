@@ -1696,10 +1696,12 @@ unsigned int selector(unsigned int dir)
   else if (mapper == ASCII8)
     dir = 0x6000 + (dir - 0x4000) / 4;
   else if (mapper == ASCII16)
+  {
     if (dir == 0x4000)
       dir = 0x6000;
     else
       dir = 0x7000;
+  }
   return dir;
 }
 
