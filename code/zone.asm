@@ -1,19 +1,19 @@
 ; -----------------------------------------------------------------------------------------------
-;	
+;
 ;	 ¦¦¦ ¦¦¦ ¦  ¦ ¦¦¦
 ;	   ¦ ¦ ¦ ¦¦ ¦ ¦
-;	  ¦  ¦ ¦ ¦ ¦¦ ¦¦¦ 
+;	  ¦  ¦ ¦ ¦ ¦¦ ¦¦¦
 ;	 ¦   ¦ ¦ ¦  ¦ ¦
 ;	 ¦¦¦ ¦¦¦ ¦  ¦ ¦¦¦
 ;
-; 	 I'm - OpenSource 
-;       ZONE - versión 2048 Bytes 
-; Jos'b 2008 - José Javier Franco Benítez	
+; 	 I'm - OpenSource
+;       ZONE - versión 2048 Bytes
+; Jos'b 2008 - José Javier Franco Benítez
 ;
 ; Objetivo del juego - ZONE
 ;
 ;	El juego esta basado en un juego electrónico que hace algunos años anunciaban en TV,
-;	y de cuyo nombre no  puedo acordarme. El  juego consiste en  resolver una serie  de 
+;	y de cuyo nombre no  puedo acordarme. El  juego consiste en  resolver una serie  de
 ;	puzzles, consiguiendo eliminar todas las casillas que estén iluminadas. Para  poder
 ;	conocer el mecanismo del juego, simplemente hay que jugar.
 ;
@@ -22,7 +22,7 @@
 ;	- Cursores para mover el puntero por la pantalla
 ;	- Barra espaciadora para ejercer movimiento
 ;	- ESC para volver a pantalla inmediatamente anterior o salida al BASIC
-; 
+;
 ; Ensamblador utilizado
 ;
 ;	AsMSX 0.12g
@@ -49,7 +49,7 @@
 ; Notas del autor al código fuente
 ;
 ;	Es evidente que el código fuente puede ser mejorado, incluso teniendo en cuenta mis
-;	propias limitaciones como programador en ensamblador. Sin  embargo el espíritu  del 
+;	propias limitaciones como programador en ensamblador. Sin  embargo el espíritu  del
 ;	que he pretendido dotar a este código es que refleje de forma simple la posibilidad
 ;	de crear un programa de manera que pueda ser entendido con facilidad por cualquiera
 ;	que este en sus comienzos en el mundo del Z80.
@@ -61,7 +61,7 @@
 ;	- ADD, AND, BIT, DEC, INC, SBC, SLA, SRL y XOR
 ;
 ;	Por supuesto, aquel  que considere que el  código  puede ser  fácilmente  mejorado
-;	manteniendo el espíritu del mismo, debería tener la obligación de comunicármelo. 
+;	manteniendo el espíritu del mismo, debería tener la obligación de comunicármelo.
 ;
 ; Posibles fallos detectados en el ensamblador AsMSX 0.12g durante el desarrollo de este juego
 ;
@@ -79,34 +79,34 @@
 ; -----------------------------------------------------------------------------------------------
 ; Prepara ensamblador
 ; -----------------------------------------------------------------------------------------------
-	
+
 	.BIOS				; Activa tabla de nombres oficiales para la BIOS
 	.BASIC				; Fichero compatible con Basic, formato BIN
-	.ORG C000h			; Dirección ensamblado
+	.ORG 0xC000			; Dirección ensamblado
 
-	FORCLR equ F3E9h		; Asigna etiqueta a dirección memoria
-	BAKCLR equ F3EAh		; Asigna etiqueta a dirección memoria
-	BDRCLR equ F3EBh		; Asigna etiqueta a dirección memoria
- 
+	FORCLR equ 0xF3E9		; Asigna etiqueta a dirección memoria
+	BAKCLR equ 0xF3EA		; Asigna etiqueta a dirección memoria
+	BDRCLR equ 0xF3EB		; Asigna etiqueta a dirección memoria
+
 					; Para "Screen 2"
-	CHPATT equ 0000h		; Tabla patrones char (0 Dec - Definiciones Char)
-	CHNAME equ 1800h		; Tabla de nombres char (6144 Dec - Posiciones)
-	CHCLOR equ 2000h		; Tabla de colores char (8192 Dec - Colores char)
+	CHPATT equ 0x0000		; Tabla patrones char (0 Dec - Definiciones Char)
+	CHNAME equ 0x1800		; Tabla de nombres char (6144 Dec - Posiciones)
+	CHCLOR equ 0x2000		; Tabla de colores char (8192 Dec - Colores char)
 
-	SPATTB equ 1B00h		; Tabla de atributos de sprites (6912 Dec - Atb. Sprites)
-	SPPATT equ 3800h		; Tabla de patrones de sprites (14336 Dec - Def. Sprites)
+	SPATTB equ 0x1B00		; Tabla de atributos de sprites (6912 Dec - Atb. Sprites)
+	SPPATT equ 0x3800		; Tabla de patrones de sprites (14336 Dec - Def. Sprites)
 
 ; -----------------------------------------------------------------------------------------------
 ; Establece modo pantalla, color por defecto y otras configuraciones de pantalla
 ; -----------------------------------------------------------------------------------------------
 
-	ld a,2				; Carga registro A con valor 2	
+	ld a,2				; Carga registro A con valor 2
 	ld [FORCLR],a			; Almacena en F3E9 valor 2 - Color tinta
 	ld a,0				; Carga registro A con valor 0
 	ld [BAKCLR],a			; Almacena en F3EA valor 0 - Color de fondo
 	ld [BDRCLR],a			; Almacena en F3E9 valor 0 - Color de bordes
 	call CHGCLR			; Llama BIOS para hacer COLOR 2,0,0
-	
+
 	call INIGRP			; Activa SCREEN 2 e inicializa todas las tablas
 	ld c,1				; Registro 1 VDP
 	ld b,11000010b			; Prepara información para activar SCREEN 2,2
@@ -118,51 +118,51 @@
 
 	call 41h			; Desactiva pantalla
 
-	ld hl,GRAF			; Dirección RAM origen (set gráfico) 
+	ld hl,GRAF			; Dirección RAM origen (set gráfico)
 	ld de,4096			; Dirección VRAM destino (solo en el tercer banco)
 	ld bc,104			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-	ld hl,BLOCK			; Dirección RAM origen (set gráfico) 
+	ld hl,BLOCK			; Dirección RAM origen (set gráfico)
 	ld de,91*8			; Dirección VRAM destino (primer banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-	ld hl,BLOCK			; Dirección RAM origen (set gráfico) 
+	ld hl,BLOCK			; Dirección RAM origen (set gráfico)
 	ld de,91*8+2048			; Dirección VRAM destino (segundo banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-	ld hl,BLOCK			; Dirección RAM origen (set gráfico) 
+	ld hl,BLOCK			; Dirección RAM origen (set gráfico)
 	ld de,91*8+4096			; Dirección VRAM destino (tercer banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
 					; COLOR
-	ld hl,COLOR			; Dirección RAM origen (set gráfico) 
+	ld hl,COLOR			; Dirección RAM origen (set gráfico)
 	ld de,CHCLOR+4096		; Dirección VRAM destino (solo en el tercer banco)
 	ld bc,104			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-	ld hl,CBLOCK			; Dirección RAM origen (set gráfico) 
+	ld hl,CBLOCK			; Dirección RAM origen (set gráfico)
 	ld de,CHCLOR+91*8		; Dirección VRAM destino (primer banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-	ld hl,CBLOCK			; Dirección RAM origen (set gráfico) 
+	ld hl,CBLOCK			; Dirección RAM origen (set gráfico)
 	ld de,CHCLOR+91*8+2048		; Dirección VRAM destino (segundo banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-	ld hl,CBLOCK			; Dirección RAM origen (set gráfico) 
+	ld hl,CBLOCK			; Dirección RAM origen (set gráfico)
 	ld de,CHCLOR+91*8+4096		; Dirección VRAM destino (tercer banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; Define SPRITE para puntero flecha
 ; -----------------------------------------------------------------------------------------------
-	ld hl,SPT			; Direeción RAM origen (SPRITE) 
+	ld hl,SPT			; Direeción RAM origen (SPRITE)
 	ld de, SPPATT 			; Dirección VRAM destino (tabla de patrones de Sprites)
 	ld bc,64			; Total de valores a copiar 64 valores (2 Sprites)
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
@@ -170,7 +170,7 @@
 ; -----------------------------------------------------------------------------------------------
 ; Presentación
 ; -----------------------------------------------------------------------------------------------
-@@CREDITS:	
+@@CREDITS:
 	call TITLE			; Imprime pantalla de presentación del juego
 	call 44h			; Activa pantalla
 
@@ -185,10 +185,10 @@
 	ld a,1				; Prepara para descomprimir información
 	ld hl,GO			; Apunta a pantalla de aviso "empieza juego"
 	call STAGE_PRINT		; Lanza pantalla intermedia
-	
+
 	call WAIT_TRIGGER		; Vuelve a esperar a que se pulse disparador o ESC
 	cp 27				; Comprueba que se ha pulsado ESC
-	jp z, @@CREDITS			; Si es así retorna a la pantalla de créditos	
+	jp z, @@CREDITS			; Si es así retorna a la pantalla de créditos
 
 	ld hl,ST01			; Apunta a pantalla inicial de juego
 
@@ -208,9 +208,9 @@
 	call ARROW			; Llama a la rutina que imprime el puntero en [X] e [Y]
 	call MOVE_ARROW			; Llama a la rutina que gestiona la posición del puntero
 	call READ_TRIGGER		; Lee si se ha pulsado SPACE o DISPARADOR Joystick
-	cp FFh	  			; Comprueba si realmente ha sido pulsado disparador
+	cp 0xFF	  			; Comprueba si realmente ha sido pulsado disparador
 	call z, PUZZLE			; Si ha sido así actualiza puzzle
-	call STATE_PUZZLE		; Comprueba "continuamente" estado puzzle (A=0 Fin)		
+	call STATE_PUZZLE		; Comprueba "continuamente" estado puzzle (A=0 Fin)
 	cp 0				; Comprueba que no hay bloques activos (IF A=0 THEN END)
 
 	jp nz, @@GAME			; Continua en juego si la comparación anterior es falsa
@@ -228,7 +228,7 @@
 
 	pop hl				; Recupera puntero a pantalla
 	ld de,24 			; Incrementa en 24 bytes la dirección de HL
-	add hl,de				
+	add hl,de
 					; Ojo que PUSH y POP deben estar equilibrados
 	call WAIT_TRIGGER		; Esperar pulsación disparador para continuar otro puzzle
 	cp 27				; Comprueba que se ha pulsado ESC
@@ -239,8 +239,8 @@
 ; -----------------------------------------------------------------------------------------------
 ; Final del juego. Se ha conseguido superar con éxito todos los puzzles
 ; -----------------------------------------------------------------------------------------------
-@@END:	
-	pop hl				; Equilibra la pila 
+@@END:
+	pop hl				; Equilibra la pila
 
 	ld a,1				; Prepara para descomprimir información
 	ld hl,WELL			; Apunta a pantalla de aviso "empieza juego"
@@ -268,7 +268,7 @@
 	pop hl				; Recupera puntero a pantalla, y no actualiza HL
 					; Esto se hace entre las dos llamadas CALL para evitar
 					; que se retorne a la pantalla de créditos con la pila
-					; tocada, y para evitar que HL cambie 
+					; tocada, y para evitar que HL cambie
 
 
 	call WAIT_TRIGGER		; Esperar pulsación disparador para continuar otro puzzle
@@ -276,12 +276,12 @@
 	jp z,@@CREDITS			; Si es así retorna a la pantalla de CREDITOS
 
 	jp @@MAIN			; Salta al principio
-	
+
 ; -----------------------------------------------------------------------------------------------
 ; Salida al BASIC
 ; -----------------------------------------------------------------------------------------------
-@@EXIT_TO_BASIC:						
-	ld a,15				; Carga registro A con valor 15	
+@@EXIT_TO_BASIC:
+	ld a,15				; Carga registro A con valor 15
 	ld [FORCLR],a			; Almacena en F3E9 valor 15 - Color tinta
 	ld a,4				; Carga registro A con valor 4
 	ld [BAKCLR],a			; Almacena en F3EA valor 4 - Color de fondo
@@ -299,7 +299,7 @@
 ;
 ;	Entrada:
 ;		- Ninguna, toma los valores de las posiciones de memoria [X] e [Y]
-;	
+;
 ;	Salida:
 ;		- En pantalla
 ;
@@ -311,11 +311,11 @@ ARROW:
 	push bc				; Reserva valor de BC
 	push de				; Reserva valor de DE
 
-	ld a,[X]			; Lee valores de X 
+	ld a,[X]			; Lee valores de X
 	ld b,a				; Asigna a registro B para usarlo en llamada PUT_SPRITE
 	ld a,[Y]			; Lee valores de Y
 	ld c,a				; Asigna a registro C para usarlo en llamada PUT_SPRITE
-			
+
 	ld a,0				; plano
 	ld d,1				; Nº sprite
 	ld e,14				; Color
@@ -350,7 +350,7 @@ ARROW:
 ;
 ;	Entrada:
 ;		- Ninguna
-;	
+;
 ;	Salida:
 ;		- En pantalla
 ;
@@ -385,7 +385,7 @@ ARROW_OFF:
 
 	ret				; Retorno al punto de llamada
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; BIT2BYTE
 ;
 ;	Descripción:
@@ -393,7 +393,7 @@ ARROW_OFF:
 ;
 ;	Entrada:
 ;		- HL = Dirección memoria que contiene los Bits
-;	
+;
 ;	Salida:
 ;		- En el BUFFER
 ;
@@ -401,7 +401,7 @@ ARROW_OFF:
 ;	 	- Ok
 ; -----------------------------------------------------------------------------------------------
 BIT2BYTE:
-	push af				; Reserva AF	
+	push af				; Reserva AF
 	push bc				; reserva BC
 	push hl				; Reserva HL
 	push ix				; Reserva IX
@@ -417,11 +417,11 @@ BIT2BYTE:
 
 	ld b,8				; Lee los 8 bits de cada Byte (uno a uno)
 @@BUC_INT:
-	ld a,d				; Carga A con el Byte codificado	
+	ld a,d				; Carga A con el Byte codificado
 	and 10000000b			; A=128 si bit 7 de [HL] es 1 de lo contrario A=0
 	ld [ix],a			; Almacena valor del bit en el Byte apuntado por IX
 	sla d				; Desplaza Byte a izquierda para analizar siguiente Bit
-	inc ix				; Siguiente Byte de BUFFER 
+	inc ix				; Siguiente Byte de BUFFER
 	djnz @@BUC_INT			; Repite bucle interior 8 veces (8 bits)
 
 	inc hl				; Siguiente Byte codificado
@@ -435,16 +435,16 @@ BIT2BYTE:
 
 	ret				; Devuelve control al punto de llamada
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; LOCATE
 ;
 ;	Descripción:
 ;		- Pasa coordenadas físicas X,Y a formato dirección VRAM en tabla de nombres
 ;
-;	Entrada:	
-;		- E = Coordenada en X 
+;	Entrada:
+;		- E = Coordenada en X
 ;		- D = Coordenada en Y
-;	
+;
 ;	Salida:
 ;		- HL = Dirección VRAM
 ;
@@ -457,14 +457,14 @@ LOCATE:
 	push de				; Asegura valor DE
 
 	ld hl, CHNAME			; Apunta a tabla de nombres
-	
+
 	ld a,d				; A=D
 	cp 0				; Comprueba que se solicita una línea distinta de la 1ª
 	call nz, @@SUMA32		; Si es así, suma +32 posiciones VRAM por cada valor D
 
 	ld d,0				; Borra parte alta del registro DE
 	add hl, de			; Suma el valor X a la dirección VRAM contenida en HL
-	
+
 	pop de				; Restaura valor DE
 	pop bc				; Restaura valor BC
 	pop af				; Restaura valor AF
@@ -474,14 +474,14 @@ LOCATE:
 	push de				; Reserva DE para usarlo registro en el bucle
 	ld b,d				; Posiciona bloque en Y
 	ld de,32			; sumando +32
-@@BUC:	
+@@BUC:
 	add hl,de			; Posiciona HL incrementando en +32
 	djnz @@BUC			; Realiza bucle hasta que ha finalizado de colocar Y
 	pop de				; Recupera DE para usar el valor X
 
 	ret				; Continua con la función LOCATE
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; MOVE_ARROW
 ;
 ;	Descripción:
@@ -489,7 +489,7 @@ LOCATE:
 ;
 ;	Entrada:
 ;		- Ninguna, toma los valores de las posiciones de memoria [X] e [Y]
-;	
+;
 ;	Salida:
 ;		- Salva los valores actualizados en [X] e [Y]
 ;
@@ -512,16 +512,16 @@ MOVE_ARROW:
 
 	cp 1				; Comprueba si se ha pulsado ARRIBA
 	jr nz, @@CHK2			; Si no es así realiza siguiente comprobación
-	dec c				; Decrementa C, que es igual que Y=Y-1		
+	dec c				; Decrementa C, que es igual que Y=Y-1
 @@CHK2:
 	cp 2				; Comprueba si se ha pulsado ARRIBA-DERECHA
 	jr nz, @@CHK3			; Si no así es realiza siguiente comprobación
-	dec c				; Decrementa C, que es igual que Y=Y-1		
-	inc b				; Incrementa B, que es igual que X=X+1		
+	dec c				; Decrementa C, que es igual que Y=Y-1
+	inc b				; Incrementa B, que es igual que X=X+1
 @@CHK3:
 	cp 3				; Comprueba si se ha pulsado DERECHA
 	jr nz, @@CHK4			; Si no es así realiza siguiente comprobación
-	inc b				; Incrementa B, que es igual que X=X+1		
+	inc b				; Incrementa B, que es igual que X=X+1
 @@CHK4:
 	cp 4				; Comprueba si se ha pulsado DERECHA-ABAJO
 	jr nz, @@CHK5			; Si no es así realiza siguiente comprobación
@@ -546,7 +546,7 @@ MOVE_ARROW:
 	dec c				; Decrementa c, que es igual que Y=Y-1
 	dec b				; Decrementa B, que es igual que X=X-1
 @@CHK_END:
-	
+
 	call @@LIMITS			; Llama a la rutina 'interna' que limita al puntero
 
 	ld a,b				; A=B
@@ -560,7 +560,7 @@ MOVE_ARROW:
 
 	ret				; Vuelve al punto de llamada
 
-@@LIMITS:				; Evita que el puntero se salga de limites de pantalla	
+@@LIMITS:				; Evita que el puntero se salga de limites de pantalla
 	ld a,b				; Comprueba posición X
 	cp 0				; ¿ Está en el límite izquierdo ?
 	jr nz, @@CL2			; Si no es así comprueba siguiente límite
@@ -581,7 +581,7 @@ MOVE_ARROW:
 
 	ret				; Finaliza comprobaciones y retorna al punto llamante
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; PUT_BLOCK
 ;
 ;	Descripción:
@@ -589,35 +589,35 @@ MOVE_ARROW:
 ;
 ;	Entrada:
 ;		- A = tipo de bloque ( hueco=95, macizo=91)
-;		- E = Coordenada en X 
+;		- E = Coordenada en X
 ;		- D = Coordenada en Y
-;	
+;
 ;	Salida:
 ;		- En pantalla
 ;
 ; 	Estado:
-;		- OK 
+;		- OK
 ; -----------------------------------------------------------------------------------------------
 PUT_BLOCK:
 	push af				; Reserva registro AF
 	push bc				; Reserva registro BC
 	push hl				; Reserva registro HL
 	push de				; Reserva registro DE
-	
+
 	call LOCATE			; Posiciona punto VRAM donde imprimir el bloque
 
 					; El primer carácter a imprimir se ha pasado por reg. A
 	call WRTVRM			; Imprime carácter contenido en A
-	inc a				; Cambia a el siguiente carácter a imprimir 
+	inc a				; Cambia a el siguiente carácter a imprimir
 	push hl				; Guarda dirección VRAM para usarlo después
-	inc hl				; Incrementa en +1 la dirección VRAM 
+	inc hl				; Incrementa en +1 la dirección VRAM
 	call WRTVRM			; Imprime carácter A+1
 	pop hl				; Recupera dirección VRAM
 	ld de,32			; Cambia de línea incrementando en +32 la direcc. VRAM
 	add hl,de			; Hace la suma HL=HL+32
 	inc a				; Prepara siguiente carácter a imprimir
 	call WRTVRM			; Imprime A+2
-	inc a				; Prepara el último carácter a imprimir 
+	inc a				; Prepara el último carácter a imprimir
 	inc hl				; Aumenta la dirección VRAM en +1
 	call WRTVRM			; Imprime caracter A+3
 
@@ -628,7 +628,7 @@ PUT_BLOCK:
 
 	ret				; Finaliza la rutina
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; PUT_SPRITE
 ;
 ;	Descripción:
@@ -640,7 +640,7 @@ PUT_BLOCK:
 ;		- C = Coordenada en Y del Sprite
 ;		- D = Número de sprite a imprimir
 ;		- E = Color del sprite
-;	
+;
 ;	Salida:
 ;		- En pantalla
 ;
@@ -656,7 +656,7 @@ PUT_SPRITE:
 
 	push bc				; Reserva registro BC para poder usarlo en otras cosas
 
-	ld c,a				; C=A					
+	ld c,a				; C=A
 	add a,c				; Al contenido de A se le añaden 3 veces más de A, que es
 	add a,c				; lo mismo que A=A+A+A+A, con esto se calcula el OFFSET
 	add a,c				; del plano dentro de la tabla de atributos de sprites
@@ -671,7 +671,7 @@ PUT_SPRITE:
 
 	xor a				; A=0
 	add a,d				; Al contenido de A se le añaden 4 veces más de D, que es
-	add a,d				; lo mismo que A=4*D. Con esto se consigue acceder al  
+	add a,d				; lo mismo que A=4*D. Con esto se consigue acceder al
 	add a,d				; sprite numero D definido en tabla de patrones sprites
 	add a,d				; Para el caso de sprites de 8x8 sobrarían estas líneas
 	ld d,a				; Se actualiza el valor correcto para D en sprites de 16
@@ -687,7 +687,7 @@ PUT_SPRITE:
 	ld a,d				; Número de sprite a imprimir
 	call WRTVRM			; VPOKE HL,D
 	inc hl				; Siguiente posición de la tabla de atributos
-	ld a,e				; Color del sprite		
+	ld a,e				; Color del sprite
 	call WRTVRM			; VPOKE HL,E
 
 	pop ix				; Restaura valor para IX
@@ -695,7 +695,7 @@ PUT_SPRITE:
 	pop de				; Restaura valor para DE
 	pop bc				; Restaura valor para BC
 	pop af				; Restaura valor para AF
-	
+
 	ret				; Al punto de llamada
 
 ; -----------------------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ PUT_SPRITE:
 ;
 ;	Entrada:
 ;		- Ninguna, toma los valores de las posiciones de memoria [X] e [Y]
-;	
+;
 ;	Salida:
 ;		- En pantalla y en el BUFFER dónde se encuentra la información del puzzle
 ;
@@ -720,9 +720,9 @@ PUZZLE:
 	push hl				; Reserva HL
 
 					; A esta rutina se ha entrado cuando se ha pulsado
-					; el disparador, pero no se activa hasta que el TRIGGER 
+					; el disparador, pero no se activa hasta que el TRIGGER
 					; no se suelte. Esa es la función de este bucle inicial.
-@@OFF:					
+@@OFF:
 	call READ_TRIGGER		; Lee estado de la barra SPACE o DISPARADOR MANDO 1
 	cp 00h				; Comprueba que se ha soltado alguno de los dos
 	jr nz, @@OFF 			; Si no es así espera a que se deje de pulsar TRIGGER
@@ -739,7 +739,7 @@ PUZZLE:
 	srl e				; Divide por 2 (total divide por 4)
 	srl e				; Divide por 2 (total divide por 8)
 	srl e				; Divide por 2 (total divide por 16)
-	
+
 					; E=E/16 Coordenada [Y]
 	srl d				; Divide por 2
 	srl d				; Divide por 2 (total divide por 4)
@@ -754,18 +754,18 @@ PUZZLE:
 					; Busca posición RAM en BUFFER correspondiente al bloque
 					; Este trozo de código es igual al de la función LOCATE
 					; Solo cambia destino memoria y tamaño matriz
-					 
+
 	ld hl, BUFFER			; Apunta a BUFFER donde se encuentra info pantalla
 					; El tamaño de la pantalla es de 16x12 bloques
-	
+
 	ld a,d				; A=D
 	cp 0				; Comprueba que se solicita una línea distinta de la 1ª
 	call nz, @@SUMA16		; Si es así, suma +16 posiciones BUFFER por cada valor D
 
 	ld d,0				; Borra parte alta del registro DE
 	add hl, de			; Suma el valor X a la dirección BUFFER contenida en HL
-					; HL contiene posición RAM dónde se encuentra el puntero			
-					
+					; HL contiene posición RAM dónde se encuentra el puntero
+
 					; A continuación se modifican los bloques necesarios
 
 					; BLOQUE SUPERIOR
@@ -778,13 +778,13 @@ PUZZLE:
 
 @@BLOCK_LEFT:				; BLOQUE IZQUIERDO
 	ld de,15			; Prepara para posicionar direcc. Hl en bloque izquierdo
-	add hl,de			; Coloca HL en bloque izquierdo	
+	add hl,de			; Coloca HL en bloque izquierdo
 	ld a,[XB]			; A=Coordenada XB
 	cp 0				; Comp. que coordenada [XB-1] no supera límite izquierdo
 	jr z, @@BLOCK_ARROW		; Si supera límite pasa del bloque e imprime siguiente
 	call @@INVERT			; De lo contrario invierte valor bloque
 
-@@BLOCK_ARROW:				; BLOQUE DEL PUNTERO				
+@@BLOCK_ARROW:				; BLOQUE DEL PUNTERO
 	inc hl				; Este bloque siempre está en pantalla
 	call @@INVERT			; Llama a rutina para invertir valor
 
@@ -818,7 +818,7 @@ PUZZLE:
 
 @@INVERT:				; HL debe contener el OFFSET en el BUFFER
 	ld a,[hl]			; De lo contrario lee el valor de esa posición
-	xor 10000000b			; Invierte su contenido	
+	xor 10000000b			; Invierte su contenido
 	ld [hl],a			; Y lo vuelve a almacenar en el mismo lugar RAM
 	ret				; Al punto de llamada
 
@@ -826,14 +826,14 @@ PUZZLE:
 	push de				; Reserva DE para usarlo registro en el bucle
 	ld b,d				; Posiciona bloque en Y
 	ld de,16			; sumando +16
-@@BUC:	
+@@BUC:
 	add hl,de			; Posiciona HL incrementando en +16
 	djnz @@BUC			; Realiza bucle hasta que ha finalizado de colocar Y
 	pop de				; Recupera DE para usar el valor X
 
 	ret				; Al punto de llamada
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; READ_STICK
 ;
 ;	Descripción:
@@ -841,7 +841,7 @@ PUZZLE:
 ;
 ;	Entrada:
 ;		- Ninguna.
-;	
+;
 ;	Salida:
 ;		- A= de 0 a 7, igual que la función "A= STICK(0) OR STICK(1)" del BASIC
 ;
@@ -851,23 +851,23 @@ PUZZLE:
 READ_STICK:
 
 	ld a,0				; Prepara para leer STICK del teclado
-	call GTSTCK			; Lee valor del STICK 
+	call GTSTCK			; Lee valor del STICK
 	cp 0				; Comprueba si se ha pulsado algún cursor del teclado
 	ret nz				; Si es así retorna y devuelve en A el valor asignado
 	ld a,1				; De lo contrario prepara para leer JOYSTICK en puerto 1
-	call GTSTCK			; Lee valor del JOYSTICK 
+	call GTSTCK			; Lee valor del JOYSTICK
 
-	ret				; Devuelve valor A<>0 si se ha pulsado algo, o A=0	
+	ret				; Devuelve valor A<>0 si se ha pulsado algo, o A=0
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; READ_TRIGGER
 ;
 ;	Descripción:
 ;		- Lee estado del disparador "SPACE" o "TRIGGER 1"
 ;
-;	Entrada:	
+;	Entrada:
 ;		- Ninguna
-;	
+;
 ;	Salida:
 ;		- A = 0 o -1(FFh) según este el disparador "sin pulsar" o "pulsado"
 ;
@@ -878,15 +878,15 @@ READ_TRIGGER:
 
 	ld a,0				; Prepara para leer SPACE
 	call GTTRIG			; Lee estado de la barra SPACE
-	cp FFh				; Comprueba que ha sido pulsada
+	cp 0xFF				; Comprueba que ha sido pulsada
 	ret z				; Si es así retorna y devuelve en A=FFh
 	ld a,1				; Prepara para leer TRIGGER en puerto 1
 	call GTTRIG			; Lee estado TRIGGER
 
 	ret				; Retorna con valor en A=0 o A=FFh
 
-; ----------------------------------------------------------------------------------------------- 
-; STAGE_PRINT 
+; -----------------------------------------------------------------------------------------------
+; STAGE_PRINT
 ;
 ;	Descripción:
 ;		- Imprime pantalla de juego codificada en bits
@@ -895,30 +895,30 @@ READ_TRIGGER:
 ;		- A  = 1, Indica si hay que descomprimir información "pantalla inicial" en BUFFER
 ;		- HL = Dirección memoria que contiene la "pantalla inicial" de juego, solo tiene
 ;		       utilidad cuando se quiere descomprimir la pantalla inicial de cada puzzle
-;	
+;
 ;	Salida:
 ;		- En pantalla
 ;
 ; 	Estado:
 ;		- Ok (se mantiene @@AUX_1 Y @@AUX_2 por legibilidad del código)
 ; -----------------------------------------------------------------------------------------------
-STAGE_PRINT:	
+STAGE_PRINT:
 	push af				; Reserva valor AF
 	push bc				; Reserva valor BC
 	push hl				; Reserva valor HL
 	push de				; Reserva valor DE
-	
+
 	cp 1				; Comprueba que se quiere descomprimir pantalla
 	call z, BIT2BYTE		; Descomprime la información codificada en bit en BUFFER
 
 	ld ix,BUFFER			; Almacena en IX la dirección de memoria del BUFFER
 	ld e,0				; Prepara para imprimir en coordenada X
 	ld d,0				; Prepara para imprimir en coordenada Y
-	
+
 	ld b,192			; Número de ciclos a realizar por el bucle
-@@BUC:	
-	ld a,[ix]			; A = Contenido del BUFFER 
-	cp 0				; Compara con el valor cero	
+@@BUC:
+	ld a,[ix]			; A = Contenido del BUFFER
+	cp 0				; Compara con el valor cero
 	push af				; Almacena estado del registro de banderas FLAG
 	call nz, @@AUX_1		; Si la comparación anterior es <>0 imprime bloque macizo
 	pop af				; Rescata el estado del registro de banderas FLAG
@@ -949,7 +949,7 @@ STAGE_PRINT:
 	call PUT_BLOCK			; Llama a rutina para imprimir bloque
 	ret				; Devuelve control a función principal
 
-@@AUX_3:	
+@@AUX_3:
 	inc d				; Avanza una línea de bloques
 	inc d				; por lo que avanza en Y dos posiciones
 	ld e,0				; Coloca coordenada X al principio de la línea
@@ -963,7 +963,7 @@ STAGE_PRINT:
 ;
 ;	Entrada:
 ;		- Ninguna
-;	
+;
 ;	Salida:
 ;		- A= Número de bloques que quedan para terminar, si A=0 puzzle realizado
 ;
@@ -972,7 +972,7 @@ STAGE_PRINT:
 ; -----------------------------------------------------------------------------------------------
 STATE_PUZZLE:
 	push bc				; Reserva BC
-	push hl				; Reserva HL	
+	push hl				; Reserva HL
 
 	ld a, 0				; Inicializa el contador "A" a cero
 	ld hl,BUFFER			; Apunta al BUFFER
@@ -995,7 +995,7 @@ STATE_PUZZLE:
 
 	ret				; Al punto de llamada y A contiene bloques aún activos
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; SOUND
 ;
 ;	Descripción:
@@ -1003,7 +1003,7 @@ STATE_PUZZLE:
 ;
 ;	Entrada:
 ;		- Ninguna
-;	
+;
 ;	Salida:
 ;		- PSG
 ;
@@ -1021,7 +1021,7 @@ SOUND:
 	ld b,[ix]			; Cantidad de datos a enviar, y número de bucles
 @@BUCLE:
 	ld a,[ix+1] 			; Registro PSG
-	ld e,[ix+2]			; Dato 
+	ld e,[ix+2]			; Dato
 	call WRTPSG			; Envía información al PSG a través de la BIOS
 	inc ix				; Incrementa para leer siguiente dato
 	inc ix				; en dos unidades ya que se leen de dos en dos
@@ -1034,7 +1034,7 @@ SOUND:
 
 	ret				; Al punto de Llamada
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; TITLE
 ;
 ;	Descripción:
@@ -1042,7 +1042,7 @@ SOUND:
 ;
 ;	Entrada:
 ;		- Toma todos los datos necesarios de memoria
-;	
+;
 ;	Salida:
 ;		- En pantalla
 ;
@@ -1059,7 +1059,7 @@ TITLE:
 	ld hl,ST00			; Apunta a pantalla inicial de juego
 	call STAGE_PRINT		; Imprime pantalla
 
-	ld hl,INFO			; Dirección RAM origen (set grafico) 
+	ld hl,INFO			; Dirección RAM origen (set grafico)
 	ld de,CHNAME+704		; Dirección VRAM destino (solo en el tercer banco)
 	ld bc,64			; Total de valores a copiar
 	call LDIRVM			; Llamada a BIOS para realizar el paso de RAM=>VRAM
@@ -1079,7 +1079,7 @@ TITLE:
 ;
 ;	Entrada:
 ;		- Ninguna
-;	
+;
 ;	Salida:
 ;		- A = 27 (Si se ha pulsado ESC) de lo contrario envía A=0
 ;
@@ -1094,7 +1094,7 @@ WAIT_TRIGGER:
 	bit 2,a	 		   	; Comprueba que la tecla ESC ha sido pulsada
 	jp z, @@ESC			; Si es así devuelve valor A=?????1??
 	call READ_TRIGGER		; Lee estado de la barra SPACE o DISPARADOR MANDO 1
-	cp FFh				; Comprueba que se ha pulsado alguno de los dos
+	cp 0xFF				; Comprueba que se ha pulsado alguno de los dos
 	jr nz, @@BUC1			; Si no es así retorna al bucle de presentación
 
 @@BUC2:
@@ -1108,115 +1108,115 @@ WAIT_TRIGGER:
 	ld a, 27			; Envía A=27 para indicar que se ha pulsado ESC
 	ret				; Al punto de llamada
 
-; ----------------------------------------------------------------------------------------------- 
-; Información fija en RAM 
+; -----------------------------------------------------------------------------------------------
+; Información fija en RAM
 ; -----------------------------------------------------------------------------------------------
 
 	; Definición de los gráficos desde el carácter 0 hasta el 10
-GRAF:	db 7Ch,FEh,8Eh,8Eh,8Eh,CEh,7Ch,00h,04h,06h,06h,06h,06h,06h,04h,00h
-        db 7Ch,FEh,06h,7Ch,C0h,FEh,7Ch,00h,7Ch,8Eh,CEh,FEh,8Eh,CEh,7Ch,00h
-        db E3h,E6h,0Ch,18h,30h,67h,C7h,00h,3Ch,42h,99h,85h,85h,99h,42h,3Ch
-        db 0Eh,0Eh,0Eh,0Eh,CEh,FEh,FEh,00h,00h,00h,FBh,9Ah,9Bh,98h,FBh,00h
-        db 36h,16h,D7h,06h,C6h,46h,C7h,00h,00h,00h,E0h,60h,60h,60h,E0h,00h
-        db 7Ch,C6h,C6h,FEh,C6h,C6h,44h,00h,7Ch,FEh,C0h,7Ch,06h,FEh,7Ch,00h
-        db 44h,EEh,FEh,D6h,C6h,C6h,44h,00h
+GRAF:	db 0x7C,0xFE,0x8E,0x8E,0x8E,0xCE,0x7C,0x00,0x04,0x06,0x06,0x06,0x06,0x06,0x04,0x00
+        db 0x7C,0xFE,0x06,0x7C,0xC0,0xFE,0x7C,0x00,0x7C,0x8E,0xCE,0xFE,0x8E,0xCE,0x7C,0x00
+        db 0xE3,0xE6,0x0C,0x18,0x30,0x67,0xC7,0x00,0x3C,0x42,0x99,0x85,0x85,0x99,0x42,0x3C
+        db 0x0E,0x0E,0x0E,0x0E,0xCE,0xFE,0xFE,0x00,0x00,0x00,0xFB,0x9A,0x9B,0x98,0xFB,0x00
+        db 0x36,0x16,0xD7,0x06,0xC6,0x46,0xC7,0x00,0x00,0x00,0xE0,0x60,0x60,0x60,0xE0,0x00
+        db 0x7C,0xC6,0xC6,0xFE,0xC6,0xC6,0x44,0x00,0x7C,0xFE,0xC0,0x7C,0x06,0xFE,0x7C,0x00
+        db 0x44,0xEE,0xFE,0xD6,0xC6,0xC6,0x44,0x00
 
-COLOR:	db B1h,E1h,E1h,F1h,E1h,E1h,B1h,B1h,B1h,E1h,E1h,F1h,E1h,E1h,B1h,B1h
-        db B1h,E1h,E1h,F1h,E1h,E1h,B1h,B1h,B1h,E1h,E1h,F1h,E1h,E1h,B1h,B1h
-        db C1h,21h,31h,31h,31h,21h,C1h,C1h,61h,81h,81h,91h,91h,81h,81h,61h
-        db 41h,51h,51h,71h,51h,51h,41h,41h,41h,51h,51h,71h,51h,51h,41h,41h
-        db 41h,51h,51h,71h,51h,51h,41h,41h,41h,51h,51h,71h,51h,51h,41h,41h
-        db C1h,21h,21h,31h,21h,21h,C1h,C1h,C1h,21h,21h,31h,21h,21h,C1h,C1h
-        db C1h,21h,21h,31h,21h,21h,C1h,C1h
+COLOR:	db 0xB1,0xE1,0xE1,0xF1,0xE1,0xE1,0xB1,0xB1,0xB1,0xE1,0xE1,0xF1,0xE1,0xE1,0xB1,0xB1
+        db 0xB1,0xE1,0xE1,0xF1,0xE1,0xE1,0xB1,0xB1,0xB1,0xE1,0xE1,0xF1,0xE1,0xE1,0xB1,0xB1
+        db 0xC1,0x21,0x31,0x31,0x31,0x21,0xC1,0xC1,0x61,0x81,0x81,0x91,0x91,0x81,0x81,0x61
+        db 0x41,0x51,0x51,0x71,0x51,0x51,0x41,0x41,0x41,0x51,0x51,0x71,0x51,0x51,0x41,0x41
+        db 0x41,0x51,0x51,0x71,0x51,0x51,0x41,0x41,0x41,0x51,0x51,0x71,0x51,0x51,0x41,0x41
+        db 0xC1,0x21,0x21,0x31,0x21,0x21,0xC1,0xC1,0xC1,0x21,0x21,0x31,0x21,0x21,0xC1,0xC1
+        db 0xC1,0x21,0x21,0x31,0x21,0x21,0xC1,0xC1
 
-	; Definición del tipo de bloque relleno 
-BLOCK:	db 7Fh,80h,9Fh,BFh,BFh,BFh,BFh,BFh,FCh,02h,F2h,FAh,FAh,FAh,FAh,FAh
-	db BFh,BFh,BFh,BFh,9Fh,80h,7Fh,00h,FAh,FAh,FAh,FAh,F2h,02h,FCh,00h
+	; Definición del tipo de bloque relleno
+BLOCK:	db 0x7F,0x80,0x9F,0xBF,0xBF,0xBF,0xBF,0xBF,0xFC,0x02,0xF2,0xFA,0xFA,0xFA,0xFA,0xFA
+	db 0xBF,0xBF,0xBF,0xBF,0x9F,0x80,0x7F,0x00,0xFA,0xFA,0xFA,0xFA,0xF2,0x02,0xFC,0x00
 	; Definición del tipo de bloque hueco
- 	db 7Fh,80h,9Fh,BFh,BFh,BFh,BFh,BFh,FCh,02h,F2h,FAh,FAh,FAh,FAh,FAh
-	db BFh,BFh,BFh,BFh,9Fh,80h,7Fh,00h,FAh,FAh,FAh,FAh,F2h,02h,FCh,00h
+ 	db 0x7F,0x80,0x9F,0xBF,0xBF,0xBF,0xBF,0xBF,0xFC,0x02,0xF2,0xFA,0xFA,0xFA,0xFA,0xFA
+	db 0xBF,0xBF,0xBF,0xBF,0x9F,0x80,0x7F,0x00,0xFA,0xFA,0xFA,0xFA,0xF2,0x02,0xFC,0x00
 
-	; Color bloque relleno	
-CBLOCK:	db 20h,20h,30h,30h,20h,20h,20h,20h,20h,20h,30h,30h,20h,20h,20h,20h
-	db 20h,20h,30h,30h,20h,20h,20h,20h,20h,20h,30h,30h,20h,20h,20h,20h
+	; Color bloque relleno
+CBLOCK:	db 0x20,0x20,0x30,0x30,0x20,0x20,0x20,0x20,0x20,0x20,0x30,0x30,0x20,0x20,0x20,0x20
+	db 0x20,0x20,0x30,0x30,0x20,0x20,0x20,0x20,0x20,0x20,0x30,0x30,0x20,0x20,0x20,0x20
 	; Color bloque hueco
-	db 14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h
-	db 14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h,14h
+	db 0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14
+	db 0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14
 
 	; Definición de SPRITES de 16x16 - Cuerpo del puntero y sombra
-SPT:	db 80h,C0h,E0h,F0h,F8h,FCh,FEh,FFh,FFh,FFh,FFh,FFh,FEh,F8h,E2h,87h
-	db 00h,00h,00h,00h,00h,00h,00h,00h,80h,C0h,E0h,80h,00h,00h,00h,00h
+SPT:	db 0x80,0xC0,0xE0,0xF0,0xF8,0xFC,0xFE,0xFF,0xFF,0xFF,0xFF,0xFF,0xFE,0xF8,0xE2,0x87
+	db 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xC0,0xE0,0x80,0x00,0x00,0x00,0x00
 
 	; Definición de SPRITES de 16x16 - Borde del puntero
-	db 80h,C0h,E0h,B0h,98h,8Ch,86h,83h,81h,80h,80h,83h,8Eh,B8h,E0h,80h
-	db 00h,00h,00h,00h,00h,00h,00h,00h,80h,C0h,E0h,80h,00h,00h,00h,00h
+	db 0x80,0xC0,0xE0,0xB0,0x98,0x8C,0x86,0x83,0x81,0x80,0x80,0x83,0x8E,0xB8,0xE0,0x80
+	db 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80,0xC0,0xE0,0x80,0x00,0x00,0x00,0x00
 
 	; Pantallas codificadas en bits 16X12 titles
-GO:	db 00h,00h,00h,00h,00h,00h,1Eh,08h,10h,E8h,16h,A8h	; GO!
-	db 12h,A0h,1Eh,E8h,00h,00h,00h,00h,00h,00h,00h,00h
+GO:	db 0x00,0x00,0x00,0x00,0x00,0x00,0x1E,0x08,0x10,0xE8,0x16,0xA8	; GO!
+	db 0x12,0xA0,0x1E,0xE8,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 
-NEXT:	db 00h,00h,00h,00h,00h,00h,97h,57h,D4h,52h,B6h,22h	; NEXT
-	db 94h,52h,97h,52h,00h,00h,00h,00h,00h,00h,00h,00h
+NEXT:	db 0x00,0x00,0x00,0x00,0x00,0x00,0x97,0x57,0xD4,0x52,0xB6,0x22	; NEXT
+	db 0x94,0x52,0x97,0x52,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 
-INTE:	db 00h,00h,03h,C0h,07h,E0h,06h,60h,00h,60h,00h,C0h	; ?
-	db 01h,80h,01h,80h,00h,00h,01h,80h,01h,80h,00h,00h
+INTE:	db 0x00,0x00,0x03,0xC0,0x07,0xE0,0x06,0x60,0x00,0x60,0x00,0xC0	; ?
+	db 0x01,0x80,0x01,0x80,0x00,0x00,0x01,0x80,0x01,0x80,0x00,0x00
 
-WELL:	db 00h,00h,00h,00h,00h,00h,8Bh,D2h,8Ah,12h,ABh,12h	; WELL
-	db DAh,12h,8Bh,$DB,00h,00h,00h,00h,00h,00h,00h,00h		
+WELL:	db 0x00,0x00,0x00,0x00,0x00,0x00,0x8B,0xD2,0x8A,0x12,0xAB,0x12	; WELL
+	db 0xDA,0x12,0x8B,0xDB,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 
-ST00:	db 00h,00h,00h,00h,00h,00h,EEh,97h,2Ah,D4h,4Ah,B7h	; Stage 0 - Presentación
-	db 8Ah,94h,EEh,97h,00h,00h,00h,00h,00h,00h,00h,00h
+ST00:	db 0x00,0x00,0x00,0x00,0x00,0x00,0xEE,0x97,0x2A,0xD4,0x4A,0xB7	; Stage 0 - Presentación
+	db 0x8A,0x94,0xEE,0x97,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 
-ST01: 	db 00h,00h,10h,00h,10h,00h,6Ch,00h,10h,00h,10h,00h	; Stage 1 - 4 Movimientos
-	db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h	; Muy Fácil - Star
+ST01: 	db 0x00,0x00,0x10,0x00,0x10,0x00,0x6C,0x00,0x10,0x00,0x10,0x00	; Stage 1 - 4 Movimientos
+	db 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00	; Muy Fácil - Star
 
-ST02:	db 00h,00h,00h,00h,00h,00h,22h,00h,6Bh,00h,00h,00h	; Stage 2 - 6 Movimientos
-	db 00h,00h,08h,00h,00h,00h,00h,00h,00h,00h,00h,00h	; Muy Fácil - Umbrella
+ST02:	db 0x00,0x00,0x00,0x00,0x00,0x00,0x22,0x00,0x6B,0x00,0x00,0x00	; Stage 2 - 6 Movimientos
+	db 0x00,0x00,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00	; Muy Fácil - Umbrella
 
-ST03:	db 00h,00h,00h,00h,01h,80h,00h,00h,02h,40h,08h,10h	; Stage 3 - 12 Movimientos
-	db 08h,10h,02h,40h,00h,00h,01h,80h,00h,00h,00h,00h	; Fácil-Medio - Circle
+ST03:	db 0x00,0x00,0x00,0x00,0x01,0x80,0x00,0x00,0x02,0x40,0x08,0x10	; Stage 3 - 12 Movimientos
+	db 0x08,0x10,0x02,0x40,0x00,0x00,0x01,0x80,0x00,0x00,0x00,0x00	; Fácil-Medio - Circle
 
-ST04:	db 00h,00h,02h,40h,02h,40h,04h,20h,1Ah,58h,00h,00h	; Stage 4 - 24 Movimientos
-	db 00h,00h,1Ah,58h,04h,20h,02h,40h,02h,40h,00h,00h	; Medio - Cross
+ST04:	db 0x00,0x00,0x02,0x40,0x02,0x40,0x04,0x20,0x1A,0x58,0x00,0x00	; Stage 4 - 24 Movimientos
+	db 0x00,0x00,0x1A,0x58,0x04,0x20,0x02,0x40,0x02,0x40,0x00,0x00	; Medio - Cross
 
-ST05:	db 19h,80h,29h,40h,86h,10h,10h,84h,00h,21h,10h,08h	; Stage 5 - 44 Movimientos
-	db 84h,00h,21h,08h,08h,61h,02h,94h,02h,94h,04h,62h	; Medio - Double Wave
+ST05:	db 0x19,0x80,0x29,0x40,0x86,0x10,0x10,0x84,0x00,0x21,0x10,0x08	; Stage 5 - 44 Movimientos
+	db 0x84,0x00,0x21,0x08,0x08,0x61,0x02,0x94,0x02,0x94,0x04,0x62	; Medio - Double Wave
 
-ST06: 	db 00h,04h,00h,00h,00h,00h,00h,04h,00h,09h,00h,24h	; Stage 6 - 18 Movimientos 
-	db 00h,24h,00h,09h,00h,04h,00h,00h,00h,00h,00h,04h	; Medio - Tissue
+ST06: 	db 0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x09,0x00,0x24	; Stage 6 - 18 Movimientos
+	db 0x00,0x24,0x00,0x09,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x04	; Medio - Tissue
 
-ST07:	db 00h,00h,00h,00h,00h,A0h,01h,1Ch,01h,22h,01h,00h	; Stage 7 - 22 Movimientos
-	db 02h,8Ah,00h,04h,02h,24h,01h,C4h,00h,28h,00h,00h	; Medio - Rose
+ST07:	db 0x00,0x00,0x00,0x00,0x00,0xA0,0x01,0x1C,0x01,0x22,0x01,0x00	; Stage 7 - 22 Movimientos
+	db 0x02,0x8A,0x00,0x04,0x02,0x24,0x01,0xC4,0x00,0x28,0x00,0x00	; Medio - Rose
 
-ST08:	db 00h,08h,03h,00h,07h,00h,07h,12h,00h,55h,00h,82h	; Stage 8 - 36 Movimientos
-	db 00h,00h,01h,93h,00h,00h,00h,82h,00h,54h,04h,11h	; Dificil - Quarter to Twelve	
+ST08:	db 0x00,0x08,0x03,0x00,0x07,0x00,0x07,0x12,0x00,0x55,0x00,0x82	; Stage 8 - 36 Movimientos
+	db 0x00,0x00,0x01,0x93,0x00,0x00,0x00,0x82,0x00,0x54,0x04,0x11	; Dificil - Quarter to Twelve
 
-ST09:	db 55h,55h,D1h,55h,6Fh,55h,40h,00h,00h,00h,42h,40h	; Stage 9 - ??
-	db 44h,20h,80h,00h,90h,20h,01h,C0h,06h,00h,98h,00h	; Extra - Not enough
+ST09:	db 0x55,0x55,0xD1,0x55,0x6F,0x55,0x40,0x00,0x00,0x00,0x42,0x40	; Stage 9 - ??
+	db 0x44,0x20,0x80,0x00,0x90,0x20,0x01,0xC0,0x06,0x00,0x98,0x00	; Extra - Not enough
 
-ST0A:	db 00h,00h,00h,00h,06h,20h,08h,40h,04h,28h,00h,10h	; Stage A - ??
-	db 00h,00h,00h,40h,10h,40h,04h,40h,05h,10h,04h,00h	; Extra - Terror
+ST0A:	db 0x00,0x00,0x00,0x00,0x06,0x20,0x08,0x40,0x04,0x28,0x00,0x10	; Stage A - ??
+	db 0x00,0x00,0x00,0x40,0x10,0x40,0x04,0x40,0x05,0x10,0x04,0x00	; Extra - Terror
 
 	; Información pantalla
-INFO:	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h
-	db 20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h,20h
-	db 20h,01h,00h,00h,04h,20h,0Ah,0Bh,0Ch,20h,20h,20h,20h,20h,20h,20h
-	db 20h,20h,20h,20h,20h,06h,07h,08h,09h,05h,20h,02h,00h,00h,03h,20h
+INFO:	db 0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20
+	db 0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20
+	db 0x20,0x01,0x00,0x00,0x04,0x20,0x0A,0x0B,0x0C,0x20,0x20,0x20,0x20,0x20,0x20,0x20
+	db 0x20,0x20,0x20,0x20,0x20,0x06,0x07,0x08,0x09,0x05,0x20,0x02,0x00,0x00,0x03,0x20
 
 					; Formato "Registro_PSG, Información"
 SND:	db 6				; Cantidad de información que hay que enviar al PSG
-	db 0,172			; Ajuste fino canal A				
-	db 1,7				; Ajuste grueso canal A			
+	db 0,172			; Ajuste fino canal A
+	db 1,7				; Ajuste grueso canal A
 	db 8,16				; Volumen canal A máximo con activación curva Envolvente
 	db 11,16			; f(Hz)=3.5*10^6/(R11*256+R12)	Valor de R11
 	db 12,16			; 				Valor de R12
 	db 13,0				; Forma de ONDA elegida (0,4,8,10,11,12,13,14)
 
-; ----------------------------------------------------------------------------------------------- 
+; -----------------------------------------------------------------------------------------------
 ; Información variable y buffer en RAM
 ; -----------------------------------------------------------------------------------------------
 BUFFER:		ds 192				; BUFFER, para almacenar pantallas en BYTES
-XB:		ds 1				; Bloque horizontal donde está el puntero 
+XB:		ds 1				; Bloque horizontal donde está el puntero
 YB:		ds 1				; Bloque vertical donde está el puntero
 X: 		db 120				; Coordenada X del puntero "ARROW"
 Y:		db 88				; Coordenada Y del puntero "ARROW"
