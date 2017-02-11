@@ -8,6 +8,8 @@ asmsx
 *.tab.h
 *.tab.c
 lex.*.c
+*.output
+*.error
 
 # asMSX output files
 ~*.*
