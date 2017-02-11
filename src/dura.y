@@ -1970,13 +1970,13 @@ int main(int argc, char *argv[])
  }
  clock();
  inicializar_sistema();
- ensamblador=(unsigned char*)malloc(0x100);
- fuente=(unsigned char*)malloc(0x100);
- original=(unsigned char*)malloc(0x100);
- binario=(char*)malloc(0x100);
- simbolos=(char*)malloc(0x100);
- salida=(char*)malloc(0x100);
- filename=(char*)malloc(0x100);
+ ensamblador=malloc(0x100);
+ fuente=malloc(0x100);
+ original=malloc(0x100);
+ binario=malloc(0x100);
+ simbolos=malloc(0x100);
+ salida=malloc(0x100);
+ filename=malloc(0x100);
 
  strcpy(filename,argv[1]);
  strcpy(ensamblador,filename);
