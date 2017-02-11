@@ -1,3 +1,5 @@
+%option noinput
+
 %{
 #include "dura.tab.h"
 
