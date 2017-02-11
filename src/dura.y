@@ -1855,7 +1855,7 @@ void generar_wav()
   int wav_size;
   unsigned int i;
 
-  if ((type == MEGAROM) || ((type = ROM) && (dir_inicio < 0x8000)))
+  if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
   {
     hacer_advertencia(0);
     return;
