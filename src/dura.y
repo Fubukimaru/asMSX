@@ -1919,8 +1919,7 @@ void generar_wav()
     for (i = dir_inicio; i <= dir_final; i++)
       write_byte(memory[i]);
   }
-
-  if (type == Z80)
+  else if (type == Z80)
   {
     wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - dir_inicio + 1)) * 36;
     wav_size = wav_size << 1;
@@ -1946,6 +1945,9 @@ void generar_wav()
     for (i = dir_inicio; i <= dir_final; i++)
     write_byte(memory[i]);
   }
+  /* Fix compiler warning about wav_size being potentially undefined when used in printf() below */
+  else
+    wav_size = 0;
 
   /* Write blank */
   for (i=0; i < 1500; i++)
