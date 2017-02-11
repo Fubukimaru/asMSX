@@ -27,7 +27,7 @@
 extern int prompt_error1(char);
 %}
 
-%option yylineno
+%option yylineno noinput nounput
 
 %s comment
 %s pascal_comment
