@@ -1688,12 +1688,19 @@ void localizar_32k()
 
 unsigned int selector(unsigned int dir)
 {
- dir=(dir/pagesize)*pagesize;
- if ((mapper==KONAMI) && (dir==0x4000)) hacer_error(38);
- if (mapper==KONAMISCC) dir+=0x1000; else
-  if (mapper==ASCII8) dir=0x6000+(dir-0x4000)/4; else
-   if (mapper==ASCII16) if (dir==0x4000) dir=0x6000; else dir=0x7000;
- return dir;
+  dir = (dir / pagesize) * pagesize;
+  if ((mapper == KONAMI) && (dir == 0x4000))
+    hacer_error(38);
+  if (mapper == KONAMISCC)
+    dir += 0x1000;
+  else if (mapper == ASCII8)
+    dir = 0x6000 + (dir - 0x4000) / 4;
+  else if (mapper == ASCII16)
+    if (dir == 0x4000)
+      dir = 0x6000;
+    else
+      dir = 0x7000;
+  return dir;
 }
 
 
