@@ -76,6 +76,7 @@
 #include<string.h>
 #include<time.h>
 #include<math.h>
+#include<ctype.h>
 
 #define VERSION "0.18"
 #define DATE "01/02/2017"
@@ -1734,7 +1735,7 @@ void generar_cassette()
   if (strlen(interno)<6)
    for (i=strlen(interno);i<6;i++) interno[i]=32;
 
-  for (i=0;i<6;i++) fputc(interno[i],salida);
+  for (i=0;i<6;i++) fputc(toupper(interno[i]),salida);
 
   for (i=0;i<8;i++) fputc(cas[i],salida);
 
