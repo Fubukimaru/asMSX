@@ -12,22 +12,23 @@
 */
 
 %{
-	#include <stdio.h>
-	#define MAX_INCLUDE_LEVEL 16
+#include <stdio.h>
+#define MAX_INCLUDE_LEVEL 16
 
-	char *p1_text,*p1_tmpstr,*p1_name,p1_i,p1_include_index=0;
-	FILE *p1_output_file,*p1_input_file;
- 	struct
-	{
-		YY_BUFFER_STATE buffer;
-		unsigned int line;
-  		char *name;
-	} p1_include_stack[MAX_INCLUDE_LEVEL];
+char *p1_text, *p1_tmpstr, *p1_name;
+unsigned int p1_i, p1_include_index = 0;
+FILE *p1_output_file, *p1_input_file;
+struct
+{
+  YY_BUFFER_STATE buffer;
+  unsigned int line;
+  char *name;
+} p1_include_stack[MAX_INCLUDE_LEVEL];
 
 extern int prompt_error1(char);
 %}
 
-%option yylineno
+%option yylineno noinput nounput
 
 %s comment
 %s pascal_comment

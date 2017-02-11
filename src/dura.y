@@ -152,7 +152,8 @@ FILE *wav;
 
 
 unsigned char *memory,zilog=0,pass=1,size=0,bios=0,type=0,conditional[16],conditional_level=0,parity;
-unsigned char *filename,*ensamblador,*binario,*simbolos,*salida,*fuente,*original,cassette=0,*interno;
+unsigned char cassette=0;
+char *fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,*original;
 unsigned int ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit,dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas;
 unsigned int maxpage[4]={32,64,256,256};
 unsigned char locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
@@ -1199,7 +1200,7 @@ void registrar_etiqueta(char *nombre)
    for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) {ultima_global=i;return;}
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) hacer_error(14);
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+4);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+4);
  strcpy(lista_identificadores[maxima-1].nombre,nombre);
  lista_identificadores[maxima-1].valor=ePC;
  lista_identificadores[maxima-1].type=1;
@@ -1214,7 +1215,7 @@ void registrar_local(char *nombre)
  if (pass==2) return;
  for (i=ultima_global;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) hacer_error(14);
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+4);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+4);
  strcpy(lista_identificadores[maxima-1].nombre,nombre);
  lista_identificadores[maxima-1].valor=ePC;
  lista_identificadores[maxima-1].type=1;
@@ -1229,7 +1230,7 @@ void registrar_simbolo(char *nombre, int numero, int type)
  if (pass==2) return;
  for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) {hacer_error(14);return;}
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+1);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+1);
 
  tmpstr=strdup(nombre);
  strcpy(lista_identificadores[maxima-1].nombre,strtok(tmpstr," "));
@@ -1242,28 +1243,39 @@ void registrar_variable(char *nombre, int numero)
  unsigned int i;
  for (i=0;i<maxima;i++) if ((!strcmp(nombre,lista_identificadores[i].nombre))&&(lista_identificadores[i].type==3)) {lista_identificadores[i].valor=numero;return;}
  if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=(char*)malloc(strlen(nombre)+1);
+ lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+1);
  strcpy(lista_identificadores[maxima-1].nombre,strtok(nombre," "));
  lista_identificadores[maxima-1].valor=numero;
  lista_identificadores[maxima-1].type=3;
 }
 
-
 unsigned int leer_etiqueta(char *nombre)
 {
- unsigned int i;
- for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) return lista_identificadores[i].valor;
- if ((pass==1)&&(i==maxima)) return ePC;
- hacer_error(12);
+  unsigned int i;
+
+  for (i = 0; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      return lista_identificadores[i].valor;
+
+  if ((pass == 1) && (i == maxima))
+    return ePC;
+
+  hacer_error(12);
+  exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
 unsigned int leer_local(char *nombre)
 {
- unsigned int i;
- if (pass==1) return ePC;
- for (i=ultima_global;i<maxima;i++)
-   if (!strcmp(nombre,lista_identificadores[i].nombre)) return lista_identificadores[i].valor;
- hacer_error(13);
+  unsigned int i;
+
+  if (pass == 1)
+    return ePC;
+
+  for (i = ultima_global; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      return lista_identificadores[i].valor;
+  hacer_error(13);
+  exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
 void salida_texto()
@@ -1295,12 +1307,15 @@ void salvar_simbolos()
  for (i=0;i<maxima;i++) if (lista_identificadores[i].type==1) j++;
  if (j>0)
  {
- fprintf(fichero,"; global and local labels\n");
- for (i=0;i<maxima;i++)
-  if (lista_identificadores[i].type==1)
-   if (type!=MEGAROM) fprintf(fichero,"%4.4Xh %s\n",lista_identificadores[i].valor,lista_identificadores[i].nombre);
+  fprintf(fichero,"; global and local labels\n");
+  for (i=0;i<maxima;i++)
+   if (lista_identificadores[i].type==1)
+   {
+    if (type!=MEGAROM)
+     fprintf(fichero,"%4.4Xh %s\n",lista_identificadores[i].valor,lista_identificadores[i].nombre);
     else
      fprintf(fichero,"%2.2Xh:%4.4Xh %s\n",lista_identificadores[i].pagina&0xff,lista_identificadores[i].valor,lista_identificadores[i].nombre);
+   }
  }
  j=0;
  for (i=0;i<maxima;i++) if (lista_identificadores[i].type==2) j++;
@@ -1410,146 +1425,160 @@ void write_zx_number(unsigned int i)
 
 void guardar_binario()
 {
-  unsigned int i,j;
+  unsigned int i, j;
 
-  if ((dir_inicio>dir_final)&&(type!=MEGAROM)) hacer_error(24);
+  if ((dir_inicio > dir_final) && (type != MEGAROM))
+    hacer_error(24);
 
-  if (type==Z80) binario=strcat(binario,".z80");
-   else if (type==ROM)
-    {
-     binario=strcat(binario,".rom");
-     PC=dir_inicio+2;
-     guardar_word(inicio);
-     if (!size) size=8*((dir_final-dir_inicio+8191)/8192);
-    } else if (type==BASIC) binario=strcat(binario,".bin");
-     else if (type==MSXDOS) binario=strcat(binario,".com");
-       else if (type==MEGAROM)
-       {
-        binario=strcat(binario,".rom");
-        PC=0x4002;
-        subpage=0x00;
-        pageinit=0x4000;
-        guardar_word(inicio);
-       }
-	else if (type==SINCLAIR)
-	{
-	 binario=strcat(binario,".tap");
-	}
-
-  if (type==MEGAROM)
+  if (type == Z80)
+    binario = strcat(binario, ".z80");
+  else if (type == ROM)
   {
-   for (i=1,j=0;i<=lastpage;i++) j+=usedpage[i];
-   j>>=1;
-   if (j<lastpage)
-     fprintf(stderr, "Warning: %i out of %i megaROM pages are not defined\n",lastpage-j,lastpage);
+    binario = strcat(binario, ".rom");
+    PC = dir_inicio + 2;
+    guardar_word(inicio);
+    if (!size)
+      size = 8 * ((dir_final - dir_inicio + 8191) / 8192);
+  }
+  else if (type == BASIC)
+    binario = strcat(binario, ".bin");
+  else if (type == MSXDOS)
+    binario = strcat(binario, ".com");
+  else if (type == MEGAROM)
+  {
+    binario = strcat(binario, ".rom");
+    PC = 0x4002;
+    subpage = 0x00;
+    pageinit = 0x4000;
+    guardar_word(inicio);
+  }
+  else if (type == SINCLAIR)
+    binario = strcat(binario, ".tap");
+
+  if (type == MEGAROM)
+  {
+    for (i = 1, j = 0; i <= lastpage; i++)
+      j += usedpage[i];
+    j >>= 1;
+    if (j < lastpage)
+      fprintf(stderr, "Warning: %i out of %i megaROM pages are not defined\n", lastpage - j, lastpage);
   }
 
-  printf("Binary file %s saved\n",binario);
-  output=fopen(binario,"wb");
-  if (type==BASIC)
+  printf("Binary file %s saved\n", binario);
+  output = fopen(binario, "wb");
+  if (type == BASIC)
   {
-   putc(0xfe,output);
-   putc(dir_inicio & 0xff,output);
-   putc((dir_inicio>>8) & 0xff,output);
-   putc(dir_final & 0xff,output);
-   putc((dir_final>>8) & 0xff,output);
-   if (!inicio) inicio=dir_inicio;
-   putc(inicio & 0xff,output);
-   putc((inicio>>8) & 0xff,output);
-  } else
-   if (type==SINCLAIR)
-   {
+    putc(0xfe, output);
+    putc(dir_inicio & 0xff, output);
+    putc((dir_inicio >> 8) & 0xff, output);
+    putc(dir_final & 0xff, output);
+    putc((dir_final >> 8) & 0xff, output);
+    if (!inicio)
+      inicio = dir_inicio;
+    putc(inicio & 0xff, output);
+    putc((inicio >> 8) & 0xff, output);
+  }
+  else if (type == SINCLAIR)
+  {
+    if (inicio)
+    {
+      putc(0x13, output);
+      putc(0, output);
+      putc(0, output);
+      parity = 0x20;
+      write_zx_byte(0);
 
-	if (inicio)
-   {
+      for (i = 0; i < 10; i++) 
+        if (i < strlen(filename))
+          write_zx_byte(filename[i]);
+        else
+          write_zx_byte(0x20);
 
-        putc(0x13,output);
-        putc(0,output);
-        putc(0,output);
-        parity=0x20;
-        write_zx_byte(0);
+      write_zx_byte(0x1e);      /* line length */
+      write_zx_byte(0);
+      write_zx_byte(0x0a);      /* 10 */
+      write_zx_byte(0);
+      write_zx_byte(0x1e);      /* line length */
+      write_zx_byte(0);
+      write_zx_byte(0x1b);
+      write_zx_byte(0x20);
+      write_zx_byte(0);
+      write_zx_byte(0xff);
+      write_zx_byte(0);
+      write_zx_byte(0x0a);
+      write_zx_byte(0x1a);
+      write_zx_byte(0);
+      write_zx_byte(0xfd);      /* CLEAR */
+      write_zx_byte(0xb0);      /* VAL */
+      write_zx_byte('\"');
+      write_zx_number(dir_inicio - 1);
+      write_zx_byte('\"');
+      write_zx_byte(':');
+      write_zx_byte(0xef);      /* LOAD */
+      write_zx_byte('\"');
+      write_zx_byte('\"');
+      write_zx_byte(0xaf);      /* CODE */
+      write_zx_byte(':');
+      write_zx_byte(0xf9);      /* RANDOMIZE */
+      write_zx_byte(0xc0);      /* USR */
+      write_zx_byte(0xb0);      /* VAL */
+      write_zx_byte('\"');
+      write_zx_number(inicio);
+      write_zx_byte('\"');
+      write_zx_byte(0x0d);
+      write_zx_byte(parity);
+    }
 
-	for (i=0;i<10;i++) 
-		if (i<strlen(filename)) write_zx_byte(filename[i]); else write_zx_byte(0x20);
+    putc(19, output);		/* Header len */
+    putc(0, output);		/* MSB of len */
+    putc(0, output);		/* Header is 0 */
+    parity = 0;
 
-        write_zx_byte(0x1e);      /* line length */
-        write_zx_byte(0);
-        write_zx_byte(0x0a);      /* 10 */
-        write_zx_byte(0);
-        write_zx_byte(0x1e);      /* line length */
-        write_zx_byte(0);
-        write_zx_byte(0x1b);
+    write_zx_byte(3);		/* Filetype (Code) */
+
+    for (i=0; i < 10; i++) 
+      if (i < strlen(filename))
+        write_zx_byte(filename[i]);
+      else
         write_zx_byte(0x20);
-        write_zx_byte(0);
-        write_zx_byte(0xff);
-        write_zx_byte(0);
-        write_zx_byte(0x0a);
-        write_zx_byte(0x1a);
-        write_zx_byte(0);
-        write_zx_byte(0xfd);      /* CLEAR */
-        write_zx_byte(0xb0);      /* VAL */
-        write_zx_byte('\"');
-        write_zx_number(dir_inicio-1);
-        write_zx_byte('\"');
-        write_zx_byte(':');
-        write_zx_byte(0xef);      /* LOAD */
-        write_zx_byte('\"');
-        write_zx_byte('\"');
-        write_zx_byte(0xaf);      /* CODE */
-        write_zx_byte(':');
-        write_zx_byte(0xf9);      /* RANDOMIZE */
-        write_zx_byte(0xc0);      /* USR */
-        write_zx_byte(0xb0);      /* VAL */
-        write_zx_byte('\"');
-        write_zx_number(inicio);
-        write_zx_byte('\"');
-        write_zx_byte(0x0d);
-        write_zx_byte(parity);
-	}
 
+    write_zx_word(dir_final - dir_inicio + 1);
+    write_zx_word(dir_inicio);	/* load address */
+    write_zx_word(0);		/* offset */
+    write_zx_byte(parity);
 
-	putc(19,output);	/* Header len */
-	putc(0,output);		/* MSB of len */
-	putc(0,output);		/* Header is 0 */
-	parity=0;
-	
-	write_zx_byte(3);	/* Filetype (Code) */
+    write_zx_word(dir_final - dir_inicio + 3);	/* Length of next block */
+    parity = 0;
+    write_zx_byte(255);		/* Data... */
 
-	for (i=0;i<10;i++) 
-		if (i<strlen(filename)) write_zx_byte(filename[i]); else write_zx_byte(0x20);
+    for (i = dir_inicio; i <= dir_final; i++)
+      write_zx_byte(memory[i]);
+    write_zx_byte(parity);
+  }
 
-	write_zx_word(dir_final-dir_inicio+1);
-        write_zx_word(dir_inicio); /* load address */
-	write_zx_word(0);	/* offset */
-	write_zx_byte(parity);
-	
-	write_zx_word(dir_final-dir_inicio+3);	/* Length of next block */
-	parity=0;
-	write_zx_byte(255);	/* Data... */
-	for (i=dir_inicio; i<=dir_final;i++) {
-		write_zx_byte(memory[i]);
-	}
-	write_zx_byte(parity);
-	
-	
-   }
-
-  if (type!=SINCLAIR) if (!size)
+  if (type != SINCLAIR)
   {
-   if (type!=MEGAROM) for (i=dir_inicio;i<=dir_final;i++) putc(memory[i],output);
-    else for (i=0;i<(lastpage+1)*pagesize*1024;i++) putc(memory[i],output);
-  } else if (type!=MEGAROM) for (i=dir_inicio;i<dir_inicio+size*1024;i++) putc(memory[i],output);
-    else for (i=0;i<size*1024;i++) putc(memory[i],output);
+    if (!size)
+    {
+      if (type != MEGAROM)
+        for (i = dir_inicio; i <= dir_final; i++)
+          putc(memory[i], output);
+      else
+        for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
+          putc(memory[i], output);
+    } else if (type != MEGAROM)
+      for (i = dir_inicio; i < dir_inicio + size * 1024; i++)
+        putc(memory[i], output);
+    else
+      for (i = 0; i < size * 1024; i++)
+        putc(memory[i], output);
+  }
 
   fclose(output);
-
-
 }
 
 void finalizar()
 {
- unsigned int i;
- 
  // Obtener nombre del archivo de s�mbolos
  strcpy(simbolos,filename);
  simbolos=strcat(simbolos,".sym");
@@ -1670,12 +1699,21 @@ void localizar_32k()
 
 unsigned int selector(unsigned int dir)
 {
- dir=(dir/pagesize)*pagesize;
- if ((mapper==KONAMI) && (dir==0x4000)) hacer_error(38);
- if (mapper==KONAMISCC) dir+=0x1000; else
-  if (mapper==ASCII8) dir=0x6000+(dir-0x4000)/4; else
-   if (mapper==ASCII16) if (dir==0x4000) dir=0x6000; else dir=0x7000;
- return dir;
+  dir = (dir / pagesize) * pagesize;
+  if ((mapper == KONAMI) && (dir == 0x4000))
+    hacer_error(38);
+  if (mapper == KONAMISCC)
+    dir += 0x1000;
+  else if (mapper == ASCII8)
+    dir = 0x6000 + (dir - 0x4000) / 4;
+  else if (mapper == ASCII16)
+  {
+    if (dir == 0x4000)
+      dir = 0x6000;
+    else
+      dir = 0x7000;
+  }
+  return dir;
 }
 
 
@@ -1814,124 +1852,111 @@ void write_byte(unsigned char m)
 
 void generar_wav()
 {
- int wav_size;
- unsigned int i;
+  int wav_size;
+  unsigned int i;
 
- if ((type==MEGAROM)||((type=ROM)&&(dir_inicio<0x8000)))
- {
-  hacer_advertencia(0);
-  return;
- }
+  if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
+  {
+    hacer_advertencia(0);
+    return;
+  }
 
- binario[strlen(binario)-3]=0;
- binario=strcat(binario,"wav");
+  binario[strlen(binario) - 3] = 0;
+  binario = strcat(binario, "wav");
 
- wav=fopen(binario,"wb");
+  wav = fopen(binario, "wb");
 
- if ((type==BASIC)||(type==ROM))
- {
+  if ((type == BASIC) || (type == ROM))
+  {
+    wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + dir_final - dir_inicio + 1)) * 40;
+    wav_size = wav_size << 1;
 
-  wav_size=(3968*2+1500*2+11*(10+6+6+dir_final-dir_inicio+1))*40;
+    wav_header[4] = (wav_size + 36) & 0xff;
+    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+    wav_header[40] = wav_size & 0xff;
+    wav_header[41] = (wav_size >> 8) & 0xff;
+    wav_header[42] = (wav_size >> 16) & 0xff;
+    wav_header[43] = (wav_size >> 24) & 0xff;
 
-  wav_size=wav_size<<1;
+    /* Write WAV header */
+    for (i = 0; i < 44; i++)
+      fputc(wav_header[i], wav);
 
-  wav_header[4]=(wav_size+36)&0xff;
-  wav_header[5]=((wav_size+36)>>8) & 0xff;
-  wav_header[6]=((wav_size+36)>>16) & 0xff;
-  wav_header[7]=((wav_size+36)>>24) & 0xff;
-  wav_header[40]=wav_size & 0xff;
-  wav_header[41]=(wav_size >> 8) & 0xff;
-  wav_header[42]=(wav_size >> 16) & 0xff;
-  wav_header[43]=(wav_size >> 24) & 0xff;
+    /* Write long header */
+    for (i = 0; i < 3968; i++)
+      write_one();
 
+    /* Write file identifier */
+    for (i = 0; i < 10; i++)
+      write_byte(0xd0);
 
-// Write WAV header
+    /* Write MSX name */
+    if (strlen(interno) < 6)
+      for (i = strlen(interno); i < 6; i++)
+        interno[i] = 32; /* 32 is space character */
+    for (i = 0; i < 6; i++)
+      write_byte(interno[i]);
 
-  for (i=0;i<44;i++) fputc(wav_header[i],wav);
+    /* Write blank */
+    for (i = 0; i < 1500; i++)
+      write_nothing();
 
-// Write long header
+    /* Write short header */
+    for (i = 0; i < 3968; i++)
+      write_one();
 
- for (i=0;i<3968;i++) write_one();
+    /* Write init, end and start addresses */
+    write_byte(dir_inicio & 0xff);
+    write_byte((dir_inicio >> 8) & 0xff);
+    write_byte(dir_final & 0xff);
+    write_byte((dir_final >> 8) & 0xff);
+    write_byte(inicio & 0xff);
+    write_byte((inicio >> 8) & 0xff);
 
-// Write file identifier
+    /* Write data */
+    for (i = dir_inicio; i <= dir_final; i++)
+      write_byte(memory[i]);
+  }
+  else if (type == Z80)
+  {
+    wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - dir_inicio + 1)) * 36;
+    wav_size = wav_size << 1;
 
- for (i=0;i<10;i++) write_byte(0xd0);
+    wav_header[4] = (wav_size + 36) & 0xff;
+    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+    wav_header[40] = wav_size & 0xff;
+    wav_header[41] = (wav_size >> 8) & 0xff;
+    wav_header[42] = (wav_size >> 16) & 0xff;
+    wav_header[43] = (wav_size >> 24) & 0xff;
 
-// Write MSX name
+    /* Write WAV header */
+    for (i = 0; i < 44; i++)
+      fputc(wav_header[i], wav);
 
-  if (strlen(interno)<6)
-   for (i=strlen(interno);i<6;i++) interno[i]=32;
+    /* Write long header */
+    for (i = 0; i < 3968; i++)
+      write_one();
 
-  for (i=0;i<6;i++) write_byte(interno[i]);
+    /* Write data */
+    for (i = dir_inicio; i <= dir_final; i++)
+    write_byte(memory[i]);
+  }
+  /* Fix compiler warning about wav_size being potentially undefined when used in printf() below */
+  else
+    wav_size = 0;
 
-// Write blank
+  /* Write blank */
+  for (i=0; i < 1500; i++)
+    write_nothing();
 
- for (i=0;i<1500;i++) write_nothing();
-
-// Write short header
-
- for (i=0;i<3968;i++) write_one();
-
-// Write init, end and start addresses
-
-  write_byte(dir_inicio & 0xff);
-  write_byte((dir_inicio>>8) & 0xff);
-  write_byte(dir_final & 0xff);
-  write_byte((dir_final>>8) & 0xff);
-  write_byte(inicio & 0xff);
-  write_byte((inicio>>8) & 0xff);
-
-
-// Write data
-
-  for (i=dir_inicio;i<=dir_final;i++)
-   write_byte(memory[i]);
-
- }
-
-
- if (type==Z80)
- {
-
-  wav_size=(3968*1+1500*1+11*(dir_final-dir_inicio+1))*36;
-
-  wav_size=wav_size<<1;
-
-  wav_header[4]=(wav_size+36)&0xff;
-  wav_header[5]=((wav_size+36)>>8) & 0xff;
-  wav_header[6]=((wav_size+36)>>16) & 0xff;
-  wav_header[7]=((wav_size+36)>>24) & 0xff;
-  wav_header[40]=wav_size & 0xff;
-  wav_header[41]=(wav_size >> 8) & 0xff;
-  wav_header[42]=(wav_size >> 16) & 0xff;
-  wav_header[43]=(wav_size >> 24) & 0xff;
-
-
-// Write WAV header
-
-  for (i=0;i<44;i++) fputc(wav_header[i],wav);
-
-// Write long header
-
- for (i=0;i<3968;i++) write_one();
-
-// Write data
-
-  for (i=dir_inicio;i<=dir_final;i++)
-   write_byte(memory[i]);
-
- }
-
-// Write blank
-
-  for (i=0;i<1500;i++) write_nothing();
-
-// Close file
-
+  /* Close file */
   fclose(wav);
 
-  printf("Audio file %s saved [%2.2f sec]\n",binario,(float)wav_size/176400);
-
+  printf("Audio file %s saved [%2.2f sec]\n", binario, (float)wav_size/176400);
 }
 
 
@@ -1971,13 +1996,13 @@ int main(int argc, char *argv[])
  }
  clock();
  inicializar_sistema();
- ensamblador=(unsigned char*)malloc(0x100);
- fuente=(unsigned char*)malloc(0x100);
- original=(unsigned char*)malloc(0x100);
- binario=(char*)malloc(0x100);
- simbolos=(char*)malloc(0x100);
- salida=(char*)malloc(0x100);
- filename=(char*)malloc(0x100);
+ ensamblador=malloc(0x100);
+ fuente=malloc(0x100);
+ original=malloc(0x100);
+ binario=malloc(0x100);
+ simbolos=malloc(0x100);
+ salida=malloc(0x100);
+ filename=malloc(0x100);
 
  strcpy(filename,argv[1]);
  strcpy(ensamblador,filename);

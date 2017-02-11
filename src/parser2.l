@@ -16,6 +16,8 @@
  extern void hacer_error(int);
 %}
 
+%option noinput nounput
+
 %s rept
 %s repnum
 %s line

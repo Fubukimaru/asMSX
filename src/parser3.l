@@ -14,6 +14,8 @@
  char *p3_text;
 %}
 
+%option noinput nounput
+
 %s line
 %s zilog
 

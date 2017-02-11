@@ -1,6 +1,6 @@
 all:	asmsx
 asmsx:	dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c
-	gcc $^ -o$@ -lm -Os -s
+	gcc $^ -o$@ -lm -Os -s -Wall
 dura.tab.c dura.tab.h:	dura.y
 	bison -d $<
 lex.yy.c:	lex.l
