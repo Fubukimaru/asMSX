@@ -1261,6 +1261,7 @@ unsigned int leer_etiqueta(char *nombre)
     return ePC;
 
   hacer_error(12);
+  exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
 unsigned int leer_local(char *nombre)
