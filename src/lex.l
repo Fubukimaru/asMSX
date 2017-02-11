@@ -2,7 +2,7 @@
 #include "dura.tab.h"
 
 extern unsigned int ePC;
-extern unsigned char *original;
+extern char *original;
 extern unsigned char pass;
 %}
 
