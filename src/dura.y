@@ -63,9 +63,14 @@
 	 v.0.17: [19/12/2013]
 		[FIX] Issue 1: Crash on Linux when including additional .asm files (by theNestruo)
 		[FIX] Issue 5: Non-zero exit code on errors (by theNestruo)
-	 v.0.18: 
+
+	 v.0.18: [01/02/2017]
 	 	Fixed issue with .megaflashrom and the defines.
 	 
+	 v.0.18.1: [11/02/2017]
+	 	Fixed multiple compilation warnings by specifying function parameters and return type explicitly
+                Fixed a problem with cassette file name generation due to uninitialized variable 'binario'
+
 */
 
 /* Cabecera y definiciones para C */
@@ -78,8 +83,8 @@
 #include<math.h>
 #include<ctype.h>
 
-#define VERSION "0.18"
-#define DATE "01/02/2017"
+#define VERSION "0.18.1"
+#define DATE "11/02/2017"
 
 #define Z80 0
 #define ROM 1
