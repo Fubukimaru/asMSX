@@ -1275,6 +1275,7 @@ unsigned int leer_local(char *nombre)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return lista_identificadores[i].valor;
   hacer_error(13);
+  exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
 void salida_texto()
