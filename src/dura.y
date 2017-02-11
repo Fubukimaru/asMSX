@@ -1266,11 +1266,15 @@ unsigned int leer_etiqueta(char *nombre)
 
 unsigned int leer_local(char *nombre)
 {
- unsigned int i;
- if (pass==1) return ePC;
- for (i=ultima_global;i<maxima;i++)
-   if (!strcmp(nombre,lista_identificadores[i].nombre)) return lista_identificadores[i].valor;
- hacer_error(13);
+  unsigned int i;
+
+  if (pass == 1)
+    return ePC;
+
+  for (i = ultima_global; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      return lista_identificadores[i].valor;
+  hacer_error(13);
 }
 
 void salida_texto()
