@@ -1414,140 +1414,154 @@ void write_zx_number(unsigned int i)
 
 void guardar_binario()
 {
-  unsigned int i,j;
+  unsigned int i, j;
 
-  if ((dir_inicio>dir_final)&&(type!=MEGAROM)) hacer_error(24);
+  if ((dir_inicio > dir_final) && (type != MEGAROM))
+    hacer_error(24);
 
-  if (type==Z80) binario=strcat(binario,".z80");
-   else if (type==ROM)
-    {
-     binario=strcat(binario,".rom");
-     PC=dir_inicio+2;
-     guardar_word(inicio);
-     if (!size) size=8*((dir_final-dir_inicio+8191)/8192);
-    } else if (type==BASIC) binario=strcat(binario,".bin");
-     else if (type==MSXDOS) binario=strcat(binario,".com");
-       else if (type==MEGAROM)
-       {
-        binario=strcat(binario,".rom");
-        PC=0x4002;
-        subpage=0x00;
-        pageinit=0x4000;
-        guardar_word(inicio);
-       }
-	else if (type==SINCLAIR)
-	{
-	 binario=strcat(binario,".tap");
-	}
-
-  if (type==MEGAROM)
+  if (type == Z80)
+    binario = strcat(binario, ".z80");
+  else if (type == ROM)
   {
-   for (i=1,j=0;i<=lastpage;i++) j+=usedpage[i];
-   j>>=1;
-   if (j<lastpage)
-     fprintf(stderr, "Warning: %i out of %i megaROM pages are not defined\n",lastpage-j,lastpage);
+    binario = strcat(binario, ".rom");
+    PC = dir_inicio + 2;
+    guardar_word(inicio);
+    if (!size)
+      size = 8 * ((dir_final - dir_inicio + 8191) / 8192);
+  }
+  else if (type == BASIC)
+    binario = strcat(binario, ".bin");
+  else if (type == MSXDOS)
+    binario = strcat(binario, ".com");
+  else if (type == MEGAROM)
+  {
+    binario = strcat(binario, ".rom");
+    PC = 0x4002;
+    subpage = 0x00;
+    pageinit = 0x4000;
+    guardar_word(inicio);
+  }
+  else if (type == SINCLAIR)
+    binario = strcat(binario, ".tap");
+
+  if (type == MEGAROM)
+  {
+    for (i = 1, j = 0; i <= lastpage; i++)
+      j += usedpage[i];
+    j >>= 1;
+    if (j < lastpage)
+      fprintf(stderr, "Warning: %i out of %i megaROM pages are not defined\n", lastpage - j, lastpage);
   }
 
-  printf("Binary file %s saved\n",binario);
-  output=fopen(binario,"wb");
-  if (type==BASIC)
+  printf("Binary file %s saved\n", binario);
+  output = fopen(binario, "wb");
+  if (type == BASIC)
   {
-   putc(0xfe,output);
-   putc(dir_inicio & 0xff,output);
-   putc((dir_inicio>>8) & 0xff,output);
-   putc(dir_final & 0xff,output);
-   putc((dir_final>>8) & 0xff,output);
-   if (!inicio) inicio=dir_inicio;
-   putc(inicio & 0xff,output);
-   putc((inicio>>8) & 0xff,output);
-  } else
-   if (type==SINCLAIR)
-   {
+    putc(0xfe, output);
+    putc(dir_inicio & 0xff, output);
+    putc((dir_inicio >> 8) & 0xff, output);
+    putc(dir_final & 0xff, output);
+    putc((dir_final >> 8) & 0xff, output);
+    if (!inicio)
+      inicio = dir_inicio;
+    putc(inicio & 0xff, output);
+    putc((inicio >> 8) & 0xff, output);
+  }
+  else if (type == SINCLAIR)
+  {
+    if (inicio)
+    {
+      putc(0x13, output);
+      putc(0, output);
+      putc(0, output);
+      parity = 0x20;
+      write_zx_byte(0);
 
-	if (inicio)
-   {
+      for (i = 0; i < 10; i++) 
+        if (i < strlen(filename))
+          write_zx_byte(filename[i]);
+        else
+          write_zx_byte(0x20);
 
-        putc(0x13,output);
-        putc(0,output);
-        putc(0,output);
-        parity=0x20;
-        write_zx_byte(0);
+      write_zx_byte(0x1e);      /* line length */
+      write_zx_byte(0);
+      write_zx_byte(0x0a);      /* 10 */
+      write_zx_byte(0);
+      write_zx_byte(0x1e);      /* line length */
+      write_zx_byte(0);
+      write_zx_byte(0x1b);
+      write_zx_byte(0x20);
+      write_zx_byte(0);
+      write_zx_byte(0xff);
+      write_zx_byte(0);
+      write_zx_byte(0x0a);
+      write_zx_byte(0x1a);
+      write_zx_byte(0);
+      write_zx_byte(0xfd);      /* CLEAR */
+      write_zx_byte(0xb0);      /* VAL */
+      write_zx_byte('\"');
+      write_zx_number(dir_inicio - 1);
+      write_zx_byte('\"');
+      write_zx_byte(':');
+      write_zx_byte(0xef);      /* LOAD */
+      write_zx_byte('\"');
+      write_zx_byte('\"');
+      write_zx_byte(0xaf);      /* CODE */
+      write_zx_byte(':');
+      write_zx_byte(0xf9);      /* RANDOMIZE */
+      write_zx_byte(0xc0);      /* USR */
+      write_zx_byte(0xb0);      /* VAL */
+      write_zx_byte('\"');
+      write_zx_number(inicio);
+      write_zx_byte('\"');
+      write_zx_byte(0x0d);
+      write_zx_byte(parity);
+    }
 
-	for (i=0;i<10;i++) 
-		if (i<strlen(filename)) write_zx_byte(filename[i]); else write_zx_byte(0x20);
+    putc(19, output);		/* Header len */
+    putc(0, output);		/* MSB of len */
+    putc(0, output);		/* Header is 0 */
+    parity = 0;
 
-        write_zx_byte(0x1e);      /* line length */
-        write_zx_byte(0);
-        write_zx_byte(0x0a);      /* 10 */
-        write_zx_byte(0);
-        write_zx_byte(0x1e);      /* line length */
-        write_zx_byte(0);
-        write_zx_byte(0x1b);
+    write_zx_byte(3);		/* Filetype (Code) */
+
+    for (i=0; i < 10; i++) 
+      if (i < strlen(filename))
+        write_zx_byte(filename[i]);
+      else
         write_zx_byte(0x20);
-        write_zx_byte(0);
-        write_zx_byte(0xff);
-        write_zx_byte(0);
-        write_zx_byte(0x0a);
-        write_zx_byte(0x1a);
-        write_zx_byte(0);
-        write_zx_byte(0xfd);      /* CLEAR */
-        write_zx_byte(0xb0);      /* VAL */
-        write_zx_byte('\"');
-        write_zx_number(dir_inicio-1);
-        write_zx_byte('\"');
-        write_zx_byte(':');
-        write_zx_byte(0xef);      /* LOAD */
-        write_zx_byte('\"');
-        write_zx_byte('\"');
-        write_zx_byte(0xaf);      /* CODE */
-        write_zx_byte(':');
-        write_zx_byte(0xf9);      /* RANDOMIZE */
-        write_zx_byte(0xc0);      /* USR */
-        write_zx_byte(0xb0);      /* VAL */
-        write_zx_byte('\"');
-        write_zx_number(inicio);
-        write_zx_byte('\"');
-        write_zx_byte(0x0d);
-        write_zx_byte(parity);
-	}
 
+    write_zx_word(dir_final - dir_inicio + 1);
+    write_zx_word(dir_inicio);	/* load address */
+    write_zx_word(0);		/* offset */
+    write_zx_byte(parity);
 
-	putc(19,output);	/* Header len */
-	putc(0,output);		/* MSB of len */
-	putc(0,output);		/* Header is 0 */
-	parity=0;
-	
-	write_zx_byte(3);	/* Filetype (Code) */
+    write_zx_word(dir_final - dir_inicio + 3);	/* Length of next block */
+    parity = 0;
+    write_zx_byte(255);		/* Data... */
 
-	for (i=0;i<10;i++) 
-		if (i<strlen(filename)) write_zx_byte(filename[i]); else write_zx_byte(0x20);
+    for (i = dir_inicio; i <= dir_final; i++)
+      write_zx_byte(memory[i]);
+    write_zx_byte(parity);
+  }
 
-	write_zx_word(dir_final-dir_inicio+1);
-        write_zx_word(dir_inicio); /* load address */
-	write_zx_word(0);	/* offset */
-	write_zx_byte(parity);
-	
-	write_zx_word(dir_final-dir_inicio+3);	/* Length of next block */
-	parity=0;
-	write_zx_byte(255);	/* Data... */
-	for (i=dir_inicio; i<=dir_final;i++) {
-		write_zx_byte(memory[i]);
-	}
-	write_zx_byte(parity);
-	
-	
-   }
-
-  if (type!=SINCLAIR) if (!size)
-  {
-   if (type!=MEGAROM) for (i=dir_inicio;i<=dir_final;i++) putc(memory[i],output);
-    else for (i=0;i<(lastpage+1)*pagesize*1024;i++) putc(memory[i],output);
-  } else if (type!=MEGAROM) for (i=dir_inicio;i<dir_inicio+size*1024;i++) putc(memory[i],output);
-    else for (i=0;i<size*1024;i++) putc(memory[i],output);
+  if (type != SINCLAIR)
+    if (!size)
+    {
+      if (type != MEGAROM)
+        for (i = dir_inicio; i <= dir_final; i++)
+          putc(memory[i], output);
+      else
+        for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
+          putc(memory[i], output);
+    } else if (type != MEGAROM)
+      for (i = dir_inicio; i < dir_inicio + size * 1024; i++)
+        putc(memory[i], output);
+    else
+      for (i = 0; i < size * 1024; i++)
+        putc(memory[i], output);
 
   fclose(output);
-
-
 }
 
 void finalizar()
