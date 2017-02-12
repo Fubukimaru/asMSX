@@ -1294,7 +1294,7 @@ unsigned int leer_etiqueta(char *nombre)
 
 unsigned int leer_local(char *nombre)
 {
-  unsigned int i;
+  int i;
 
   if (pass == 1)
     return ePC;
