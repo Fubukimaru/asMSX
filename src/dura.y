@@ -82,6 +82,7 @@
 #include<time.h>
 #include<math.h>
 #include<ctype.h>
+#include <malloc.h>
 
 #define VERSION "0.18.1"
 #define DATE "11/02/2017"
@@ -1238,7 +1239,7 @@ void registrar_local(char *nombre)
 void registrar_simbolo(char *nombre, int numero, int type)
 {
   int i;
-  char *tmpstr;
+  char *_nombre;
 
   if (pass == 2)
     return;
@@ -1254,8 +1255,9 @@ void registrar_simbolo(char *nombre, int numero, int type)
     hacer_error(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
-  tmpstr=strdup(nombre);
-  strcpy(lista_identificadores[maxima - 1].nombre, strtok(tmpstr, " "));
+  _nombre = alloca(strlen(nombre) + 1);	/* allocate on stack, freed automatically on return */
+  strcpy(_nombre, nombre);	/* guarantees we won't pass string literal to strtok(), which causes SEGFAULT on GCC 6.2.0 */
+  strcpy(lista_identificadores[maxima - 1].nombre, strtok(_nombre, " "));
   lista_identificadores[maxima - 1].valor = numero;
   lista_identificadores[maxima - 1].type = type;
 }
