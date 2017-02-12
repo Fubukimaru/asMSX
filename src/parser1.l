@@ -15,10 +15,11 @@
 #include <stdio.h>
 #define MAX_INCLUDE_LEVEL 16
 
-char *p1_text, *p1_tmpstr, *p1_name;
-char p1_i, p1_include_index = 0;
-FILE *p1_output_file, *p1_input_file;
-struct
+static char *p1_text, *p1_tmpstr, *p1_name;
+static int p1_include_index = 0;
+static FILE *p1_output_file, *p1_input_file;
+
+static struct
 {
   YY_BUFFER_STATE buffer;
   unsigned int line;
@@ -42,10 +43,11 @@ extern int prompt_error1(char);
 <inclusion>[ \t]*      /* strip spaces */
 <inclusion>[^ \t\n]+   p1_tmpstr=strtok(yytext,"\42");
 <inclusion>\n {
+        int i;
 	if (p1_tmpstr==NULL) prompt_error1(5);
 	if (p1_tmpstr[strlen(p1_tmpstr)-1]<=32) prompt_error1(1);
 	if (p1_include_index>=MAX_INCLUDE_LEVEL) prompt_error1(2);
-	for (p1_i=0;p1_i<p1_include_index;p1_i++) if (!strcmp(p1_tmpstr,p1_include_stack[p1_i].name)) prompt_error1(4);
+	for (i=0;i<p1_include_index;i++) if (!strcmp(p1_tmpstr,p1_include_stack[i].name)) prompt_error1(4);
 	p1_include_stack[p1_include_index].name=(char*)malloc(0x100);
 	strcpy(p1_include_stack[p1_include_index].name,p1_name);
 	p1_include_stack[p1_include_index].line=yylineno;
