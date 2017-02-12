@@ -671,7 +671,17 @@ mnemo_general: MNEMO_DAA {guardar_byte(0x27);}
              | MNEMO_HALT {guardar_byte(0x76);}
              | MNEMO_DI {guardar_byte(0xf3);}
              | MNEMO_EI {guardar_byte(0xfb);}
-             | MNEMO_IM valor_8bits {if (($2<0)||($2>2)) hacer_error(3);guardar_byte(0xed);if ($2==0) guardar_byte(0x46); else if ($2==1) guardar_byte(0x56); else guardar_byte(0x5e);}
+             | MNEMO_IM valor_8bits {
+                if ($2 > 2)
+                  hacer_error(3);
+                guardar_byte(0xed);
+                if ($2 == 0)
+                  guardar_byte(0x46);
+                else if ($2==1)
+                  guardar_byte(0x56);
+                else
+                  guardar_byte(0x5e);
+              }
 ;
 
 mnemo_rotate: MNEMO_RLCA {guardar_byte(0x07);}
