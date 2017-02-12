@@ -122,7 +122,7 @@ void type_sinclair();
 void msx_bios();
 void hacer_error(int);
 void localizar_32k();
-void establecer_subpagina(int, int);
+void establecer_subpagina(unsigned int, unsigned int);
 void seleccionar_pagina_directa(unsigned int, unsigned int);
 void seleccionar_pagina_registro(unsigned int, unsigned int);
 void guardar_byte(int);
@@ -1716,17 +1716,29 @@ void type_msxdos()
  ePC=0x0100;
 }
 
-void establecer_subpagina(int n, int dir)
+void establecer_subpagina(unsigned int n, unsigned int dir)
 {
- if (n>lastpage) lastpage=n;
- if (!n) hacer_error(32);
- if (usedpage[n]==pass) hacer_error(37); else usedpage[n]=pass;
- if ((dir<0x4000) || (dir>0xbfff)) hacer_error(35);
- if (n>maxpage[mapper]) hacer_error(36);
- subpage=n;
- pageinit=(dir/pagesize)*pagesize;
- PC=pageinit;
- ePC=PC;
+  if (n > lastpage)
+    lastpage = n;
+
+  if (!n)
+    hacer_error(32);
+
+  if (usedpage[n] == pass)
+    hacer_error(37);
+  else
+    usedpage[n] = pass;
+
+  if ((dir < 0x4000) || (dir > 0xbfff))
+    hacer_error(35);
+
+  if (n > maxpage[mapper])
+    hacer_error(36);
+
+  subpage = n;
+  pageinit = (dir / pagesize) * pagesize;
+  PC = pageinit;
+  ePC = PC;
 }
 
 void localizar_32k()
