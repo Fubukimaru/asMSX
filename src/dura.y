@@ -1237,18 +1237,27 @@ void registrar_local(char *nombre)
 
 void registrar_simbolo(char *nombre, int numero, int type)
 {
- unsigned int i;
- char *tmpstr;
+  unsigned int i;
+  char *tmpstr;
 
- if (pass==2) return;
- for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) {hacer_error(14);return;}
- if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+1);
+  if (pass == 2)
+    return;
 
- tmpstr=strdup(nombre);
- strcpy(lista_identificadores[maxima-1].nombre,strtok(tmpstr," "));
- lista_identificadores[maxima-1].valor=numero;
- lista_identificadores[maxima-1].type=type;
+  for (i = 0; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+    {
+      hacer_error(14);
+      return;
+    }
+
+  if (++maxima == max_id)
+    hacer_error(11);
+
+  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
+  tmpstr=strdup(nombre);
+  strcpy(lista_identificadores[maxima - 1].nombre, strtok(tmpstr, " "));
+  lista_identificadores[maxima - 1].valor = numero;
+  lista_identificadores[maxima - 1].type = type;
 }
 
 void registrar_variable(char *nombre, int numero)
