@@ -1279,7 +1279,7 @@ void registrar_variable(char *nombre, int numero)
 
 unsigned int leer_etiqueta(char *nombre)
 {
-  unsigned int i;
+  int i;
 
   for (i = 0; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
