@@ -2012,9 +2012,11 @@ void generar_wav()
 
 int simbolo_definido(char *nombre)
 {
- unsigned int i;
- for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) return 1;
- return 0;
+  int i;
+  for (i = 0; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      return 1;
+  return 0;
 }
 
 
