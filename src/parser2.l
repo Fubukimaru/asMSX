@@ -9,9 +9,9 @@
 
 %{
  #include<stdio.h>
- FILE *p2_output;
- char *p2_text,*p2_buffer,p2_nested=0,p2_level;
- unsigned int p2_number,p2_lines,p2_i;
+ static FILE *p2_output;
+ static char *p2_text,*p2_buffer,p2_nested=0,p2_level;
+ static unsigned int p2_number,p2_lines;
  int prompt_error2(char);
  extern void hacer_error(int);
 %}
@@ -41,7 +41,8 @@
                 p2_buffer=strcat(p2_buffer,yytext);
                } else
               {
-               for (p2_i=0;p2_i<p2_number;p2_i++)
+               unsigned int i;
+               for (i=0;i<p2_number;i++)
                 fprintf(p2_output,"%s",p2_buffer);
                p2_buffer[0]=0;
                BEGIN(INITIAL);
