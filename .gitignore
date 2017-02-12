@@ -10,12 +10,13 @@ asmsx
 lex.*.c
 *.output
 *.error
+warn*.txt
 
 # asMSX output files
 ~*.*
 *.bin
 *.cas
-*.txt
+code/*.txt
 *.wav
 *.sym
 *.rom

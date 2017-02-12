@@ -9,10 +9,12 @@
 */
 
 %{
- #include<stdio.h>
- FILE *p3_output;
- char *p3_text;
+#include <stdio.h>
+static FILE *p3_output;
+static char *p3_text;
 %}
+
+%option noinput nounput
 
 %s line
 %s zilog
