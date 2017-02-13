@@ -941,7 +941,7 @@ valor: NUMERO {$$=$1;}
      | valor SHIFT_R valor {$$=$1>>$3;}
      | PSEUDO_RANDOM '(' valor ')' {for (;($$=d_rand()&0xff)>=$3;);}
      | PSEUDO_INT '(' valor_real ')' { $$ = (unsigned int)$3; }
-     | PSEUDO_FIX '(' valor_real ')' {$$=(int)($3*256);}
+     | PSEUDO_FIX '(' valor_real ')' { $$ = (unsigned int)($3 * 256); }
      | PSEUDO_FIXMUL '(' valor ',' valor ')' {$$=(int)((((float)$3/256)*((float)$5/256))*256);}
      | PSEUDO_FIXDIV '(' valor ',' valor ')' {$$=(int)((((float)$3/256)/((float)$5/256))*256);}
 ;
