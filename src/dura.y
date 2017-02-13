@@ -410,7 +410,19 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                   | PSEUDO_SELECT valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_directa($2,$4);}}
                   | PSEUDO_SELECT REGISTRO PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_registro($2,$4);}}
                   | PSEUDO_START valor {if (conditional[conditional_level]) {inicio=$2;}}
-                  | PSEUDO_CALLBIOS valor {if (conditional[conditional_level]) {guardar_byte(0xfd);guardar_byte(0x2a);guardar_word(0xfcc0);guardar_byte(0xdd);guardar_byte(0x21);guardar_word($2);guardar_byte(0xcd);guardar_word(0x001c);}}
+                  | PSEUDO_CALLBIOS valor {
+                        if (conditional[conditional_level])
+                        {
+                          guardar_byte(0xfd);
+                          guardar_byte(0x2a);
+                          guardar_word(0xfcc0);
+                          guardar_byte(0xdd);
+                          guardar_byte(0x21);
+                          guardar_word($2);
+                          guardar_byte(0xcd);
+                          guardar_word(0x001c);
+                        }
+                      }
                   | PSEUDO_CALLDOS valor {if (conditional[conditional_level]) {if (type!=MSXDOS) hacer_error(25);guardar_byte(0x0e);guardar_byte($2);guardar_byte(0xcd);guardar_word(0x0005);}}
                   | PSEUDO_DB listado_8bits {;}
                   | PSEUDO_DW listado_16bits {;}
