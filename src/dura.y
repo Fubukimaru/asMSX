@@ -945,7 +945,9 @@ valor: NUMERO {$$=$1;}
      | PSEUDO_FIXMUL '(' valor ',' valor ')' {
                         $$ = (unsigned int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
                       }
-     | PSEUDO_FIXDIV '(' valor ',' valor ')' {$$=(int)((((float)$3/256)/((float)$5/256))*256);}
+     | PSEUDO_FIXDIV '(' valor ',' valor ')' {
+                        $$ = (unsigned int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
+                      }
 ;
 
 valor_real: REAL {$$=$1;}
