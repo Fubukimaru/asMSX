@@ -462,15 +462,12 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                   | PSEUDO_PRINTHEX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"$%4.4x\n",(short)$2&0xffff);}}}
                   | PSEUDO_PRINTFIX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",((float)($2&0xffff))/256);}}}
                   | PSEUDO_SIZE valor {
-                        if (conditional[conditional_level])
+                        if (conditional[conditional_level] && (pass == 2))
                         {
-                          if (pass == 2)
-                          {
-                            if (size > 0)
-                              hacer_error(15);
-                            else
-                              size=$2;
-                          }
+                          if (size > 0)
+                            hacer_error(15);
+                          else
+                            size=$2;
                         }
                       }
                   | PSEUDO_IF valor {if (conditional_level==15) hacer_error(44);conditional_level++;if ($2) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
