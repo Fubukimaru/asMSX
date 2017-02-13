@@ -1281,7 +1281,7 @@ void salto_relativo(unsigned int direccion)
   if ((salto > 127) || (salto < -128))
     hacer_error(8);
 
-  guardar_byte(salto);
+  guardar_byte((unsigned int)salto);
 }
 
 void registrar_etiqueta(char *nombre)
@@ -1472,41 +1472,55 @@ void yyerror(char *s)
 
 void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
 {
- FILE *fichero;
- char k;
- unsigned int i;
- if ((fichero=fopen(nombre,"rb"))==NULL) hacer_error(18);
+  FILE *fichero;
+  char k;
+  unsigned int i;
 
- if (pass==1) printf("Including binary file %s",nombre);
- if ((pass==1)&&(skip)) printf(", skipping %i bytes",skip);
- if ((pass==1)&&(n)) printf(", saving %i bytes",n);
- if (pass==1) printf("\n");
+  if ((fichero = fopen(nombre, "rb")) == NULL)
+    hacer_error(18);
 
- if (skip) for (i=0;(!feof(fichero))&&(i<skip);i++) k=fgetc(fichero);
+  if (pass == 1)
+    printf("Including binary file %s", nombre);
 
- if (skip && feof(fichero)) hacer_error(29);
+  if ((pass == 1) && (skip))
+    printf(", skipping %i bytes", skip);
 
- if (n)
- {
-  for (i=0;(i<n)&&(!feof(fichero));)
+  if ((pass == 1) && n)
+    printf(", saving %i bytes", n);
+
+  if (pass == 1)
+    printf("\n");
+ 
+  if (skip)
+    for (i = 0; (!feof(fichero)) && (i < skip); i++)
+      k = fgetc(fichero);
+ 
+  if (skip && feof(fichero))
+    hacer_error(29);
+ 
+  if (n)
   {
-   k=fgetc(fichero);
-   if (!feof(fichero))
-   {
-    guardar_byte(k);
-    i++;
-   }
+    for (i = 0; (i < n) && (!feof(fichero));)
+    {
+      k = fgetc(fichero);
+      if (!feof(fichero))
+      {
+        guardar_byte(k);
+        i++;
+      }
+    }
+    if (i < n)
+      hacer_error(29);
   }
-  if (i<n) hacer_error(29);
- } else
+  else
+    for (; !feof(fichero); i++)
+    {
+      k = fgetc(fichero);
+      if (!feof(fichero))
+        guardar_byte(k);
+    }
 
-  for (;!feof(fichero);i++)
-  {
-   k=fgetc(fichero);
-   if (!feof(fichero)) guardar_byte(k);
-  }
-
- fclose(fichero);
+  fclose(fichero);
 }
 
 
