@@ -423,7 +423,17 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                           guardar_word(0x001c);
                         }
                       }
-                  | PSEUDO_CALLDOS valor {if (conditional[conditional_level]) {if (type!=MSXDOS) hacer_error(25);guardar_byte(0x0e);guardar_byte($2);guardar_byte(0xcd);guardar_word(0x0005);}}
+                  | PSEUDO_CALLDOS valor {
+                        if (conditional[conditional_level])
+                        {
+                          if (type != MSXDOS)
+                            hacer_error(25);
+                          guardar_byte(0x0e);
+                          guardar_byte($2);
+                          guardar_byte(0xcd);
+                          guardar_word(0x0005);
+                        }
+                      }
                   | PSEUDO_DB listado_8bits {;}
                   | PSEUDO_DW listado_16bits {;}
                   | PSEUDO_DS valor_16bits {if (conditional[conditional_level]) {if (dir_inicio>PC) dir_inicio=PC;PC+=$2;ePC+=$2;if (PC>0xffff) hacer_error(1);}}
