@@ -2776,58 +2776,151 @@ valor: NUMERO {
           }
 ;
 
-valor_real: REAL {$$=$1;}
-         | '-' valor_real {$$=-$2;}
-         | valor_real '+' valor_real {$$=$1+$3;}
-         | valor_real '-' valor_real {$$=$1-$3;}
-         | valor_real '*' valor_real {$$=$1*$3;}
-         | valor_real '/' valor_real {if (!$3) hacer_error(1); else $$=$1/$3;}
-         | valor '+' valor_real {$$=(double)$1+$3;}
-         | valor '-' valor_real {$$=(double)$1-$3;}
-         | valor '*' valor_real {$$=(double)$1*$3;}
-         | valor '/' valor_real {if ($3<1e-6) hacer_error(1); else $$=(double)$1/$3;}
-         | valor_real '+' valor {$$=$1+(double)$3;}
-         | valor_real '-' valor {$$=$1-(double)$3;}
-         | valor_real '*' valor {$$=$1*(double)$3;}
-         | valor_real '/' valor {if (!$3) hacer_error(1); else $$=$1/(double)$3;}
-         | PSEUDO_SIN '(' valor_real ')' {$$=sin($3);}
-         | PSEUDO_COS '(' valor_real ')' {$$=cos($3);}
-         | PSEUDO_TAN '(' valor_real ')' {$$=tan($3);}
-         | PSEUDO_SQR '(' valor_real ')' {$$=$3*$3;}
-         | PSEUDO_SQRT '(' valor_real ')' {$$=sqrt($3);}
-         | PSEUDO_PI {$$=asin(1)*2;}
-         | PSEUDO_ABS '(' valor_real ')' {
-             $$ = abs((int)$3);
-           }
-         | PSEUDO_ACOS '(' valor_real ')' {$$=acos($3);}
-         | PSEUDO_ASIN '(' valor_real ')' {$$=asin($3);}
-         | PSEUDO_ATAN '(' valor_real ')' {$$=atan($3);}
-         | PSEUDO_EXP '(' valor_real ')' {$$=exp($3);}
-         | PSEUDO_LOG '(' valor_real ')' {$$=log10($3);}
-         | PSEUDO_LN '(' valor_real ')' {$$=log($3);}
-         | PSEUDO_POW '(' valor_real ',' valor_real ')' {$$=pow($3,$5);}
-         | '(' valor_real ')' {$$=$2;}
+valor_real: REAL {
+            $$ = $1;
+          }
+        | '-' valor_real {
+            $$ =- $2;
+          }
+        | valor_real '+' valor_real {
+            $$ = $1 + $3;
+          }
+        | valor_real '-' valor_real {
+            $$ = $1 - $3;
+          }
+        | valor_real '*' valor_real {
+            $$ = $1 * $3;
+          }
+        | valor_real '/' valor_real {
+            if (!$3)
+              hacer_error(1);
+            else
+              $$ = $1 / $3;
+          }
+        | valor '+' valor_real {
+            $$ = (double)$1 + $3;
+          }
+        | valor '-' valor_real {
+            $$ = (double)$1 - $3;
+          }
+        | valor '*' valor_real {
+            $$ = (double)$1 * $3;
+          }
+        | valor '/' valor_real {
+            if ($3 < 1e-6)
+              hacer_error(1);
+            else
+              $$ = (double)$1 / $3;
+          }
+        | valor_real '+' valor {
+            $$ = $1 + (double)$3;
+          }
+        | valor_real '-' valor {
+            $$ = $1 - (double)$3;
+          }
+        | valor_real '*' valor {
+            $$ = $1 * (double)$3;
+          }
+        | valor_real '/' valor {
+            if (!$3)
+              hacer_error(1);
+            else
+              $$ = $1 / (double)$3;
+          }
+        | PSEUDO_SIN '(' valor_real ')' {
+            $$ = sin($3);
+          }
+        | PSEUDO_COS '(' valor_real ')' {
+            $$ = cos($3);
+          }
+        | PSEUDO_TAN '(' valor_real ')' {
+            $$ = tan($3);
+          }
+        | PSEUDO_SQR '(' valor_real ')' {
+            $$ = $3 * $3;
+          }
+        | PSEUDO_SQRT '(' valor_real ')' {
+            $$ = sqrt($3);
+          }
+        | PSEUDO_PI {
+            $$ = asin(1) * 2;	/* TODO: replace with actual constant to avoid slightly different ROMs depending on compiler */
+          }
+        | PSEUDO_ABS '(' valor_real ')' {
+            $$ = abs((int)$3);
+          }
+        | PSEUDO_ACOS '(' valor_real ')' {
+            $$ = acos($3);
+          }
+        | PSEUDO_ASIN '(' valor_real ')' {
+            $$ = asin($3);
+          }
+        | PSEUDO_ATAN '(' valor_real ')' {
+            $$ = atan($3);
+          }
+        | PSEUDO_EXP '(' valor_real ')' {
+            $$ = exp($3);
+          }
+        | PSEUDO_LOG '(' valor_real ')' {
+            $$ = log10($3);
+          }
+        | PSEUDO_LN '(' valor_real ')' {
+            $$ = log($3);
+          }
+        | PSEUDO_POW '(' valor_real ',' valor_real ')' {
+            $$ = pow($3, $5);
+          }
+        | '(' valor_real ')' {
+            $$ = $2;
+          }
 ;
 
-valor_3bits: valor {if (($1<0)||($1>7)) hacer_advertencia(3);$$=$1&0x07;}
+valor_3bits: valor {
+            if (($1 < 0) || ($1 > 7))
+              hacer_advertencia(3);
+            $$ = $1 & 0x07;
+          }
 ;
 
-valor_8bits: valor {if (($1>255)||($1<-128)) hacer_advertencia(2);$$=$1&0xff;}
+valor_8bits: valor {
+            if (($1 > 255) || ($1 < -128))
+              hacer_advertencia(2);
+            $$ = $1 & 0xff;
+          }
 ;
 
-valor_16bits: valor {if (($1>65535)||($1<-32768)) hacer_advertencia(1);$$=$1&0xffff;}
+valor_16bits: valor {
+            if (($1 > 65535) || ($1 < -32768))
+              hacer_advertencia(1);
+            $$ = $1 & 0xffff;
+          }
 ;
 
-listado_8bits : valor_8bits {guardar_byte($1);}
-         | TEXTO {guardar_texto($1);}
-         | listado_8bits ',' valor_8bits {guardar_byte($3);}
-         | listado_8bits ',' TEXTO {guardar_texto($3);}
+listado_8bits : valor_8bits {
+            guardar_byte($1);
+          }
+        | TEXTO {
+            guardar_texto($1);
+          }
+        | listado_8bits ',' valor_8bits {
+            guardar_byte($3);
+          }
+        | listado_8bits ',' TEXTO {
+            guardar_texto($3);
+          }
 ;
 
-listado_16bits : valor_16bits {guardar_word($1);}
-         | TEXTO {guardar_texto($1);}
-         | listado_16bits ',' valor_16bits {guardar_word($3);}
-         | listado_16bits ',' TEXTO {guardar_texto($3);}
+listado_16bits : valor_16bits {
+            guardar_word($1);
+          }
+        | TEXTO {
+            guardar_texto($1);
+          }
+        | listado_16bits ',' valor_16bits {
+            guardar_word($3);
+          }
+        | listado_16bits ',' TEXTO {
+            guardar_texto($3);
+          }
 ;
 
 %%
