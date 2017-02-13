@@ -3832,14 +3832,19 @@ void type_sinclair()
 
 void type_rom()
 {
- if ((pass==1) && (!dir_inicio)) hacer_error(19);
- if ((type) && (type!=ROM)) hacer_error(20);
- type=ROM;
- guardar_byte(65);
- guardar_byte(66);
- PC+=14;
- ePC+=14;
- if (!inicio) inicio=ePC;
+  if ((pass == 1) && (!dir_inicio))
+    hacer_error(19);
+
+  if ((type) && (type != ROM))
+    hacer_error(20);
+
+  type = ROM;
+  guardar_byte(65);
+  guardar_byte(66);
+  PC += 14;
+  ePC += 14;
+  if (!inicio)
+    inicio = ePC;
 }
 
 void type_megarom(int n)
