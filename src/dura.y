@@ -2449,27 +2449,124 @@ mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
           }
 ;
 
-mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {if ($2!=7) hacer_error(4);guardar_byte(0xdb);guardar_byte($5);}
-        | MNEMO_IN REGISTRO ',' valor_8bits {if ($2!=7) hacer_error(4);if (zilog) hacer_advertencia(5);guardar_byte(0xdb);guardar_byte($4);}
-        | MNEMO_IN REGISTRO ',' '[' REGISTRO ']' {if ($5!=1) hacer_error(2);guardar_byte(0xed);guardar_byte(0x40|($2<<3));}
-        | MNEMO_IN '[' REGISTRO ']'{if ($3!=1) hacer_error(2);if (zilog) hacer_advertencia(5);guardar_byte(0xed);guardar_byte(0x70);}
-        | MNEMO_IN REGISTRO_F ',' '[' REGISTRO ']' {if ($5!=1) hacer_error(2);guardar_byte(0xed);guardar_byte(0x70);}
-        | MNEMO_INI {guardar_byte(0xed);guardar_byte(0xa2);}
-        | MNEMO_INIR {guardar_byte(0xed);guardar_byte(0xb2);}
-        | MNEMO_IND {guardar_byte(0xed);guardar_byte(0xaa);}
-        | MNEMO_INDR {guardar_byte(0xed);guardar_byte(0xba);}
-        | MNEMO_OUT '[' valor_8bits ']' ',' REGISTRO {if ($6!=7) hacer_error(5);guardar_byte(0xd3);guardar_byte($3);}
-        | MNEMO_OUT valor_8bits ',' REGISTRO {if ($4!=7) hacer_error(5);if (zilog) hacer_advertencia(5);guardar_byte(0xd3);guardar_byte($2);}
-        | MNEMO_OUT '[' REGISTRO ']' ',' REGISTRO {if ($3!=1) hacer_error(2);guardar_byte(0xed);guardar_byte(0x41|($6<<3));}
-        | MNEMO_OUT '[' REGISTRO ']' ',' valor_8bits {if ($3!=1) hacer_error(2);if ($6!=0) hacer_error(6);guardar_byte(0xed);guardar_byte(0x71);}
-        | MNEMO_OUTI {guardar_byte(0xed);guardar_byte(0xa3);}
-        | MNEMO_OTIR {guardar_byte(0xed);guardar_byte(0xb3);}
-        | MNEMO_OUTD {guardar_byte(0xed);guardar_byte(0xab);}
-        | MNEMO_OTDR {guardar_byte(0xed);guardar_byte(0xbb);}
-        | MNEMO_IN '[' valor_8bits ']' {if (zilog) hacer_advertencia(5);guardar_byte(0xdb);guardar_byte($3);}
-        | MNEMO_IN valor_8bits {if (zilog) hacer_advertencia(5);guardar_byte(0xdb);guardar_byte($2);}
-        | MNEMO_OUT '[' valor_8bits ']' {if (zilog) hacer_advertencia(5);guardar_byte(0xd3);guardar_byte($3);}
-        | MNEMO_OUT valor_8bits {if (zilog) hacer_advertencia(5);guardar_byte(0xd3);guardar_byte($2);}
+mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
+            if ($2 != 7)
+              hacer_error(4);
+            guardar_byte(0xdb);
+            guardar_byte($5);
+          }
+        | MNEMO_IN REGISTRO ',' valor_8bits {
+            if ($2 != 7)
+              hacer_error(4);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdb);
+            guardar_byte($4);
+          }
+        | MNEMO_IN REGISTRO ',' '[' REGISTRO ']' {
+            if ($5 != 1)
+              hacer_error(2);
+            guardar_byte(0xed);
+            guardar_byte(0x40 | ($2 << 3));
+          }
+        | MNEMO_IN '[' REGISTRO ']'{
+            if ($3 != 1)
+              hacer_error(2);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xed);
+            guardar_byte(0x70);
+          }
+        | MNEMO_IN REGISTRO_F ',' '[' REGISTRO ']' {
+            if ($5 != 1)
+              hacer_error(2);
+            guardar_byte(0xed);
+            guardar_byte(0x70);
+          }
+        | MNEMO_INI {
+            guardar_byte(0xed);
+            guardar_byte(0xa2);
+          }
+        | MNEMO_INIR {
+            guardar_byte(0xed);
+            guardar_byte(0xb2);
+          }
+        | MNEMO_IND {
+            guardar_byte(0xed);
+            guardar_byte(0xaa);
+          }
+        | MNEMO_INDR {
+            guardar_byte(0xed);
+            guardar_byte(0xba);
+          }
+        | MNEMO_OUT '[' valor_8bits ']' ',' REGISTRO {
+            if ($6 != 7)
+              hacer_error(5);
+            guardar_byte(0xd3);
+            guardar_byte($3);
+          }
+        | MNEMO_OUT valor_8bits ',' REGISTRO {
+            if ($4 != 7)
+              hacer_error(5);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xd3);
+            guardar_byte($2);
+          }
+        | MNEMO_OUT '[' REGISTRO ']' ',' REGISTRO {
+            if ($3 != 1)
+              hacer_error(2);
+            guardar_byte(0xed);
+            guardar_byte(0x41 | ($6 << 3));
+          }
+        | MNEMO_OUT '[' REGISTRO ']' ',' valor_8bits {
+            if ($3 != 1)
+              hacer_error(2);
+            if ($6 != 0)
+              hacer_error(6);
+            guardar_byte(0xed);
+            guardar_byte(0x71);
+          }
+        | MNEMO_OUTI {
+            guardar_byte(0xed);
+            guardar_byte(0xa3);
+          }
+        | MNEMO_OTIR {
+            guardar_byte(0xed);
+            guardar_byte(0xb3);
+          }
+        | MNEMO_OUTD {
+            guardar_byte(0xed);
+            guardar_byte(0xab);
+          }
+        | MNEMO_OTDR {
+            guardar_byte(0xed);
+            guardar_byte(0xbb);
+          }
+        | MNEMO_IN '[' valor_8bits ']' {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdb);
+            guardar_byte($3);
+          }
+        | MNEMO_IN valor_8bits {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdb);
+            guardar_byte($2);
+          }
+        | MNEMO_OUT '[' valor_8bits ']' {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xd3);
+            guardar_byte($3);
+          }
+        | MNEMO_OUT valor_8bits {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xd3);
+            guardar_byte($2);
+          }
 ;
 
 mnemo_jump: MNEMO_JP valor_16bits {guardar_byte(0xc3);guardar_word($2);}
