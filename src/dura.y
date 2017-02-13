@@ -474,7 +474,14 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                   | PSEUDO_IFDEF IDENTIFICADOR {if (conditional_level==15) hacer_error(44);conditional_level++;if (simbolo_definido($2)) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
                   | PSEUDO_ELSE {if (!conditional_level) hacer_error(42); conditional[conditional_level]=(conditional[conditional_level]^1)&conditional[conditional_level-1];}
                   | PSEUDO_ENDIF {if (!conditional_level) hacer_error(43); conditional_level--;}
-                  | PSEUDO_CASSETTE TEXTO {if (conditional[conditional_level]) {if (!interno[0]) strcpy(interno,$2);cassette|=$1;}}
+                  | PSEUDO_CASSETTE TEXTO {
+                        if (conditional[conditional_level])
+                        {
+                          if (!interno[0])
+                            strcpy(interno, $2);
+                          cassette |= $1;
+                        }
+                      }
                   | PSEUDO_CASSETTE {if (conditional[conditional_level]) {if (!interno[0]) {strcpy(interno,binario);interno[strlen(interno)-1]=0;}cassette|=$1;}}
                   | PSEUDO_ZILOG {zilog=1;}
                   | PSEUDO_FILENAME TEXTO {strcpy(filename,$2);}
