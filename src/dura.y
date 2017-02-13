@@ -1208,8 +1208,8 @@ void guardar_texto(char *texto)
 
 void guardar_word(int w)
 {
- guardar_byte(w&0xff);
- guardar_byte((w>>8)&0xff);
+  guardar_byte(w & 0xff);
+  guardar_byte((w >> 8) & 0xff);
 }
 
 void salto_relativo(int direccion)
