@@ -129,7 +129,7 @@ void seleccionar_pagina_registro(unsigned int, unsigned int);
 void guardar_byte(unsigned int);
 void guardar_word(unsigned int);
 void registrar_simbolo(char *, unsigned int, unsigned char);
-void registrar_variable(char *, int);
+void registrar_variable(char *, unsigned int);
 void incluir_binario(char *, unsigned int, unsigned int);
 void finalizar();
 void guardar_texto(char *);
@@ -1312,7 +1312,7 @@ void registrar_simbolo(char *nombre, unsigned int numero, unsigned char type)
   lista_identificadores[maxima - 1].type = type;
 }
 
-void registrar_variable(char *nombre, int numero)
+void registrar_variable(char *nombre, unsigned int numero)
 {
   int i;
   for (i = 0; i < maxima; i++)
