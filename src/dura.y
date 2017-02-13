@@ -1526,19 +1526,19 @@ void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
 
 void write_zx_byte(unsigned char c)
 {
- putc(c,output);
- parity^=c;
+  putc(c, output);
+  parity ^= c;
 }
 
 void write_zx_word(unsigned int c)
 {
- write_zx_byte(c&0xff);
- write_zx_byte((c>>8)&0xff);
+  write_zx_byte(c & 0xff);
+  write_zx_byte((c >> 8) & 0xff);
 }
 
 void write_zx_number(unsigned int i)
 {
-  int c;
+  unsigned int c;
 
   c = i / 10000;
   i -= c * 10000;
