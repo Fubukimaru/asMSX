@@ -3058,79 +3058,191 @@ void msx_bios()
 
 void hacer_error(int codigo)
 {
- printf("%s, line %d: ",strtok(fuente,"\042"),lineas);
- switch (codigo)
- {
-  case 0: fprintf(stderr, "syntax error\n");break;
-  case 1: fprintf(stderr, "memory overflow\n");break;
-  case 2: fprintf(stderr, "wrong register combination\n");break;
-  case 3: fprintf(stderr, "wrong interruption mode\n");break;
-  case 4: fprintf(stderr, "destiny register should be A\n");break;
-  case 5: fprintf(stderr, "source register should be A\n");break;
-  case 6: fprintf(stderr, "value should be 0\n");break;
-  case 7: fprintf(stderr, "missing condition\n");break;
-  case 8: fprintf(stderr, "unreachable address\n");break;
-  case 9: fprintf(stderr, "wrong condition\n");break;
-  case 10: fprintf(stderr, "wrong restart address\n");break;
-  case 11: fprintf(stderr, "symbol table overflow\n");break;
-  case 12: fprintf(stderr, "undefined identifier\n");break;
-  case 13: fprintf(stderr, "undefined local label\n");break;
-  case 14: fprintf(stderr, "symbol redefinition\n");break;
-  case 15: fprintf(stderr, "size redefinition\n");break;
-  case 16: fprintf(stderr, "reserved word used as identifier\n");break;
-  case 17: fprintf(stderr, "code size overflow\n");break;
-  case 18: fprintf(stderr, "binary file not found\n");break;
-  case 19: fprintf(stderr, "ROM directive should preceed any code\n");break;
-  case 20: fprintf(stderr, "type previously defined\n");break;
-  case 21: fprintf(stderr, "BASIC directive should preceed any code\n");break;
-  case 22: fprintf(stderr, "page out of range\n");break;
-  case 23: fprintf(stderr, "MSXDOS directive should preceed any code\n");break;
-  case 24: fprintf(stderr, "no code in the whole file\n");break;
-  case 25: fprintf(stderr, "only available for MSXDOS\n");break;
-  case 26: fprintf(stderr, "machine not defined\n");break;
-  case 27: fprintf(stderr, "MegaROM directive should preceed any code\n");break;
-  case 28: fprintf(stderr, "cannot write ROM code/data to page 3\n");break;
-  case 29: fprintf(stderr, "included binary shorter than expected\n");break;
-  case 30: fprintf(stderr, "wrong number of bytes to skip/include\n");break;
-  case 31: fprintf(stderr, "megaROM subpage overflow\n");break;
-  case 32: fprintf(stderr, "subpage 0 can only be defined by megaROM directive\n");break;
-  case 33: fprintf(stderr, "unsupported mapper type\n");break;
-  case 34: fprintf(stderr, "megaROM code should be between 4000h and BFFFh\n");break;
-  case 35: fprintf(stderr, "code/data without subpage\n");break;
-  case 36: fprintf(stderr, "megaROM mapper subpage out of range\n");break;
-  case 37: fprintf(stderr, "megaROM subpage already defined\n");break;
-  case 38: fprintf(stderr, "Konami megaROM forces page 0 at 4000h\n");break;
-  case 39: fprintf(stderr, "megaROM subpage not defined\n");break;
-  case 40: fprintf(stderr, "megaROM-only macro used\n");break;
-  case 41: fprintf(stderr, "only for ROMs and megaROMs\n");break;
-  case 42: fprintf(stderr, "ELSE without IF\n");break;
-  case 43: fprintf(stderr, "ENDIF without IF\n");break;
-  case 44: fprintf(stderr, "Cannot nest more IF's\n");break;
-  case 45: fprintf(stderr, "IF not closed\n");break;
-  case 46: fprintf(stderr, "Sinclair directive should preceed any code\n");break;
- }
-
- remove("~tmppre.?");
-
- exit(codigo + 1);
+  printf("%s, line %d: ", strtok(fuente, "\042"), lineas);
+  switch (codigo)
+  {
+    case 0:
+      fprintf(stderr, "syntax error\n");
+      break;
+    case 1:
+      fprintf(stderr, "memory overflow\n");
+      break;
+    case 2:
+      fprintf(stderr, "wrong register combination\n");
+      break;
+    case 3:
+      fprintf(stderr, "wrong interruption mode\n");
+      break;
+    case 4:
+      fprintf(stderr, "destiny register should be A\n");
+      break;
+    case 5:
+      fprintf(stderr, "source register should be A\n");break;
+    case 6:
+      fprintf(stderr, "value should be 0\n");
+      break;
+    case 7:
+      fprintf(stderr, "missing condition\n");
+      break;
+    case 8:
+      fprintf(stderr, "unreachable address\n");
+      break;
+    case 9:
+      fprintf(stderr, "wrong condition\n");
+      break;
+    case 10:
+      fprintf(stderr, "wrong restart address\n");
+      break;
+    case 11:
+      fprintf(stderr, "symbol table overflow\n");
+      break;
+    case 12:
+      fprintf(stderr, "undefined identifier\n");
+      break;
+    case 13:
+      fprintf(stderr, "undefined local label\n");
+      break;
+    case 14:
+      fprintf(stderr, "symbol redefinition\n");
+      break;
+    case 15:
+      fprintf(stderr, "size redefinition\n");
+      break;
+    case 16:
+      fprintf(stderr, "reserved word used as identifier\n");
+      break;
+    case 17:
+      fprintf(stderr, "code size overflow\n");
+      break;
+    case 18:
+      fprintf(stderr, "binary file not found\n");
+      break;
+    case 19:
+      fprintf(stderr, "ROM directive should preceed any code\n");
+      break;
+    case 20:
+      fprintf(stderr, "type previously defined\n");
+      break;
+    case 21:
+      fprintf(stderr, "BASIC directive should preceed any code\n");
+      break;
+    case 22:
+      fprintf(stderr, "page out of range\n");
+      break;
+    case 23:
+      fprintf(stderr, "MSXDOS directive should preceed any code\n");
+      break;
+    case 24:
+      fprintf(stderr, "no code in the whole file\n");
+      break;
+    case 25:
+      fprintf(stderr, "only available for MSXDOS\n");
+      break;
+    case 26:
+      fprintf(stderr, "machine not defined\n");
+      break;
+    case 27:
+      fprintf(stderr, "MegaROM directive should preceed any code\n");
+      break;
+    case 28:
+      fprintf(stderr, "cannot write ROM code/data to page 3\n");
+      break;
+    case 29:
+      fprintf(stderr, "included binary shorter than expected\n");
+      break;
+    case 30:
+      fprintf(stderr, "wrong number of bytes to skip/include\n");
+      break;
+    case 31:
+      fprintf(stderr, "megaROM subpage overflow\n");
+      break;
+    case 32:
+      fprintf(stderr, "subpage 0 can only be defined by megaROM directive\n");
+      break;
+    case 33:
+      fprintf(stderr, "unsupported mapper type\n");
+      break;
+    case 34:
+      fprintf(stderr, "megaROM code should be between 4000h and BFFFh\n");
+      break;
+    case 35:
+      fprintf(stderr, "code/data without subpage\n");
+      break;
+    case 36:
+      fprintf(stderr, "megaROM mapper subpage out of range\n");
+      break;
+    case 37:
+      fprintf(stderr, "megaROM subpage already defined\n");
+      break;
+    case 38:
+      fprintf(stderr, "Konami megaROM forces page 0 at 4000h\n");
+      break;
+    case 39:
+      fprintf(stderr, "megaROM subpage not defined\n");
+      break;
+    case 40:
+      fprintf(stderr, "megaROM-only macro used\n");
+      break;
+    case 41:
+      fprintf(stderr, "only for ROMs and megaROMs\n");
+      break;
+    case 42:
+      fprintf(stderr, "ELSE without IF\n");
+      break;
+    case 43:
+      fprintf(stderr, "ENDIF without IF\n");
+      break;
+    case 44:
+      fprintf(stderr, "Cannot nest more IF's\n");
+      break;
+    case 45:
+      fprintf(stderr, "IF not closed\n");
+      break;
+    case 46:
+      fprintf(stderr, "Sinclair directive should preceed any code\n");
+      break;
+    default:
+      fprintf(stderr, "Unexpected error code %d\n", codigo);
+  }
+  remove("~tmppre.?");
+  exit(codigo + 1);
 }
 
 void hacer_advertencia(int codigo)
 {
- if (pass==2) {
- printf("%s, line %d: Warning: ",strtok(fuente,"\042"),lineas);
- switch (codigo)
- {
-  case 0: fprintf(stderr, "undefined error\n");break;
-  case 1: fprintf(stderr, "16-bit overflow\n");break;
-  case 2: fprintf(stderr, "8-bit overflow\n");break;
-  case 3: fprintf(stderr, "3-bit overflow\n");break;
-  case 4: fprintf(stderr, "output cannot be converted to CAS\n");break;
-  case 5: fprintf(stderr, "non official Zilog syntax\n");break;
-  case 6: fprintf(stderr, "undocumented Zilog instruction\n");break;
- }
- advertencias++;
- }
+  if (pass != 2)
+    return;
+
+  printf("%s, line %d: Warning: ", strtok(fuente, "\042"), lineas);
+
+  switch (codigo)
+  {
+    case 0:
+      fprintf(stderr, "undefined error\n");
+      break;
+    case 1:
+      fprintf(stderr, "16-bit overflow\n");
+      break;
+    case 2:
+      fprintf(stderr, "8-bit overflow\n");
+      break;
+    case 3:
+      fprintf(stderr, "3-bit overflow\n");
+      break;
+    case 4:
+      fprintf(stderr, "output cannot be converted to CAS\n");
+      break;
+    case 5:
+      fprintf(stderr, "non official Zilog syntax\n");
+      break;
+    case 6:
+      fprintf(stderr, "undocumented Zilog instruction\n");
+      break;
+    default:
+      fprintf(stderr, "unexpected warning %d\n", codigo);
+  }
+
+  advertencias++;
 }
 
 /* Generate byte */
