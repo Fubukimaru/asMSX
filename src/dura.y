@@ -3773,20 +3773,31 @@ void guardar_binario()
 
 void finalizar()
 {
- // Obtener nombre del archivo de s�mbolos
- strcpy(simbolos,filename);
- simbolos=strcat(simbolos,".sym");
+  /* Obtener nombre del archivo de simbolos */
+  strcpy(simbolos, filename);
+  simbolos = strcat(simbolos, ".sym");
+ 
+  guardar_binario();
 
- guardar_binario();
- if (cassette&1) generar_cassette();
- if (cassette&2) generar_wav();
- if (maxima>0) salvar_simbolos();
- printf("Completed in %.2f seconds",(float)clock()/(float)CLOCKS_PER_SEC);
- if (advertencias>1) fprintf(stderr, ", %i warnings\n",advertencias);
-  else if (advertencias==1) fprintf(stderr, ", 1 warning\n");
-   else printf("\n");
- remove("~tmppre.*");
- exit(0);
+  if (cassette & 1)
+    generar_cassette();
+
+  if (cassette & 2)
+    generar_wav();
+
+  if (maxima > 0)
+    salvar_simbolos();
+
+  printf("Completed in %.2f seconds", (float)clock() / (float)CLOCKS_PER_SEC);
+
+  if (advertencias > 1)
+    fprintf(stderr, ", %i warnings\n", advertencias);
+  else if (advertencias == 1)
+    fprintf(stderr, ", 1 warning\n");
+  else
+    printf("\n");
+  remove("~tmppre.*");
+  exit(0);
 }
 
 void inicializar_memory()
