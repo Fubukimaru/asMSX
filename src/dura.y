@@ -127,7 +127,7 @@ void establecer_subpagina(unsigned int, unsigned int);
 void seleccionar_pagina_directa(unsigned int, unsigned int);
 void seleccionar_pagina_registro(unsigned int, unsigned int);
 void guardar_byte(int);
-void guardar_word(int);	/* TODO: check if it should be unsigned */
+void guardar_word(unsigned int);
 void registrar_simbolo(char *, int, int);
 void registrar_variable(char *, int);
 void incluir_binario(char *, unsigned int, unsigned int);
@@ -1206,7 +1206,7 @@ void guardar_texto(char *texto)
  for (i=0;i<strlen(texto);i++) guardar_byte(texto[i]);
 }
 
-void guardar_word(int w)
+void guardar_word(unsigned int w)
 {
   guardar_byte(w & 0xff);
   guardar_byte((w >> 8) & 0xff);
