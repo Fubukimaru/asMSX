@@ -948,13 +948,13 @@ valor: NUMERO {$$=$1;}
      | valor SHIFT_L valor {$$=$1<<$3;}
      | valor SHIFT_R valor {$$=$1>>$3;}
      | PSEUDO_RANDOM '(' valor ')' {for (;($$=d_rand()&0xff)>=$3;);}
-     | PSEUDO_INT '(' valor_real ')' { $$ = $3; }
-     | PSEUDO_FIX '(' valor_real ')' { $$ = $3 * 256; }
+     | PSEUDO_INT '(' valor_real ')' { $$ = (int)$3; }
+     | PSEUDO_FIX '(' valor_real ')' { $$ = (int)($3 * 256); }
      | PSEUDO_FIXMUL '(' valor ',' valor ')' {
-                        $$ = (((float)$3 / 256) * ((float) $5 / 256)) * 256;
+                        $$ = (int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
                       }
      | PSEUDO_FIXDIV '(' valor ',' valor ')' {
-                        $$ = (((float)$3 / 256) / ((float)$5 / 256)) * 256;
+                        $$ = (int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
                       }
 ;
 
@@ -978,7 +978,9 @@ valor_real: REAL {$$=$1;}
      | PSEUDO_SQR '(' valor_real ')' {$$=$3*$3;}
      | PSEUDO_SQRT '(' valor_real ')' {$$=sqrt($3);}
      | PSEUDO_PI {$$=asin(1)*2;}
-     | PSEUDO_ABS '(' valor_real ')' {$$=abs($3);}
+     | PSEUDO_ABS '(' valor_real ')' {
+                        $$ = abs((int)$3);
+                      }
      | PSEUDO_ACOS '(' valor_real ')' {$$=acos($3);}
      | PSEUDO_ASIN '(' valor_real ')' {$$=asin($3);}
      | PSEUDO_ATAN '(' valor_real ')' {$$=atan($3);}
@@ -1246,7 +1248,7 @@ void guardar_byte(int b)
       if (size && (dir_inicio + size * 1024 > 65536) && (pass == 2))
         hacer_error(1);
 
-      memory[PC++] = b;
+      memory[PC++] = (char)b;
       ePC++;
     }
     else
@@ -1257,7 +1259,7 @@ void guardar_byte(int b)
       if (PC >= pageinit + 1024 * pagesize)
         hacer_error(31);
 
-      memory[subpage * pagesize * 1024 + PC - pageinit] = b;
+      memory[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
       PC++;
       ePC++;
     }
@@ -1631,11 +1633,14 @@ void guardar_binario()
       parity = 0x20;
       write_zx_byte(0);
 
-      for (i = 0; i < 10; i++) 
-        if (i < strlen(filename))
-          write_zx_byte(filename[i]);
-        else
-          write_zx_byte(0x20);
+      {
+        size_t t;
+        for (t = 0; t < 10; t++) 
+          if (t < strlen(filename))
+            write_zx_byte(filename[t]);
+          else
+            write_zx_byte(0x20);
+      }
 
       write_zx_byte(0x1e);      /* line length */
       write_zx_byte(0);
@@ -1679,11 +1684,14 @@ void guardar_binario()
 
     write_zx_byte(3);		/* Filetype (Code) */
 
-    for (i=0; i < 10; i++) 
-      if (i < strlen(filename))
-        write_zx_byte(filename[i]);
-      else
-        write_zx_byte(0x20);
+    {
+      size_t t;
+      for (t = 0; t < 10; t++) 
+        if (t < strlen(filename))
+          write_zx_byte(filename[t]);
+        else
+          write_zx_byte(0x20);
+    }
 
     write_zx_word(dir_final - dir_inicio + 1);
     write_zx_word(dir_inicio);	/* load address */
@@ -1949,9 +1957,12 @@ void generar_cassette()
     for (i=0; i < 10; i++)
       fputc(0xd0, salida);
 
-    if (strlen(interno) < 6)
-      for (i = strlen(interno); i < 6; i++)
-        interno[i] = 32;	/* pad with space */
+    {
+      size_t t;
+      if (strlen(interno) < 6)
+        for (t = strlen(interno); t < 6; t++)
+          interno[t] = 32;	/* pad with space */
+    }
 
     for (i = 0; i < 6; i++)
       fputc(interno[i], salida);
@@ -2006,19 +2017,22 @@ void write_nothing()
 }
 
 
-// Write full byte
-
-void write_byte(char m)
+/* Write full byte */
+void write_byte(int m)
 {
- char l;
- write_zero();
- for (l=0;l<8;l++) 
- {
-  if (m&1) write_one(); else write_zero();
-  m=m>>1;
- }
- write_one();
- write_one();
+  int l;
+
+  write_zero();
+  for (l = 0; l < 8; l++) 
+  {
+    if (m & 1)
+      write_one();
+    else
+      write_zero();
+    m = m >> 1;
+  }
+  write_one();
+  write_one();
 }
 
 
@@ -2042,14 +2056,14 @@ void generar_wav()
     wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + dir_final - dir_inicio + 1)) * 40;
     wav_size = wav_size << 1;
 
-    wav_header[4] = (char)((wav_size + 36) & 0xff);
-    wav_header[5] = (char)(((wav_size + 36) >> 8) & 0xff);
-    wav_header[6] = (char)(((wav_size + 36) >> 16) & 0xff);
-    wav_header[7] = (char)(((wav_size + 36) >> 24) & 0xff);
-    wav_header[40] = (char)(wav_size & 0xff);
-    wav_header[41] = (char)((wav_size >> 8) & 0xff);
-    wav_header[42] = (char)((wav_size >> 16) & 0xff);
-    wav_header[43] = (char)((wav_size >> 24) & 0xff);
+    wav_header[4] = (wav_size + 36) & 0xff;
+    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+    wav_header[40] = wav_size & 0xff;
+    wav_header[41] = (wav_size >> 8) & 0xff;
+    wav_header[42] = (wav_size >> 16) & 0xff;
+    wav_header[43] = (wav_size >> 24) & 0xff;
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
@@ -2095,14 +2109,14 @@ void generar_wav()
     wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - dir_inicio + 1)) * 36;
     wav_size = wav_size << 1;
 
-    wav_header[4] = (char)((wav_size + 36) & 0xff);
-    wav_header[5] = (char)(((wav_size + 36) >> 8) & 0xff);
-    wav_header[6] = (char)(((wav_size + 36) >> 16) & 0xff);
-    wav_header[7] = (char)(((wav_size + 36) >> 24) & 0xff);
-    wav_header[40] = (char)(wav_size & 0xff);
-    wav_header[41] = (char)((wav_size >> 8) & 0xff);
-    wav_header[42] = (char)((wav_size >> 16) & 0xff);
-    wav_header[43] = (char)((wav_size >> 24) & 0xff);
+    wav_header[4] = (wav_size + 36) & 0xff;
+    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+    wav_header[40] = wav_size & 0xff;
+    wav_header[41] = (wav_size >> 8) & 0xff;
+    wav_header[42] = (wav_size >> 16) & 0xff;
+    wav_header[43] = (wav_size >> 24) & 0xff;
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)

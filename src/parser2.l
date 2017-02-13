@@ -10,9 +10,9 @@
 %{
  #include<stdio.h>
  static FILE *p2_output;
- static char *p2_text,*p2_buffer,p2_nested=0,p2_level;
- static int p2_number,p2_lines;
- int prompt_error2(char);
+ static char *p2_text,*p2_buffer;
+ static int p2_number,p2_lines,p2_level,p2_nested=0;
+ int prompt_error2(int);
  extern void hacer_error(int);
 %}
 
@@ -57,7 +57,7 @@
 
 %%
 
-int prompt_error2(char c)
+int prompt_error2(int c)
 {
  fprintf(stderr, ", line %d: ",p2_lines);
  switch (c)
@@ -81,9 +81,9 @@ int preprocessor2()
  char *filename;
  int loop=0;
 
- filename=(char*)malloc(0x100);
- p2_text=(char*)malloc(0x1000);
- p2_buffer=(char*)malloc(0x4000);
+ filename=malloc(0x100);
+ p2_text=malloc(0x1000);
+ p2_buffer=malloc(0x4000);
  p2_text[0]=0;
 
  printf("Expanding system macros\n");

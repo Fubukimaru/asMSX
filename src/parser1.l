@@ -26,7 +26,7 @@ static struct
   char *name;
 } p1_include_stack[MAX_INCLUDE_LEVEL];
 
-extern int prompt_error1(char);
+extern int prompt_error1(int);
 %}
 
 %option yylineno noinput nounput
@@ -48,7 +48,7 @@ extern int prompt_error1(char);
 	if (p1_tmpstr[strlen(p1_tmpstr)-1]<=32) prompt_error1(1);
 	if (p1_include_index>=MAX_INCLUDE_LEVEL) prompt_error1(2);
 	for (i=0;i<p1_include_index;i++) if (!strcmp(p1_tmpstr,p1_include_stack[i].name)) prompt_error1(4);
-	p1_include_stack[p1_include_index].name=(char*)malloc(0x100);
+	p1_include_stack[p1_include_index].name=malloc(0x100);
 	strcpy(p1_include_stack[p1_include_index].name,p1_name);
 	p1_include_stack[p1_include_index].line=yylineno;
 	p1_include_stack[p1_include_index++].buffer=YY_CURRENT_BUFFER;
@@ -109,7 +109,7 @@ extern int prompt_error1(char);
 %%
 #define VERSION 
 
-int prompt_error1(char c)
+int prompt_error1(int c)
 {
  fprintf(stderr, "%s, line %d: ",p1_name,yylineno-1);
  switch (c)
@@ -133,9 +133,9 @@ int yywrap()
 int preprocessor1(char *input_name)
 {
 // Memory allocation for strings
- p1_text=(char*)malloc(256);
- p1_name=(char*)malloc(256);
- p1_tmpstr=(char*)malloc(256);
+ p1_text=malloc(256);
+ p1_name=malloc(256);
+ p1_tmpstr=malloc(256);
 
 // Strings initialization
  p1_text[0]=0;
