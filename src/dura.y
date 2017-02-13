@@ -3513,11 +3513,6 @@ void salvar_simbolos()
   }
 }
 
-int yywrap()
-{
- return 1;
-}
-
 void yyerror(char *s)
 {
   /* print bison error message */

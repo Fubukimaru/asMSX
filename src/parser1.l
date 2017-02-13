@@ -29,7 +29,7 @@ static struct
 extern int prompt_error1(int);
 %}
 
-%option yylineno noinput nounput
+%option yylineno noinput nounput noyywrap
 
 %s comment
 %s pascal_comment
@@ -123,11 +123,6 @@ int prompt_error1(int c)
  fclose(p1_output_file);
  exit(c);
  return 0;
-}
-
-int yywrap()
-{
- return 1;
 }
 
 int preprocessor1(char *input_name)

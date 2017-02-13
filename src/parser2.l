@@ -16,7 +16,7 @@
  extern void hacer_error(int);
 %}
 
-%option noinput nounput
+%option noinput nounput noyywrap
 
 %s rept
 %s repnum
@@ -68,11 +68,6 @@ int prompt_error2(int c)
  fclose(p2_output);
  exit(c);
  return 0;
-}
-
-int yywrap()
-{
- return 1;
 }
 
 int preprocessor2()

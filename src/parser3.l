@@ -14,7 +14,7 @@ static FILE *p3_output;
 static char *p3_text;
 %}
 
-%option noinput nounput
+%option noinput nounput noyywrap
 
 %s line
 %s zilog
@@ -35,11 +35,6 @@ static char *p3_text;
 <zilog>\n fprintf(p3_output,"%s%s",p3_text,yytext);p3_text[0]=0;
 
 %%
-
-int yywrap()
-{
- return 1;
-}
 
 int preprocessor3()
 {

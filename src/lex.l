@@ -1,4 +1,4 @@
-%option noinput
+%option noinput noyywrap
 
 %{
 #include "dura.tab.h"
