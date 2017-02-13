@@ -136,7 +136,7 @@ void guardar_texto(char *);
 void salida_texto();
 int simbolo_definido(char *);
 void hacer_advertencia(int);
-void salto_relativo(int);
+void salto_relativo(unsigned int);
 unsigned int leer_etiqueta(char *);
 unsigned int leer_local(char *);
 void guardar_binario();
@@ -1264,7 +1264,7 @@ void guardar_word(unsigned int w)
   guardar_byte((w >> 8) & 0xff);
 }
 
-void salto_relativo(int direccion)
+void salto_relativo(unsigned int direccion)
 {
   int salto;
 
