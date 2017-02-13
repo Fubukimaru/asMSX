@@ -2633,14 +2633,39 @@ mnemo_jump: MNEMO_JP valor_16bits {
           }
 ;
 
-mnemo_call: MNEMO_CALL valor_16bits {guardar_byte(0xcd);guardar_word($2);}
-        | MNEMO_CALL CONDICION ',' valor_16bits {guardar_byte(0xc4|($2<<3));guardar_word($4);}
-        | MNEMO_CALL REGISTRO ',' valor_16bits {if ($2!=1) hacer_error(7);guardar_byte(0xdc);guardar_word($4);}
-        | MNEMO_RET {guardar_byte(0xc9);}
-        | MNEMO_RET CONDICION {guardar_byte(0xc0|($2<<3));}
-        | MNEMO_RET REGISTRO {if ($2!=1) hacer_error(7);guardar_byte(0xd8);}
-        | MNEMO_RETI {guardar_byte(0xed);guardar_byte(0x4d);}
-        | MNEMO_RETN {guardar_byte(0xed);guardar_byte(0x45);}
+mnemo_call: MNEMO_CALL valor_16bits {
+            guardar_byte(0xcd);
+            guardar_word($2);
+          }
+        | MNEMO_CALL CONDICION ',' valor_16bits {
+            guardar_byte(0xc4 | ($2 << 3));
+            guardar_word($4);
+          }
+        | MNEMO_CALL REGISTRO ',' valor_16bits {
+            if ($2 != 1)
+              hacer_error(7);
+            guardar_byte(0xdc);
+            guardar_word($4);
+          }
+        | MNEMO_RET {
+            guardar_byte(0xc9);
+          }
+        | MNEMO_RET CONDICION {
+            guardar_byte(0xc0 | ($2 << 3));
+          }
+        | MNEMO_RET REGISTRO {
+            if ($2 != 1)
+              hacer_error(7);
+            guardar_byte(0xd8);
+          }
+        | MNEMO_RETI {
+            guardar_byte(0xed);
+            guardar_byte(0x4d);
+          }
+        | MNEMO_RETN {
+            guardar_byte(0xed);
+            guardar_byte(0x45);
+          }
         | MNEMO_RST valor_8bits {
             if (($2 % 8 != 0) || ($2 / 8 > 7) || ($2 / 8 < 0))
               hacer_error(10);
