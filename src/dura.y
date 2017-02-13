@@ -81,7 +81,6 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include <ctype.h>
 #include <malloc.h>
 
 #define VERSION "0.18.1"
@@ -719,7 +718,7 @@ mnemo_general: MNEMO_DAA {guardar_byte(0x27);}
              | MNEMO_DI {guardar_byte(0xf3);}
              | MNEMO_EI {guardar_byte(0xfb);}
              | MNEMO_IM valor_8bits {
-                if ($2 > 2)
+                if (($2 < 0) || ($2 > 2))
                   hacer_error(3);
                 guardar_byte(0xed);
                 if ($2 == 0)
@@ -910,7 +909,7 @@ mnemo_call: MNEMO_CALL valor_16bits {guardar_byte(0xcd);guardar_word($2);}
           | MNEMO_RETI {guardar_byte(0xed);guardar_byte(0x4d);}
           | MNEMO_RETN {guardar_byte(0xed);guardar_byte(0x45);}
           | MNEMO_RST valor_8bits {
-                if (($2 % 8 != 0) || ($2 / 8 > 7))
+                if (($2 % 8 != 0) || ($2 / 8 > 7) || ($2 / 8 < 0))
                   hacer_error(10);
                 guardar_byte(0xc7 | (($2 / 8) << 3));
               }
