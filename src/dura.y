@@ -1538,20 +1538,25 @@ void write_zx_word(unsigned int c)
 
 void write_zx_number(unsigned int i)
 {
-        int c;
-        c=i/10000;
-        i-=c*10000;
-        write_zx_byte(c+48);
-        c=i/1000;
-        i-=c*1000;
-        write_zx_byte(c+48);
-        c=i/100;
-        i-=c*100;
-        write_zx_byte(c+48);
-        c=i/10;
-        write_zx_byte(c+48);
-        i%=10;
-        write_zx_byte(i+48);
+  int c;
+
+  c = i / 10000;
+  i -= c * 10000;
+  write_zx_byte(c + 48);
+
+  c = i / 1000;
+  i -= c * 1000;
+  write_zx_byte(c + 48);
+
+  c = i / 100;
+  i -= c * 100;
+  write_zx_byte(c + 48);
+
+  c = i / 10;
+  write_zx_byte(c + 48);
+
+  i %= 10;
+  write_zx_byte(i + 48);
 }
 
 void guardar_binario()
