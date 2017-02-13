@@ -535,8 +535,12 @@ pseudo_instruccion: PSEUDO_ORG valor {
               guardar_word(0x0005);
             }
           }
-        | PSEUDO_DB listado_8bits {;}
-        | PSEUDO_DW listado_16bits {;}
+        | PSEUDO_DB listado_8bits {
+            ;
+          }
+        | PSEUDO_DW listado_16bits {
+            ;
+          }
         | PSEUDO_DS valor_16bits {
             if (conditional[conditional_level])
             {
@@ -1927,7 +1931,9 @@ mnemo_general: MNEMO_DAA {
           }
 ;
 
-mnemo_rotate: MNEMO_RLCA {guardar_byte(0x07);}
+mnemo_rotate: MNEMO_RLCA {
+            guardar_byte(0x07);
+          }
         | MNEMO_RLA {
             guardar_byte(0x17);
           }
@@ -2672,40 +2678,102 @@ mnemo_call: MNEMO_CALL valor_16bits {
             guardar_byte(0xc7 | (($2 / 8) << 3));
           }
 
-valor: NUMERO {$$=$1;}
-         | IDENTIFICADOR {$$=leer_etiqueta($1);}
-         | LOCAL_IDENTIFICADOR {$$=leer_local($1);}
-         | '-' valor %prec NEGATIVO {$$=-$2;}
-         | valor OP_EQUAL valor {$$=($1==$3);}
-         | valor OP_MINOR_EQUAL valor {$$=($1<=$3);}
-         | valor OP_MINOR valor {$$=($1<$3);}
-         | valor OP_MAJOR_EQUAL valor {$$=($1>=$3);}
-         | valor OP_MAJOR valor {$$=($1>$3);}
-         | valor OP_NON_EQUAL valor {$$=($1!=$3);}
-         | valor OP_OR_LOG valor {$$=($1||$3);}
-         | valor OP_AND_LOG valor {$$=($1&&$3);}
-         | valor '+' valor {$$=$1+$3;}
-         | valor '-' valor {$$=$1-$3;}
-         | valor '*' valor {$$=$1*$3;}
-         | valor '/' valor {if (!$3) hacer_error(1); else $$=$1/$3;}
-         | valor '%' valor {if (!$3) hacer_error(1); else $$=$1%$3;}
-         | '(' valor ')' {$$=$2;}
-         | '~' valor %prec NEGACION {$$=~$2;}
-         | '!' valor %prec OP_NEG_LOG {$$=!$2;}
-         | valor '&' valor {$$=$1&$3;}
-         | valor OP_OR valor {$$=$1|$3;}
-         | valor OP_XOR valor {$$=$1^$3;}
-         | valor SHIFT_L valor {$$=$1<<$3;}
-         | valor SHIFT_R valor {$$=$1>>$3;}
-         | PSEUDO_RANDOM '(' valor ')' {for (;($$=d_rand()&0xff)>=$3;);}
-         | PSEUDO_INT '(' valor_real ')' { $$ = (int)$3; }
-         | PSEUDO_FIX '(' valor_real ')' { $$ = (int)($3 * 256); }
-         | PSEUDO_FIXMUL '(' valor ',' valor ')' {
-             $$ = (int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
-           }
-         | PSEUDO_FIXDIV '(' valor ',' valor ')' {
-             $$ = (int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
-           }
+valor: NUMERO {
+            $$ = $1;
+          }
+        | IDENTIFICADOR {
+            $$ = leer_etiqueta($1);
+          }
+        | LOCAL_IDENTIFICADOR {
+            $$ = leer_local($1);
+          }
+        | '-' valor %prec NEGATIVO {
+            $$ =- $2;
+          }
+        | valor OP_EQUAL valor {
+            $$ = ($1 == $3);
+          }
+        | valor OP_MINOR_EQUAL valor {
+            $$ = ($1 <= $3);
+          }
+        | valor OP_MINOR valor {
+            $$ = ($1 < $3);
+          }
+        | valor OP_MAJOR_EQUAL valor {
+            $$ = ($1 >= $3);
+          }
+        | valor OP_MAJOR valor {
+            $$ = ($1 > $3);
+          }
+        | valor OP_NON_EQUAL valor {
+            $$ = ($1 != $3);
+          }
+        | valor OP_OR_LOG valor {
+            $$ = ($1 || $3);
+          }
+        | valor OP_AND_LOG valor {$$ = ($1 && $3);
+          }
+        | valor '+' valor {
+            $$ = $1 + $3;
+          }
+        | valor '-' valor {
+            $$ = $1 - $3;
+          }
+        | valor '*' valor {
+            $$ = $1 * $3;
+          }
+        | valor '/' valor {
+            if (!$3)
+              hacer_error(1);
+            else
+              $$ = $1 / $3;
+          }
+        | valor '%' valor {
+            if (!$3)
+              hacer_error(1);
+            else
+              $$ = $1 % $3;
+          }
+        | '(' valor ')' {
+            $$ = $2;
+          }
+        | '~' valor %prec NEGACION {
+            $$ =~ $2;
+          }
+        | '!' valor %prec OP_NEG_LOG {
+            $$ =! $2;
+          }
+        | valor '&' valor {
+            $$ = $1 & $3;
+          }
+        | valor OP_OR valor {
+            $$ = $1 | $3;
+          }
+        | valor OP_XOR valor {
+            $$ = $1 ^ $3;
+          }
+        | valor SHIFT_L valor {
+            $$ = $1 << $3;
+          }
+        | valor SHIFT_R valor {
+            $$ = $1 >> $3;
+          }
+        | PSEUDO_RANDOM '(' valor ')' {
+          for (; ($$ = d_rand() & 0xff) >= $3;)
+            ;
+          }
+        | PSEUDO_INT '(' valor_real ')' {
+            $$ = (int)$3;
+          }
+        | PSEUDO_FIX '(' valor_real ')' {
+            $$ = (int)($3 * 256);
+          }
+        | PSEUDO_FIXMUL '(' valor ',' valor ')' {
+            $$ = (int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
+          }
+        | PSEUDO_FIXDIV '(' valor ',' valor ')' {
+            $$ = (int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
+          }
 ;
 
 valor_real: REAL {$$=$1;}
