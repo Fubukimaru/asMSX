@@ -116,7 +116,7 @@ void yyerror(char *);
 void registrar_etiqueta(char *);
 void registrar_local(char *);
 void type_rom();
-void type_megarom(int);
+void type_megarom(unsigned int);
 void type_basic();
 void type_msxdos();
 void type_sinclair();
@@ -396,7 +396,10 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                   | PSEUDO_DEPHASE {if (conditional[conditional_level]) {ePC=PC;}}
                   | PSEUDO_ROM {if (conditional[conditional_level]) {type_rom();}}
                   | PSEUDO_MEGAROM {if (conditional[conditional_level]) {type_megarom(0);}}
-                  | PSEUDO_MEGAROM valor {if (conditional[conditional_level]) {type_megarom($2);}}
+                  | PSEUDO_MEGAROM valor {
+                        if (conditional[conditional_level])
+                          type_megarom($2);
+                      }
                   | PSEUDO_BASIC {if (conditional[conditional_level]) {type_basic();}}
                   | PSEUDO_MSXDOS {if (conditional[conditional_level]) {type_msxdos();}}
                   | PSEUDO_SINCLAIR {if (conditional[conditional_level]) {type_sinclair();}}
@@ -1675,7 +1678,7 @@ void type_rom()
  if (!inicio) inicio=ePC;
 }
 
-void type_megarom(int n)
+void type_megarom(unsigned int n)
 {
  unsigned int i;
 
