@@ -1473,7 +1473,7 @@ void yyerror(char *s)
 void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
 {
   FILE *fichero;
-  char k;
+  int k;
   unsigned int i;
 
   if ((fichero = fopen(nombre, "rb")) == NULL)
