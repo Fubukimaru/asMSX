@@ -1273,12 +1273,12 @@ void salto_relativo(unsigned int direccion)
 {
   int salto;
 
-  salto = direccion - ePC - 1;
+  salto = (int)(direccion - ePC - 1);
 
   if ((salto > 127) || (salto < -128))
     hacer_error(8);
 
-  guardar_byte(direccion - ePC - 1);
+  guardar_byte(salto);
 }
 
 void registrar_etiqueta(char *nombre)
