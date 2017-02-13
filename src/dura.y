@@ -626,34 +626,99 @@ pseudo_instruccion: PSEUDO_ORG valor {
               guardar_texto($2);
             }
           }
-        | PSEUDO_BREAK {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x00);}}             
-        | PSEUDO_BREAK valor {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x02);guardar_word($2);}}
-        | PSEUDO_PRINTTEXT TEXTO {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%s\n",$2);}}}
-        | PSEUDO_PRINT valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%d\n",(short)$2&0xffff);}}}
-        | PSEUDO_PRINT valor_real {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",$2);}}}
-        | PSEUDO_PRINTHEX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"$%4.4x\n",(short)$2&0xffff);}}}
-        | PSEUDO_PRINTFIX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",((float)($2&0xffff))/256);}}}
-        | PSEUDO_SIZE valor {
-              if (conditional[conditional_level] && (pass == 2))
+        | PSEUDO_BREAK {
+            if (conditional[conditional_level])
+            {
+              guardar_byte(0x40);
+              guardar_byte(0x18);
+              guardar_byte(0x00);
+            }
+          }
+        | PSEUDO_BREAK valor {
+            if (conditional[conditional_level])
+            {
+              guardar_byte(0x40);
+              guardar_byte(0x18);
+              guardar_byte(0x02);
+              guardar_word($2);
+            }
+          }
+        | PSEUDO_PRINTTEXT TEXTO {
+            if (conditional[conditional_level])
+            {
+              if (pass == 2)
               {
-                if (size > 0)
-                  hacer_error(15);
-                else
-                  size=$2;
+                if (mensajes == NULL)
+                  salida_texto();
+                fprintf(mensajes, "%s\n", $2);
               }
             }
+          }
+        | PSEUDO_PRINT valor {
+            if (conditional[conditional_level])
+            {
+              if (pass == 2)
+              {
+                if (mensajes == NULL)
+                  salida_texto();
+                fprintf(mensajes, "%d\n", (short int)$2 & 0xffff);
+              }
+            }
+          }
+        | PSEUDO_PRINT valor_real {
+            if (conditional[conditional_level])
+            {
+              if (pass == 2)
+              {
+                if (mensajes == NULL)
+                  salida_texto();
+                fprintf(mensajes, "%.4f\n", $2);
+              }
+            }
+          }
+        | PSEUDO_PRINTHEX valor {
+            if (conditional[conditional_level])
+            {
+              if (pass == 2)
+              {
+                if (mensajes == NULL)
+                  salida_texto();
+                fprintf(mensajes, "$%4.4x\n", (short int)$2 & 0xffff);
+              }
+            }
+          }
+        | PSEUDO_PRINTFIX valor {
+            if (conditional[conditional_level])
+            {
+              if (pass == 2)
+              {
+                if (mensajes == NULL)
+                  salida_texto();
+                fprintf(mensajes, "%.4f\n", ((float)($2 & 0xffff)) / 256);
+              }
+            }
+          }
+        | PSEUDO_SIZE valor {
+            if (conditional[conditional_level] && (pass == 2))
+            {
+              if (size > 0)
+                hacer_error(15);
+              else
+                size=$2;
+            }
+          }
         | PSEUDO_IF valor {if (conditional_level==15) hacer_error(44);conditional_level++;if ($2) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
         | PSEUDO_IFDEF IDENTIFICADOR {if (conditional_level==15) hacer_error(44);conditional_level++;if (simbolo_definido($2)) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
         | PSEUDO_ELSE {if (!conditional_level) hacer_error(42); conditional[conditional_level]=(conditional[conditional_level]^1)&conditional[conditional_level-1];}
         | PSEUDO_ENDIF {if (!conditional_level) hacer_error(43); conditional_level--;}
         | PSEUDO_CASSETTE TEXTO {
-              if (conditional[conditional_level])
-              {
-                if (!interno[0])
-                  strcpy(interno, $2);
-                cassette |= $1;
-              }
+            if (conditional[conditional_level])
+            {
+              if (!interno[0])
+                strcpy(interno, $2);
+              cassette |= $1;
             }
+          }
         | PSEUDO_CASSETTE {if (conditional[conditional_level]) {if (!interno[0]) {strcpy(interno,binario);interno[strlen(interno)-1]=0;}cassette|=$1;}}
         | PSEUDO_ZILOG {zilog=1;}
         | PSEUDO_FILENAME TEXTO {strcpy(filename,$2);}
