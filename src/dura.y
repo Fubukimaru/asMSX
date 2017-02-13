@@ -443,40 +443,67 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
               type_megarom($2);
           }
-        | PSEUDO_BASIC {if (conditional[conditional_level]) {type_basic();}}
-        | PSEUDO_MSXDOS {if (conditional[conditional_level]) {type_msxdos();}}
-        | PSEUDO_SINCLAIR {if (conditional[conditional_level]) {type_sinclair();}}
-        | PSEUDO_BIOS {if (conditional[conditional_level]) {if (!bios) msx_bios();}}
-        | PSEUDO_PAGE valor {if (conditional[conditional_level]) {subpage=0x100;if ($2>3) hacer_error(22); else {PC=0x4000*$2;ePC=PC;}}}
+        | PSEUDO_BASIC {
+            if (conditional[conditional_level])
+              type_basic();
+          }
+        | PSEUDO_MSXDOS {
+            if (conditional[conditional_level])
+              type_msxdos();
+          }
+        | PSEUDO_SINCLAIR {
+            if (conditional[conditional_level])
+              type_sinclair();
+          }
+        | PSEUDO_BIOS {
+            if (conditional[conditional_level])
+            {
+              if (!bios)
+                msx_bios();
+            }
+          }
+        | PSEUDO_PAGE valor {
+            if (conditional[conditional_level])
+            {
+              subpage = 0x100;
+              if ($2 > 3)
+                hacer_error(22);
+              else
+              {
+                PC = 0x4000 * $2;
+                ePC = PC;
+              }
+            }
+          }
         | PSEUDO_SEARCH {if (conditional[conditional_level]) {if ((type!=MEGAROM)&&(type!=ROM)) hacer_error(41);localizar_32k();}}
         | PSEUDO_SUBPAGE valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);establecer_subpagina($2,$4);}}
         | PSEUDO_SELECT valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_directa($2,$4);}}
         | PSEUDO_SELECT REGISTRO PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_registro($2,$4);}}
         | PSEUDO_START valor {if (conditional[conditional_level]) {inicio=$2;}}
         | PSEUDO_CALLBIOS valor {
-              if (conditional[conditional_level])
-              {
-                guardar_byte(0xfd);
-                guardar_byte(0x2a);
-                guardar_word(0xfcc0);
-                guardar_byte(0xdd);
-                guardar_byte(0x21);
-                guardar_word($2);
-                guardar_byte(0xcd);
-                guardar_word(0x001c);
-              }
+            if (conditional[conditional_level])
+            {
+              guardar_byte(0xfd);
+              guardar_byte(0x2a);
+              guardar_word(0xfcc0);
+              guardar_byte(0xdd);
+              guardar_byte(0x21);
+              guardar_word($2);
+              guardar_byte(0xcd);
+              guardar_word(0x001c);
             }
+          }
         | PSEUDO_CALLDOS valor {
-              if (conditional[conditional_level])
-              {
-                if (type != MSXDOS)
-                  hacer_error(25);
-                guardar_byte(0x0e);
-                guardar_byte($2);
-                guardar_byte(0xcd);
-                guardar_word(0x0005);
-              }
+            if (conditional[conditional_level])
+            {
+              if (type != MSXDOS)
+                hacer_error(25);
+              guardar_byte(0x0e);
+              guardar_byte($2);
+              guardar_byte(0xcd);
+              guardar_word(0x0005);
             }
+          }
         | PSEUDO_DB listado_8bits {;}
         | PSEUDO_DW listado_16bits {;}
         | PSEUDO_DS valor_16bits {if (conditional[conditional_level]) {if (dir_inicio>PC) dir_inicio=PC;PC+=$2;ePC+=$2;if (PC>0xffff) hacer_error(1);}}
