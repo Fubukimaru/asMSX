@@ -3,9 +3,8 @@
 %{
 #include "dura.tab.h"
 
-extern unsigned int ePC;
+extern int ePC,pass;
 extern char *original;
-extern unsigned char pass;
 %}
 
 %%

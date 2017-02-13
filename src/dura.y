@@ -116,35 +116,35 @@ void yyerror(char *);
 void registrar_etiqueta(char *);
 void registrar_local(char *);
 void type_rom();
-void type_megarom(unsigned int);
+void type_megarom(int);
 void type_basic();
 void type_msxdos();
 void type_sinclair();
 void msx_bios();
 void hacer_error(int);
 void localizar_32k();
-void establecer_subpagina(unsigned int, unsigned int);
-void seleccionar_pagina_directa(unsigned int, unsigned int);
-void seleccionar_pagina_registro(unsigned int, unsigned int);
-void guardar_byte(unsigned int);
-void guardar_word(unsigned int);
-void registrar_simbolo(char *, unsigned int, unsigned char);
-void registrar_variable(char *, unsigned int);
-void incluir_binario(char *, unsigned int, unsigned int);
+void establecer_subpagina(int, int);
+void seleccionar_pagina_directa(int, int);
+void seleccionar_pagina_registro(int, int);
+void guardar_byte(int);
+void guardar_word(int);
+void registrar_simbolo(char *, int, char);
+void registrar_variable(char *, int);
+void incluir_binario(char *, int, int);
 void finalizar();
 void guardar_texto(char *);
 void salida_texto();
 int simbolo_definido(char *);
 void hacer_advertencia(int);
-void salto_relativo(unsigned int);
-unsigned int leer_etiqueta(char *);
-unsigned int leer_local(char *);
+void salto_relativo(int);
+int leer_etiqueta(char *);
+int leer_local(char *);
 void guardar_binario();
 void generar_cassette();
 void generar_wav();
 int d_rand();
 
-unsigned char wav_header[44]={
+char wav_header[44]={
 0x52,0x49,0x46,0x46,0x44,0x00,0x00,0x00,0x57,0x41,0x56,0x45,0x66,0x6D,0x74,0x20,
 0x10,0x00,0x00,0x00,0x01,0x00,0x02,0x00,0x44,0xAC,0x00,0x00,0x10,0xB1,0x02,0x00,
 0x04,0x00,0x10,0x00,0x64,0x61,0x74,0x61,0x20,0x00,0x00,0x00};
@@ -152,13 +152,13 @@ unsigned char wav_header[44]={
 FILE *wav;
 
 
-unsigned char *memory;
+char *memory;
 char *fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,*original;
-unsigned int cassette=0,size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit;
-unsigned int dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas,parity;
-unsigned int zilog=0,pass=1,bios=0,type=0,conditional[16],conditional_level=0;
-unsigned int maxpage[4]={32,64,256,256};
-unsigned char locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
+int cassette=0,size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit;
+int dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas,parity;
+int zilog=0,pass=1,bios=0,type=0,conditional[16],conditional_level=0;
+int maxpage[4]={32,64,256,256};
+char locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
 0xB1,0x4F,0x2C,0x2C,0x2C,0x2C,0x7E,0xE6,0xC,0xB1,0x26,0x80,0xCD,0x24,0x0};
 int maxima = 0, ultima_global = 0;
 FILE *archivo,*mensajes,*output;
@@ -166,15 +166,15 @@ FILE *archivo,*mensajes,*output;
 struct
 {
   char *nombre;
-  unsigned int valor;
-  unsigned char type;
-  unsigned int pagina;
+  int valor;
+  char type;
+  int pagina;
 } lista_identificadores[max_id];
 %}
 
 %union
 {
- unsigned int val;
+ int val;
  double real;
  char *tex;
 }
@@ -945,13 +945,13 @@ valor: NUMERO {$$=$1;}
      | valor SHIFT_L valor {$$=$1<<$3;}
      | valor SHIFT_R valor {$$=$1>>$3;}
      | PSEUDO_RANDOM '(' valor ')' {for (;($$=d_rand()&0xff)>=$3;);}
-     | PSEUDO_INT '(' valor_real ')' { $$ = (unsigned int)$3; }
-     | PSEUDO_FIX '(' valor_real ')' { $$ = (unsigned int)($3 * 256); }
+     | PSEUDO_INT '(' valor_real ')' { $$ = (int)$3; }
+     | PSEUDO_FIX '(' valor_real ')' { $$ = (int)($3 * 256); }
      | PSEUDO_FIXMUL '(' valor ',' valor ')' {
-                        $$ = (unsigned int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
+                        $$ = (int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
                       }
      | PSEUDO_FIXDIV '(' valor ',' valor ')' {
-                        $$ = (unsigned int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
+                        $$ = (int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
                       }
 ;
 
@@ -1218,7 +1218,7 @@ void hacer_advertencia(int codigo)
 }
 
 /* Generate byte */
-void guardar_byte(unsigned int b)
+void guardar_byte(int b)
 {
   /* If the condition of this block is fulfilled, create the code */
   if ((!conditional_level) || (conditional[conditional_level]))
@@ -1243,7 +1243,7 @@ void guardar_byte(unsigned int b)
       if (size && (dir_inicio + size * 1024 > 65536) && (pass == 2))
         hacer_error(1);
 
-      memory[PC++] = (unsigned char)b;
+      memory[PC++] = (char)b;
       ePC++;
     }
     else
@@ -1254,7 +1254,7 @@ void guardar_byte(unsigned int b)
       if (PC >= pageinit + 1024 * pagesize)
         hacer_error(31);
 
-      memory[subpage * pagesize * 1024 + PC - pageinit] = (unsigned char)b;
+      memory[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
       PC++;
       ePC++;
     }
@@ -1265,16 +1265,16 @@ void guardar_texto(char *texto)
 {
   size_t i;
   for (i=0; i < strlen(texto); i++)
-    guardar_byte((unsigned int)texto[i]);
+    guardar_byte((int)texto[i]);
 }
 
-void guardar_word(unsigned int w)
+void guardar_word(int w)
 {
   guardar_byte(w & 0xff);
   guardar_byte((w >> 8) & 0xff);
 }
 
-void salto_relativo(unsigned int direccion)
+void salto_relativo(int direccion)
 {
   int salto;
 
@@ -1283,7 +1283,7 @@ void salto_relativo(unsigned int direccion)
   if ((salto > 127) || (salto < -128))
     hacer_error(8);
 
-  guardar_byte((unsigned int)salto);
+  guardar_byte((int)salto);
 }
 
 void registrar_etiqueta(char *nombre)
@@ -1315,7 +1315,7 @@ void registrar_local(char *nombre)
  lista_identificadores[maxima-1].pagina=subpage;
 }
 
-void registrar_simbolo(char *nombre, unsigned int numero, unsigned char type)
+void registrar_simbolo(char *nombre, int numero, char type)
 {
   int i;
   char *_nombre;
@@ -1341,7 +1341,7 @@ void registrar_simbolo(char *nombre, unsigned int numero, unsigned char type)
   lista_identificadores[maxima - 1].type = type;
 }
 
-void registrar_variable(char *nombre, unsigned int numero)
+void registrar_variable(char *nombre, int numero)
 {
   int i;
   for (i = 0; i < maxima; i++)
@@ -1358,7 +1358,7 @@ void registrar_variable(char *nombre, unsigned int numero)
   lista_identificadores[maxima - 1].type = 3;
 }
 
-unsigned int leer_etiqueta(char *nombre)
+int leer_etiqueta(char *nombre)
 {
   int i;
 
@@ -1373,7 +1373,7 @@ unsigned int leer_etiqueta(char *nombre)
   exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
-unsigned int leer_local(char *nombre)
+int leer_local(char *nombre)
 {
   int i;
 
@@ -1472,11 +1472,11 @@ void yyerror(char *s)
  hacer_error(0);
 }
 
-void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
+void incluir_binario(char *nombre, int skip, int n)
 {
   FILE *fichero;
   int k;
-  unsigned int i;
+  int i;
 
   if ((fichero = fopen(nombre, "rb")) == NULL)
     hacer_error(18);
@@ -1507,7 +1507,7 @@ void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
       k = fgetc(fichero);
       if (!feof(fichero))
       {
-        guardar_byte((unsigned int)k);
+        guardar_byte((int)k);
         i++;
       }
     }
@@ -1519,14 +1519,14 @@ void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
     {
       k = fgetc(fichero);
       if (!feof(fichero))
-        guardar_byte((unsigned int)k);
+        guardar_byte((int)k);
     }
 
   fclose(fichero);
 }
 
 
-void write_zx_byte(unsigned int c)
+void write_zx_byte(int c)
 {
   int k;
   k = (int)(c & 0xff);
@@ -1534,15 +1534,15 @@ void write_zx_byte(unsigned int c)
   parity ^= k;
 }
 
-void write_zx_word(unsigned int c)
+void write_zx_word(int c)
 {
   write_zx_byte(c & 0xff);
   write_zx_byte((c >> 8) & 0xff);
 }
 
-void write_zx_number(unsigned int i)
+void write_zx_number(int i)
 {
-  unsigned int c;
+  int c;
 
   c = i / 10000;
   i -= c * 10000;
@@ -1565,7 +1565,7 @@ void write_zx_number(unsigned int i)
 
 void guardar_binario()
 {
-  unsigned int i, j;
+  int i, j;
 
   if ((dir_inicio > dir_final) && (type != MEGAROM))
     hacer_error(24);
@@ -1737,8 +1737,8 @@ void finalizar()
 
 void inicializar_memory()
 {
- unsigned int i;
- memory=(unsigned char*)malloc(0x1000000);
+ int i;
+ memory=(char*)malloc(0x1000000);
 
  for (i=0;i<0x1000000;i++) memory[i]=0;
 
@@ -1775,9 +1775,9 @@ void type_rom()
  if (!inicio) inicio=ePC;
 }
 
-void type_megarom(unsigned int n)
+void type_megarom(int n)
 {
-  unsigned int i;
+  int i;
 
   if (pass == 1)
     for (i = 0; i < 256; i++)
@@ -1835,7 +1835,7 @@ void type_msxdos()
  ePC=0x0100;
 }
 
-void establecer_subpagina(unsigned int n, unsigned int dir)
+void establecer_subpagina(int n, int dir)
 {
   if (n > lastpage)
     lastpage = n;
@@ -1862,11 +1862,11 @@ void establecer_subpagina(unsigned int n, unsigned int dir)
 
 void localizar_32k()
 {
- unsigned int i;
+ int i;
  for (i=0;i<31;i++) guardar_byte(locate32[i]);
 }
 
-unsigned int selector(unsigned int dir)
+int selector(int dir)
 {
   dir = (dir / pagesize) * pagesize;
   if ((mapper == KONAMI) && (dir == 0x4000))
@@ -1886,9 +1886,9 @@ unsigned int selector(unsigned int dir)
 }
 
 
-void seleccionar_pagina_directa(unsigned int n, unsigned int dir)
+void seleccionar_pagina_directa(int n, int dir)
 {
- unsigned int sel;
+ int sel;
 
  sel=selector(dir);
 
@@ -1902,9 +1902,9 @@ void seleccionar_pagina_directa(unsigned int n, unsigned int dir)
 
 }
 
-void seleccionar_pagina_registro(unsigned int r, unsigned int dir)
+void seleccionar_pagina_registro(int r, int dir)
 {
- unsigned int sel;
+ int sel;
 
  sel=selector(dir);
 
@@ -1922,10 +1922,10 @@ void seleccionar_pagina_registro(unsigned int r, unsigned int dir)
 void generar_cassette()
 {
 
- unsigned char cas[8]={0x1F,0xA6,0xDE,0xBA,0xCC,0x13,0x7D,0x74};
+ char cas[8]={0x1F,0xA6,0xDE,0xBA,0xCC,0x13,0x7D,0x74};
 
  FILE *salida;
- unsigned int i;
+ int i;
 
  if ((type==MEGAROM)||((type=ROM)&&(dir_inicio<0x8000)))
  {
@@ -1972,7 +1972,7 @@ void generar_cassette()
 }
 
 
-void store(unsigned int value)
+void store(int value)
 {
  fputc(value&0xff,wav);
  fputc((value>>8)&0xff,wav);
@@ -1982,7 +1982,7 @@ void store(unsigned int value)
 
 void write_one()
 {
-  unsigned int l;
+  int l;
   for (l=0;l<5*2;l++) store(FREQ_LO);
   for (l=0;l<5*2;l++) store(FREQ_HI);
   for (l=0;l<5*2;l++) store(FREQ_LO);
@@ -1991,23 +1991,23 @@ void write_one()
 
 void write_zero()
 {
-  unsigned int l;
+  int l;
   for (l=0;l<10*2;l++) store(FREQ_LO);
   for (l=0;l<10*2;l++) store(FREQ_HI);
 }
 
 void write_nothing()
 {
-  unsigned int l;
+  int l;
   for (l=0;l<18*2;l++) store(SILENCE);
 }
 
 
 // Write full byte
 
-void write_byte(unsigned char m)
+void write_byte(char m)
 {
- unsigned char l;
+ char l;
  write_zero();
  for (l=0;l<8;l++) 
  {
@@ -2021,7 +2021,7 @@ void write_byte(unsigned char m)
 
 void generar_wav()
 {
-  unsigned int wav_size, i;
+  int wav_size, i;
 
   if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
   {
@@ -2039,14 +2039,14 @@ void generar_wav()
     wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + dir_final - dir_inicio + 1)) * 40;
     wav_size = wav_size << 1;
 
-    wav_header[4] = (unsigned char)((wav_size + 36) & 0xff);
-    wav_header[5] = (unsigned char)(((wav_size + 36) >> 8) & 0xff);
-    wav_header[6] = (unsigned char)(((wav_size + 36) >> 16) & 0xff);
-    wav_header[7] = (unsigned char)(((wav_size + 36) >> 24) & 0xff);
-    wav_header[40] = (unsigned char)(wav_size & 0xff);
-    wav_header[41] = (unsigned char)((wav_size >> 8) & 0xff);
-    wav_header[42] = (unsigned char)((wav_size >> 16) & 0xff);
-    wav_header[43] = (unsigned char)((wav_size >> 24) & 0xff);
+    wav_header[4] = (char)((wav_size + 36) & 0xff);
+    wav_header[5] = (char)(((wav_size + 36) >> 8) & 0xff);
+    wav_header[6] = (char)(((wav_size + 36) >> 16) & 0xff);
+    wav_header[7] = (char)(((wav_size + 36) >> 24) & 0xff);
+    wav_header[40] = (char)(wav_size & 0xff);
+    wav_header[41] = (char)((wav_size >> 8) & 0xff);
+    wav_header[42] = (char)((wav_size >> 16) & 0xff);
+    wav_header[43] = (char)((wav_size >> 24) & 0xff);
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
@@ -2092,14 +2092,14 @@ void generar_wav()
     wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - dir_inicio + 1)) * 36;
     wav_size = wav_size << 1;
 
-    wav_header[4] = (unsigned char)((wav_size + 36) & 0xff);
-    wav_header[5] = (unsigned char)(((wav_size + 36) >> 8) & 0xff);
-    wav_header[6] = (unsigned char)(((wav_size + 36) >> 16) & 0xff);
-    wav_header[7] = (unsigned char)(((wav_size + 36) >> 24) & 0xff);
-    wav_header[40] = (unsigned char)(wav_size & 0xff);
-    wav_header[41] = (unsigned char)((wav_size >> 8) & 0xff);
-    wav_header[42] = (unsigned char)((wav_size >> 16) & 0xff);
-    wav_header[43] = (unsigned char)((wav_size >> 24) & 0xff);
+    wav_header[4] = (char)((wav_size + 36) & 0xff);
+    wav_header[5] = (char)(((wav_size + 36) >> 8) & 0xff);
+    wav_header[6] = (char)(((wav_size + 36) >> 16) & 0xff);
+    wav_header[7] = (char)(((wav_size + 36) >> 24) & 0xff);
+    wav_header[40] = (char)(wav_size & 0xff);
+    wav_header[41] = (char)((wav_size >> 8) & 0xff);
+    wav_header[42] = (char)((wav_size >> 16) & 0xff);
+    wav_header[43] = (char)((wav_size >> 24) & 0xff);
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
@@ -2147,7 +2147,8 @@ int simbolo_definido(char *nombre)
 #define D_RAND_MAX 32767
 static unsigned long int rand_seed = 1;
 
-int d_rand() {
+int d_rand()
+{
     rand_seed = (rand_seed * 1103515245 + 12345);
     return (unsigned int)(rand_seed/65536) % (D_RAND_MAX + 1);
 }
@@ -2155,7 +2156,7 @@ int d_rand() {
 
 int main(int argc, char *argv[])
 {
- unsigned char i;
+ char i;
  printf("-------------------------------------------------------------------------------\n");
  printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
  printf("-------------------------------------------------------------------------------\n");

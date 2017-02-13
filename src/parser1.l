@@ -22,7 +22,7 @@ static FILE *p1_output_file, *p1_input_file;
 static struct
 {
   YY_BUFFER_STATE buffer;
-  unsigned int line;
+  int line;
   char *name;
 } p1_include_stack[MAX_INCLUDE_LEVEL];
 
