@@ -3796,6 +3796,7 @@ void finalizar()
     fprintf(stderr, ", 1 warning\n");
   else
     printf("\n");
+
   remove("~tmppre.*");
   exit(0);
 }
@@ -3806,7 +3807,7 @@ void inicializar_memory()
 
   memory = malloc(0x1000000);
   for (i = 0; i < 0x1000000; i++)
-    memory[i]=0;
+    memory[i] = 0;
 }
 
 void inicializar_sistema()
@@ -3824,8 +3825,8 @@ void type_sinclair()
   type = SINCLAIR;
   if (!dir_inicio)
   {
-    PC=0x8000;
-    ePC=PC;
+    PC = 0x8000;
+    ePC = PC;
   }
 }
 
