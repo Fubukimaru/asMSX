@@ -1994,8 +1994,7 @@ void write_byte(unsigned char m)
 
 void generar_wav()
 {
-  int wav_size;
-  unsigned int i;
+  unsigned int wav_size, i;
 
   if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
   {
@@ -2013,14 +2012,14 @@ void generar_wav()
     wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + dir_final - dir_inicio + 1)) * 40;
     wav_size = wav_size << 1;
 
-    wav_header[4] = (wav_size + 36) & 0xff;
-    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
-    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
-    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
-    wav_header[40] = wav_size & 0xff;
-    wav_header[41] = (wav_size >> 8) & 0xff;
-    wav_header[42] = (wav_size >> 16) & 0xff;
-    wav_header[43] = (wav_size >> 24) & 0xff;
+    wav_header[4] = (unsigned char)((wav_size + 36) & 0xff);
+    wav_header[5] = (unsigned char)(((wav_size + 36) >> 8) & 0xff);
+    wav_header[6] = (unsigned char)(((wav_size + 36) >> 16) & 0xff);
+    wav_header[7] = (unsigned char)(((wav_size + 36) >> 24) & 0xff);
+    wav_header[40] = (unsigned char)(wav_size & 0xff);
+    wav_header[41] = (unsigned char)((wav_size >> 8) & 0xff);
+    wav_header[42] = (unsigned char)((wav_size >> 16) & 0xff);
+    wav_header[43] = (unsigned char)((wav_size >> 24) & 0xff);
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
@@ -2066,14 +2065,14 @@ void generar_wav()
     wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - dir_inicio + 1)) * 36;
     wav_size = wav_size << 1;
 
-    wav_header[4] = (wav_size + 36) & 0xff;
-    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
-    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
-    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
-    wav_header[40] = wav_size & 0xff;
-    wav_header[41] = (wav_size >> 8) & 0xff;
-    wav_header[42] = (wav_size >> 16) & 0xff;
-    wav_header[43] = (wav_size >> 24) & 0xff;
+    wav_header[4] = (unsigned char)((wav_size + 36) & 0xff);
+    wav_header[5] = (unsigned char)(((wav_size + 36) >> 8) & 0xff);
+    wav_header[6] = (unsigned char)(((wav_size + 36) >> 16) & 0xff);
+    wav_header[7] = (unsigned char)(((wav_size + 36) >> 24) & 0xff);
+    wav_header[40] = (unsigned char)(wav_size & 0xff);
+    wav_header[41] = (unsigned char)((wav_size >> 8) & 0xff);
+    wav_header[42] = (unsigned char)((wav_size >> 16) & 0xff);
+    wav_header[43] = (unsigned char)((wav_size >> 24) & 0xff);
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
