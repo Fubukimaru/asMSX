@@ -3341,15 +3341,23 @@ void registrar_etiqueta(char *nombre)
 
 void registrar_local(char *nombre)
 {
- signed int i;
- if (pass==2) return;
- for (i=ultima_global;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) hacer_error(14);
- if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+4);
- strcpy(lista_identificadores[maxima-1].nombre,nombre);
- lista_identificadores[maxima-1].valor=ePC;
- lista_identificadores[maxima-1].type=1;
- lista_identificadores[maxima-1].pagina=subpage;
+  int i;
+
+  if (pass == 2)
+    return;
+
+  for (i = ultima_global; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      hacer_error(14);
+
+  if (++maxima == max_id)
+    hacer_error(11);
+
+  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
+  strcpy(lista_identificadores[maxima - 1].nombre, nombre);
+  lista_identificadores[maxima - 1].valor = ePC;
+  lista_identificadores[maxima - 1].type = 1;
+  lista_identificadores[maxima - 1].pagina = subpage;
 }
 
 void registrar_simbolo(char *nombre, int numero, int type)
