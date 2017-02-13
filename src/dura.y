@@ -1476,31 +1476,151 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
             guardar_byte(0xfd);
             guardar_byte(0xb8 | $4);
           }
-        | MNEMO_CP REGISTRO ',' valor_8bits {if ($2!=7) hacer_error(4);if (zilog) hacer_advertencia(5);guardar_byte(0xfe);guardar_byte($4);}
-        | MNEMO_CP REGISTRO ',' REGISTRO_IND_HL {if ($2!=7) hacer_error(4);if (zilog) hacer_advertencia(5);guardar_byte(0xbe);}
-        | MNEMO_CP REGISTRO ',' indireccion_IX {if ($2!=7) hacer_error(4);if (zilog) hacer_advertencia(5);guardar_byte(0xdd);guardar_byte(0xbe);guardar_byte($4);}
-        | MNEMO_CP REGISTRO ',' indireccion_IY {if ($2!=7) hacer_error(4);if (zilog) hacer_advertencia(5);guardar_byte(0xfd);guardar_byte(0xbe);guardar_byte($4);}
-        | MNEMO_ADD REGISTRO {if (zilog) hacer_advertencia(5);guardar_byte(0x80|$2);}
-        | MNEMO_ADD REGISTRO_IX {if (zilog) hacer_advertencia(5);guardar_byte(0xdd);guardar_byte(0x80|$2);}
-        | MNEMO_ADD REGISTRO_IY {if (zilog) hacer_advertencia(5);guardar_byte(0xfd);guardar_byte(0x80|$2);}
-        | MNEMO_ADD valor_8bits {if (zilog) hacer_advertencia(5);guardar_byte(0xc6);guardar_byte($2);}
-        | MNEMO_ADD REGISTRO_IND_HL {if (zilog) hacer_advertencia(5);guardar_byte(0x86);}
-        | MNEMO_ADD indireccion_IX {if (zilog) hacer_advertencia(5);guardar_byte(0xdd);guardar_byte(0x86);guardar_byte($2);}
-        | MNEMO_ADD indireccion_IY {if (zilog) hacer_advertencia(5);guardar_byte(0xfd);guardar_byte(0x86);guardar_byte($2);}
-        | MNEMO_ADC REGISTRO {if (zilog) hacer_advertencia(5);guardar_byte(0x88|$2);}
-        | MNEMO_ADC REGISTRO_IX {if (zilog) hacer_advertencia(5);guardar_byte(0xdd);guardar_byte(0x88|$2);}
-        | MNEMO_ADC REGISTRO_IY {if (zilog) hacer_advertencia(5);guardar_byte(0xfd);guardar_byte(0x88|$2);}
-        | MNEMO_ADC valor_8bits {if (zilog) hacer_advertencia(5);guardar_byte(0xce);guardar_byte($2);}
-        | MNEMO_ADC REGISTRO_IND_HL {if (zilog) hacer_advertencia(5);guardar_byte(0x8e);}
-        | MNEMO_ADC indireccion_IX {if (zilog) hacer_advertencia(5);guardar_byte(0xdd);guardar_byte(0x8e);guardar_byte($2);}
-        | MNEMO_ADC indireccion_IY {if (zilog) hacer_advertencia(5);guardar_byte(0xfd);guardar_byte(0x8e);guardar_byte($2);}
-        | MNEMO_SUB REGISTRO {guardar_byte(0x90|$2);}
-        | MNEMO_SUB REGISTRO_IX {guardar_byte(0xdd);guardar_byte(0x90|$2);}
-        | MNEMO_SUB REGISTRO_IY {guardar_byte(0xfd);guardar_byte(0x90|$2);}
-        | MNEMO_SUB valor_8bits {guardar_byte(0xd6);guardar_byte($2);}
-        | MNEMO_SUB REGISTRO_IND_HL {guardar_byte(0x96);}
-        | MNEMO_SUB indireccion_IX {guardar_byte(0xdd);guardar_byte(0x96);guardar_byte($2);}
-        | MNEMO_SUB indireccion_IY {guardar_byte(0xfd);guardar_byte(0x96);guardar_byte($2);}
+        | MNEMO_CP REGISTRO ',' valor_8bits {
+            if ($2 != 7)
+              hacer_error(4);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xfe);
+            guardar_byte($4);
+          }
+        | MNEMO_CP REGISTRO ',' REGISTRO_IND_HL {
+            if ($2 != 7)
+              hacer_error(4);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xbe);
+          }
+        | MNEMO_CP REGISTRO ',' indireccion_IX {
+            if ($2 != 7)
+              hacer_error(4);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdd);
+            guardar_byte(0xbe);
+            guardar_byte($4);
+          }
+        | MNEMO_CP REGISTRO ',' indireccion_IY {
+            if ($2 != 7)
+              hacer_error(4);
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xfd);
+            guardar_byte(0xbe);
+            guardar_byte($4);
+          }
+        | MNEMO_ADD REGISTRO {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0x80 | $2);
+          }
+        | MNEMO_ADD REGISTRO_IX {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdd);
+            guardar_byte(0x80 | $2);
+          }
+        | MNEMO_ADD REGISTRO_IY {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xfd);
+            guardar_byte(0x80 | $2);
+          }
+        | MNEMO_ADD valor_8bits {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xc6);
+            guardar_byte($2);
+          }
+        | MNEMO_ADD REGISTRO_IND_HL {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0x86);
+          }
+        | MNEMO_ADD indireccion_IX {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdd);
+            guardar_byte(0x86);
+            guardar_byte($2);
+          }
+        | MNEMO_ADD indireccion_IY {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xfd);
+            guardar_byte(0x86);
+            guardar_byte($2);
+          }
+        | MNEMO_ADC REGISTRO {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0x88 | $2);
+          }
+        | MNEMO_ADC REGISTRO_IX {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdd);
+            guardar_byte(0x88 | $2);
+          }
+        | MNEMO_ADC REGISTRO_IY {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xfd);
+            guardar_byte(0x88|$2);
+          }
+        | MNEMO_ADC valor_8bits {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xce);
+            guardar_byte($2);
+          }
+        | MNEMO_ADC REGISTRO_IND_HL {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0x8e);
+          }
+        | MNEMO_ADC indireccion_IX {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xdd);
+            guardar_byte(0x8e);
+            guardar_byte($2);
+          }
+        | MNEMO_ADC indireccion_IY {
+            if (zilog)
+              hacer_advertencia(5);
+            guardar_byte(0xfd);
+            guardar_byte(0x8e);
+            guardar_byte($2);
+          }
+        | MNEMO_SUB REGISTRO {
+            guardar_byte(0x90 | $2);
+          }
+        | MNEMO_SUB REGISTRO_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0x90 | $2);
+          }
+        | MNEMO_SUB REGISTRO_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0x90 | $2);
+          }
+        | MNEMO_SUB valor_8bits {
+            guardar_byte(0xd6);
+            guardar_byte($2);
+          }
+        | MNEMO_SUB REGISTRO_IND_HL {
+            guardar_byte(0x96);
+          }
+        | MNEMO_SUB indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0x96);
+            guardar_byte($2);
+          }
+        | MNEMO_SUB indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0x96);
+            guardar_byte($2);
+          }
         | MNEMO_SBC REGISTRO {if (zilog) hacer_advertencia(5);guardar_byte(0x98|$2);}
         | MNEMO_SBC REGISTRO_IX {if (zilog) hacer_advertencia(5);guardar_byte(0xdd);guardar_byte(0x98|$2);}
         | MNEMO_SBC REGISTRO_IY {if (zilog) hacer_advertencia(5);guardar_byte(0xfd);guardar_byte(0x98|$2);}
