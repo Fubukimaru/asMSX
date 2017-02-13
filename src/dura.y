@@ -439,7 +439,10 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                   | PSEUDO_DS valor_16bits {if (conditional[conditional_level]) {if (dir_inicio>PC) dir_inicio=PC;PC+=$2;ePC+=$2;if (PC>0xffff) hacer_error(1);}}
                   | PSEUDO_BYTE {if (conditional[conditional_level]) {PC++;ePC++;}}
                   | PSEUDO_WORD {if (conditional[conditional_level]) {PC+=2;ePC+=2;}}
-                  | IDENTIFICADOR PSEUDO_EQU valor {if (conditional[conditional_level]) {registrar_simbolo(strtok($1,"="),$3,2);}}
+                  | IDENTIFICADOR PSEUDO_EQU valor {
+                        if (conditional[conditional_level])
+                          registrar_simbolo(strtok($1, "="), $3, 2);
+                      }
                   | IDENTIFICADOR PSEUDO_ASSIGN valor {if (conditional[conditional_level]) {registrar_variable(strtok($1,"="),$3);}}
                   | PSEUDO_INCBIN TEXTO {if (conditional[conditional_level]) {incluir_binario($2,0,0);}}
                   | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,$4,0);}}
