@@ -2142,58 +2142,60 @@ int simbolo_definido(char *nombre)
 
 #define D_RAND_MAX 32767
 static unsigned long int rand_seed = 1;
-
 int d_rand()
 {
-    rand_seed = (rand_seed * 1103515245 + 12345);
-    return (unsigned int)(rand_seed/65536) % (D_RAND_MAX + 1);
+  rand_seed = (rand_seed * 1103515245 + 12345);
+  return (unsigned int)(rand_seed/65536) % (D_RAND_MAX + 1);
 }
 
 
 int main(int argc, char *argv[])
 {
- char i;
- printf("-------------------------------------------------------------------------------\n");
- printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
- printf("-------------------------------------------------------------------------------\n");
- if (argc!=2)
- {
-  printf("Syntax: asMSX [file.asm]\n");
-  exit(0);
- }
- clock();
- inicializar_sistema();
- ensamblador=malloc(0x100);
- fuente=malloc(0x100);
- original=malloc(0x100);
- binario=malloc(0x100);
- simbolos=malloc(0x100);
- salida=malloc(0x100);
- filename=malloc(0x100);
+  size_t i;
+  printf("-------------------------------------------------------------------------------\n");
+  printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
+  printf("-------------------------------------------------------------------------------\n");
+  if (argc != 2)
+  {
+    printf("Syntax: asMSX [file.asm]\n");
+    exit(0);
+  }
+  clock();
+  inicializar_sistema();
+  ensamblador = malloc(0x100);
+  fuente = malloc(0x100);
+  original = malloc(0x100);
+  binario = malloc(0x100);
+  simbolos = malloc(0x100);
+  salida = malloc(0x100);
+  filename = malloc(0x100);
 
- strcpy(filename,argv[1]);
- strcpy(ensamblador,filename);
+  strcpy(filename, argv[1]);
+  strcpy(ensamblador, filename);
 
- for (i=strlen(filename)-1;(filename[i]!='.')&&i;i--);
+  for (i = strlen(filename) - 1; (filename[i] != '.') && i; i--);
 
- if (i) filename[i]=0; else strcat(ensamblador,".asm");
+  if (i)
+    filename[i] = 0;
+  else
+    strcat(ensamblador, ".asm");
 
- // Obtener nombre de la salida binaria
- strcpy(binario,filename);
+  // Obtener nombre de la salida binaria
+  strcpy(binario, filename);
 
- preprocessor1(ensamblador);
- preprocessor3();
- sprintf(original,"~tmppre.%i",preprocessor2());
+  preprocessor1(ensamblador);
+  preprocessor3();
+  sprintf(original, "~tmppre.%i", preprocessor2());
  
- printf("Assembling source file %s\n",ensamblador);
+  printf("Assembling source file %s\n", ensamblador);
 
- conditional[0]=1;
+  conditional[0] = 1;
 
- archivo=fopen(original,"r");
+  archivo = fopen(original, "r");
 
- yyin=archivo;
+  yyin = archivo;
 
- yyparse();
+  yyparse();
 
- remove("~tmppre.?");
+  remove("~tmppre.?");
 }
