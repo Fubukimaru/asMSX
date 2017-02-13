@@ -3949,8 +3949,10 @@ void localizar_32k()
 int selector(int dir)
 {
   dir = (dir / pagesize) * pagesize;
+
   if ((mapper == KONAMI) && (dir == 0x4000))
     hacer_error(38);
+
   if (mapper == KONAMISCC)
     dir += 0x1000;
   else if (mapper == ASCII8)
@@ -3962,24 +3964,26 @@ int selector(int dir)
     else
       dir = 0x7000;
   }
+
   return dir;
 }
 
 
 void seleccionar_pagina_directa(int n, int dir)
 {
- int sel;
+  int sel;
+ 
+  sel = selector(dir);
+ 
+  if ((pass == 2) && (!usedpage[n]))
+    hacer_error(39);
 
- sel=selector(dir);
-
- if ((pass==2)&&(!usedpage[n])) hacer_error(39);
- guardar_byte(0xf5);
- guardar_byte(0x3e);
- guardar_byte(n);
- guardar_byte(0x32);
- guardar_word(sel);
- guardar_byte(0xf1);
-
+  guardar_byte(0xf5);
+  guardar_byte(0x3e);
+  guardar_byte(n);
+  guardar_byte(0x32);
+  guardar_word(sel);
+  guardar_byte(0xf1);
 }
 
 void seleccionar_pagina_registro(int r, int dir)
