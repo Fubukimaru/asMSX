@@ -3988,26 +3988,30 @@ void seleccionar_pagina_directa(int n, int dir)
 
 void seleccionar_pagina_registro(int r, int dir)
 {
- int sel;
+  int sel;
 
- sel=selector(dir);
+  sel = selector(dir);
 
- if (r!=7)
- {
-  guardar_byte(0xf5); /* PUSH AF */
-  guardar_byte(0x40|(7<<3)|r); /* LD A,r */
- }
- guardar_byte(0x32);
- guardar_word(sel);
- if (r!=7) guardar_byte(0xf1); /* POP AF */
+  if (r != 7)
+  {
+    guardar_byte(0xf5);			/* PUSH AF */
+    guardar_byte(0x40 | (7 << 3) | r);	/* LD A,r */
+  }
 
+  guardar_byte(0x32);
+  guardar_word(sel);
+
+  if (r != 7)
+    guardar_byte(0xf1);			/* POP AF */
 }
 
 void generar_cassette()
 {
   FILE *salida;
   int i;
-  int cas[8]={0x1F,0xA6,0xDE,0xBA,0xCC,0x13,0x7D,0x74};
+  int cas[8] = {
+    0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74
+  };
 
   if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
   {
@@ -4068,27 +4072,40 @@ void store(int value)
 void write_one()
 {
   int l;
-  for (l=0;l<5*2;l++) store(FREQ_LO);
-  for (l=0;l<5*2;l++) store(FREQ_HI);
-  for (l=0;l<5*2;l++) store(FREQ_LO);
-  for (l=0;l<5*2;l++) store(FREQ_HI);
+ 
+  for (l = 0; l < 5 * 2; l++)
+    store(FREQ_LO);
+
+  for (l = 0; l < 5 * 2; l++)
+    store(FREQ_HI);
+
+  for (l = 0; l < 5 * 2; l++)
+    store(FREQ_LO);
+
+  for (l = 0; l < 5 * 2; l++)
+    store(FREQ_HI);
 }
 
 void write_zero()
 {
   int l;
-  for (l=0;l<10*2;l++) store(FREQ_LO);
-  for (l=0;l<10*2;l++) store(FREQ_HI);
+
+  for (l = 0; l < 10 * 2; l++)
+    store(FREQ_LO);
+
+  for (l = 0; l < 10 * 2; l++)
+    store(FREQ_HI);
 }
 
 void write_nothing()
 {
   int l;
-  for (l=0;l<18*2;l++) store(SILENCE);
+
+  for (l = 0; l < 18 * 2; l++)
+    store(SILENCE);
 }
 
-
-/* Write full byte */
+/* Write byte */
 void write_byte(int m)
 {
   int l;
@@ -4105,7 +4122,6 @@ void write_byte(int m)
   write_one();
   write_one();
 }
-
 
 void generar_wav()
 {
@@ -4205,17 +4221,16 @@ void generar_wav()
     for (i = dir_inicio; i <= dir_final; i++)
     write_byte(memory[i]);
   }
-  /* Fix compiler warning about wav_size being potentially undefined when used in printf() below */
   else
-    wav_size = 0;
-
+    wav_size = 0;	/* Fix undefined wav_size warning in printf() below */
+    
   /* Write blank */
   for (i=0; i < 1500; i++)
     write_nothing();
-
+    
   /* Close file */
   fclose(wav);
-
+  
   printf("Audio file %s saved [%2.2f sec]\n", binario, (float)wav_size/176400);
 }
 
@@ -4223,9 +4238,11 @@ void generar_wav()
 int simbolo_definido(char *nombre)
 {
   int i;
+
   for (i = 0; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return 1;
+
   return 0;
 }
 
