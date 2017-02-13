@@ -1524,10 +1524,12 @@ void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
 }
 
 
-void write_zx_byte(unsigned char c)
+void write_zx_byte(unsigned int c)
 {
-  putc(c, output);
-  parity ^= c;
+  char k;
+  k = (char)(c & 0xff);
+  putc(k , output);
+  parity ^= k;
 }
 
 void write_zx_word(unsigned int c)
