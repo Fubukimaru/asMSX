@@ -128,7 +128,7 @@ void seleccionar_pagina_directa(int, int);
 void seleccionar_pagina_registro(int, int);
 void guardar_byte(int);
 void guardar_word(int);
-void registrar_simbolo(char *, int, char);
+void registrar_simbolo(char *, int, int);
 void registrar_variable(char *, int);
 void incluir_binario(char *, int, int);
 void finalizar();
@@ -144,39 +144,35 @@ void generar_cassette();
 void generar_wav();
 int d_rand();
 
-char wav_header[44]={
+int wav_header[44]={
 0x52,0x49,0x46,0x46,0x44,0x00,0x00,0x00,0x57,0x41,0x56,0x45,0x66,0x6D,0x74,0x20,
 0x10,0x00,0x00,0x00,0x01,0x00,0x02,0x00,0x44,0xAC,0x00,0x00,0x10,0xB1,0x02,0x00,
 0x04,0x00,0x10,0x00,0x64,0x61,0x74,0x61,0x20,0x00,0x00,0x00};
 
-FILE *wav;
-
-
-char *memory;
-char *fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,*original;
+char *memory,*fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,*original;
 int cassette=0,size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit;
 int dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas,parity;
 int zilog=0,pass=1,bios=0,type=0,conditional[16],conditional_level=0;
 int maxpage[4]={32,64,256,256};
-char locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
+int locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
 0xB1,0x4F,0x2C,0x2C,0x2C,0x2C,0x7E,0xE6,0xC,0xB1,0x26,0x80,0xCD,0x24,0x0};
 int maxima = 0, ultima_global = 0;
-FILE *archivo,*mensajes,*output;
+FILE *archivo,*mensajes,*output,*wav;
 
 struct
 {
   char *nombre;
   int valor;
-  char type;
+  int type;
   int pagina;
 } lista_identificadores[max_id];
 %}
 
 %union
 {
- int val;
- double real;
- char *tex;
+  int val;
+  double real;
+  char *tex;
 }
 
 /* Elementos principales */
@@ -1243,7 +1239,7 @@ void guardar_byte(int b)
       if (size && (dir_inicio + size * 1024 > 65536) && (pass == 2))
         hacer_error(1);
 
-      memory[PC++] = (char)b;
+      memory[PC++] = b;
       ePC++;
     }
     else
@@ -1254,7 +1250,7 @@ void guardar_byte(int b)
       if (PC >= pageinit + 1024 * pagesize)
         hacer_error(31);
 
-      memory[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
+      memory[subpage * pagesize * 1024 + PC - pageinit] = b;
       PC++;
       ePC++;
     }
@@ -1315,7 +1311,7 @@ void registrar_local(char *nombre)
  lista_identificadores[maxima-1].pagina=subpage;
 }
 
-void registrar_simbolo(char *nombre, int numero, char type)
+void registrar_simbolo(char *nombre, int numero, int type)
 {
   int i;
   char *_nombre;
@@ -1467,9 +1463,9 @@ int yywrap()
 
 void yyerror(char *s)
 {
- /* print bison error message */
- fprintf(stderr, "Parsing error: %s\n", s);
- hacer_error(0);
+  /* print bison error message */
+  fprintf(stderr, "Parsing error: %s\n", s);
+  hacer_error(0);
 }
 
 void incluir_binario(char *nombre, int skip, int n)
@@ -1737,30 +1733,31 @@ void finalizar()
 
 void inicializar_memory()
 {
- int i;
- memory=(char*)malloc(0x1000000);
+  int i;
 
- for (i=0;i<0x1000000;i++) memory[i]=0;
-
+  memory = malloc(0x1000000);
+  for (i = 0; i < 0x1000000; i++)
+    memory[i]=0;
 }
 
 void inicializar_sistema()
 {
-
- inicializar_memory();
-
- interno=malloc(0x100);
- interno[0]=0;
-
- registrar_simbolo("Eduardo_A_Robsy_Petrus_2007",0,0);
-
+  inicializar_memory();
+  interno = malloc(0x100);
+  interno[0] = 0;
+  registrar_simbolo("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 }
 
 void type_sinclair()
 {
- if ((type) && (type!=SINCLAIR)) hacer_error(46);
- type=SINCLAIR;
- if (!dir_inicio) {PC=0x8000;ePC=PC;}
+  if ((type) && (type != SINCLAIR))
+    hacer_error(46);
+  type = SINCLAIR;
+  if (!dir_inicio)
+  {
+    PC=0x8000;
+    ePC=PC;
+  }
 }
 
 void type_rom()
@@ -1862,8 +1859,9 @@ void establecer_subpagina(int n, int dir)
 
 void localizar_32k()
 {
- int i;
- for (i=0;i<31;i++) guardar_byte(locate32[i]);
+  int i;
+  for (i = 0; i < 31; i++)
+    guardar_byte(locate32[i]);
 }
 
 int selector(int dir)
@@ -1921,61 +1919,59 @@ void seleccionar_pagina_registro(int r, int dir)
 
 void generar_cassette()
 {
+  FILE *salida;
+  int i;
+  int cas[8]={0x1F,0xA6,0xDE,0xBA,0xCC,0x13,0x7D,0x74};
 
- char cas[8]={0x1F,0xA6,0xDE,0xBA,0xCC,0x13,0x7D,0x74};
+  if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
+  {
+    hacer_advertencia(0);
+    return;
+  }
 
- FILE *salida;
- int i;
+  binario[strlen(binario) - 3] = 0;
+  binario = strcat(binario, "cas");
 
- if ((type==MEGAROM)||((type=ROM)&&(dir_inicio<0x8000)))
- {
-  hacer_advertencia(0);
-  return;
- }
+  salida = fopen(binario, "wb");
 
- binario[strlen(binario)-3]=0;
- binario=strcat(binario,"cas");
+  for (i = 0; i < 8; i++)
+    fputc(cas[i], salida);
 
- salida=fopen(binario,"wb");
+  if ((type == BASIC) || (type == ROM))
+  {
+    for (i=0; i < 10; i++)
+      fputc(0xd0, salida);
 
- for (i=0;i<8;i++) fputc(cas[i],salida);
+    if (strlen(interno) < 6)
+      for (i = strlen(interno); i < 6; i++)
+        interno[i] = 32;	/* pad with space */
 
- if ((type==BASIC)||(type==ROM))
- {
-  for (i=0;i<10;i++) fputc(0xd0,salida);
+    for (i = 0; i < 6; i++)
+      fputc(interno[i], salida);
 
-  if (strlen(interno)<6)
-   for (i=strlen(interno);i<6;i++) interno[i]=32;
+    for (i = 0; i < 8; i++)
+      fputc(cas[i], salida);
 
-  for (i=0;i<6;i++) fputc(toupper(interno[i]),salida);
+    putc(dir_inicio & 0xff, salida);
+    putc((dir_inicio >> 8) & 0xff, salida);
+    putc(dir_final & 0xff, salida);
+    putc((dir_final >> 8) & 0xff, salida);
+    putc(inicio & 0xff, salida);
+    putc((inicio >> 8) & 0xff, salida);
+  }
 
-  for (i=0;i<8;i++) fputc(cas[i],salida);
+  for (i = dir_inicio; i <= dir_final; i++)
+    putc(memory[i], salida);
 
-
-  putc(dir_inicio & 0xff,salida);
-  putc((dir_inicio>>8) & 0xff,salida);
-  putc(dir_final & 0xff,salida);
-  putc((dir_final>>8) & 0xff,salida);
-  putc(inicio & 0xff,salida);
-  putc((inicio>>8) & 0xff,salida);
-
- }
-
-
- for (i=dir_inicio;i<=dir_final;i++)
-   putc(memory[i],salida);
- fclose(salida);
-
-
- printf("Cassette file %s saved\n",binario);
-
+  fclose(salida);
+  printf("Cassette file %s saved\n",binario);
 }
 
 
 void store(int value)
 {
- fputc(value&0xff,wav);
- fputc((value>>8)&0xff,wav);
+  fputc(value & 0xff, wav);
+  fputc((value >> 8) & 0xff, wav);
 }
 
 // Write one (high-state)
