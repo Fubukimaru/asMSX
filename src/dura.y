@@ -3314,18 +3314,29 @@ void salto_relativo(int direccion)
 
 void registrar_etiqueta(char *nombre)
 {
- signed int i;
- if (pass==2)
-   for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) {ultima_global=i;return;}
- for (i=0;i<maxima;i++) if (!strcmp(nombre,lista_identificadores[i].nombre)) hacer_error(14);
- if (++maxima==max_id) hacer_error(11);
- lista_identificadores[maxima-1].nombre=malloc(strlen(nombre)+4);
- strcpy(lista_identificadores[maxima-1].nombre,nombre);
- lista_identificadores[maxima-1].valor=ePC;
- lista_identificadores[maxima-1].type=1;
- lista_identificadores[maxima-1].pagina=subpage;
+  int i;
 
- ultima_global=maxima-1;
+  if (pass == 2)
+    for (i = 0; i < maxima; i++)
+      if (!strcmp(nombre, lista_identificadores[i].nombre))
+      {
+        ultima_global = i;
+        return;
+      }
+
+  for (i = 0; i < maxima; i++)
+    if (!strcmp(nombre, lista_identificadores[i].nombre))
+      hacer_error(14);
+
+  if (++maxima == max_id)
+    hacer_error(11);
+
+  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
+  strcpy(lista_identificadores[maxima - 1].nombre, nombre);
+  lista_identificadores[maxima - 1].valor = ePC;
+  lista_identificadores[maxima-1].type = 1;
+  lista_identificadores[maxima-1].pagina = subpage;
+  ultima_global = maxima - 1;
 }
 
 void registrar_local(char *nombre)
