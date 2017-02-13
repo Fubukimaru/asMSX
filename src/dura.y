@@ -128,7 +128,7 @@ void seleccionar_pagina_directa(unsigned int, unsigned int);
 void seleccionar_pagina_registro(unsigned int, unsigned int);
 void guardar_byte(unsigned int);
 void guardar_word(unsigned int);
-void registrar_simbolo(char *, int, int);
+void registrar_simbolo(char *, unsigned int, unsigned char);
 void registrar_variable(char *, int);
 void incluir_binario(char *, unsigned int, unsigned int);
 void finalizar();
@@ -1283,7 +1283,7 @@ void registrar_local(char *nombre)
  lista_identificadores[maxima-1].pagina=subpage;
 }
 
-void registrar_simbolo(char *nombre, int numero, int type)
+void registrar_simbolo(char *nombre, unsigned int numero, unsigned char type)
 {
   int i;
   char *_nombre;
