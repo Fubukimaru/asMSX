@@ -1505,7 +1505,7 @@ void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
       k = fgetc(fichero);
       if (!feof(fichero))
       {
-        guardar_byte(k);
+        guardar_byte((unsigned int)k);
         i++;
       }
     }
@@ -1517,7 +1517,7 @@ void incluir_binario(char *nombre, unsigned int skip, unsigned int n)
     {
       k = fgetc(fichero);
       if (!feof(fichero))
-        guardar_byte(k);
+        guardar_byte((unsigned int)k);
     }
 
   fclose(fichero);
