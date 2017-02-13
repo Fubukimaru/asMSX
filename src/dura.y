@@ -152,10 +152,10 @@ char *memory,*fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,
 int cassette=0,size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit;
 int dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas,parity;
 int zilog=0,pass=1,bios=0,type=0,conditional[16],conditional_level=0;
+int maxima = 0, ultima_global = 0;
 int maxpage[4]={32,64,256,256};
 int locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
 0xB1,0x4F,0x2C,0x2C,0x2C,0x2C,0x7E,0xE6,0xC,0xB1,0x26,0x80,0xCD,0x24,0x0};
-int maxima = 0, ultima_global = 0;
 FILE *archivo,*mensajes,*output,*wav;
 
 struct
@@ -452,7 +452,15 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                   | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor PSEUDO_SIZE valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$4,$6);}}
                   | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor PSEUDO_SKIP valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$6,$4);}}
                   | PSEUDO_END {if (pass==3) finalizar();PC=0;ePC=0;ultima_global=0;type=0;zilog=0;if (conditional_level) hacer_error(45);}
-                  | PSEUDO_DEBUG TEXTO {if (conditional[conditional_level]) {guardar_byte(0x52);guardar_byte(0x18);guardar_byte(strlen($2)+4);guardar_texto($2);}}
+                  | PSEUDO_DEBUG TEXTO {
+                        if (conditional[conditional_level])
+                        {
+                          guardar_byte(0x52);
+                          guardar_byte(0x18);
+                          guardar_byte(strlen($2) + 4);
+                          guardar_texto($2);
+                        }
+                      }
                   | PSEUDO_BREAK {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x00);}}             
                   | PSEUDO_BREAK valor {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x02);guardar_word($2);}}
                   | PSEUDO_PRINTTEXT TEXTO {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%s\n",$2);}}}
