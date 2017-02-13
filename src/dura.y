@@ -157,15 +157,28 @@ int wav_header[44] = {
   0x20, 0x00, 0x00, 0x00
 };
 
-char *memory,*fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,*original;
-int cassette=0,size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit;
-int dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas,parity;
-int zilog=0,pass=1,bios=0,type=0,conditional[16],conditional_level=0;
-int maxima = 0, ultima_global = 0;
-int maxpage[4]={32,64,256,256};
-int locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
-0xB1,0x4F,0x2C,0x2C,0x2C,0x2C,0x7E,0xE6,0xC,0xB1,0x26,0x80,0xCD,0x24,0x0};
 FILE *archivo,*mensajes,*output,*wav;
+char *memory, *fuente, *interno, *binario, *filename;
+char *salida, *simbolos, *ensamblador, *original;
+int cassette = 0, size = 0, ePC = 0, PC = 0;
+int subpage, pagesize, lastpage, mapper, pageinit;
+int usedpage[256];
+int dir_inicio = 0xffff, dir_final = 0x0000;
+int inicio = 0, advertencias = 0, lineas, parity;
+int zilog = 0, pass = 1, bios = 0, type = 0;
+int conditional[16];
+int conditional_level = 0, maxima = 0, ultima_global = 0;
+int maxpage[4] = {32, 64, 256, 256};
+int locate32[31] = {
+  0xCD, 0x38, 0x01, 0x0F,
+  0x0F, 0xE6, 0x03, 0x4F,
+  0x21, 0xC1, 0xFC, 0x85,
+  0x6F, 0x7E, 0xE6, 0x80,
+  0xB1, 0x4F, 0x2C, 0x2C,
+  0x2C, 0x2C, 0x7E, 0xE6,
+  0x0C, 0xB1, 0x26, 0x80,
+  0xCD, 0x24, 0x00
+};
 
 struct
 {
@@ -365,10 +378,9 @@ struct
 %type <val> indireccion_IX
 %type <val> indireccion_IY
 
+%%
 
 /* Reglas gramaticales */
-
-%%
 
 entrada: /*vacío*/
 	| entrada linea
@@ -384,7 +396,7 @@ linea: pseudo_instruccion EOL
      | mnemo_rotate EOL
      | mnemo_bits EOL
      | mnemo_io EOL
-	 | mnemo_jump EOL
+     | mnemo_jump EOL
      | mnemo_call EOL
      | PREPRO_FILE TEXTO EOL {strcpy(fuente,$2);}
      | PREPRO_LINE valor EOL {lineas=$2;}
