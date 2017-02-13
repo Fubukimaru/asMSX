@@ -3893,18 +3893,25 @@ void type_megarom(int n)
 
 void type_basic()
 {
- if ((pass==1) && (!dir_inicio)) hacer_error(21);
- if ((type) && (type!=BASIC)) hacer_error(20);
- type=BASIC;
+  if ((pass == 1) && (!dir_inicio))
+    hacer_error(21);
+
+  if ((type) && (type != BASIC))
+    hacer_error(20);
+
+  type = BASIC;
 }
 
 void type_msxdos()
 {
- if ((pass==1) && (!dir_inicio)) hacer_error(23);
- if ((type) && (type!=MSXDOS)) hacer_error(20);
- type=MSXDOS;
- PC=0x0100;
- ePC=0x0100;
+  if ((pass == 1) && (!dir_inicio))
+    hacer_error(23);
+
+  if ((type) && (type != MSXDOS))
+    hacer_error(20);
+  type = MSXDOS;
+  PC = 0x0100;
+  ePC = 0x0100;
 }
 
 void establecer_subpagina(int n, int dir)
