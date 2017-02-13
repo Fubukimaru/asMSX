@@ -1886,15 +1886,34 @@ mnemo_arit16bit: MNEMO_ADD REGISTRO_PAR ',' REGISTRO_PAR {
           }
 ;
 
-mnemo_general: MNEMO_DAA {guardar_byte(0x27);}
-        | MNEMO_CPL {guardar_byte(0x2f);}
-        | MNEMO_NEG {guardar_byte(0xed);guardar_byte(0x44);}
-        | MNEMO_CCF {guardar_byte(0x3f);}
-        | MNEMO_SCF {guardar_byte(0x37);}
-        | MNEMO_NOP {guardar_byte(0x00);}
-        | MNEMO_HALT {guardar_byte(0x76);}
-        | MNEMO_DI {guardar_byte(0xf3);}
-        | MNEMO_EI {guardar_byte(0xfb);}
+mnemo_general: MNEMO_DAA {
+            guardar_byte(0x27);
+          }
+        | MNEMO_CPL {
+            guardar_byte(0x2f);
+          }
+        | MNEMO_NEG {
+            guardar_byte(0xed);
+            guardar_byte(0x44);
+          }
+        | MNEMO_CCF {
+            guardar_byte(0x3f);
+          }
+        | MNEMO_SCF {
+            guardar_byte(0x37);
+          }
+        | MNEMO_NOP {
+            guardar_byte(0x00);
+          }
+        | MNEMO_HALT {
+            guardar_byte(0x76);
+          }
+        | MNEMO_DI {
+            guardar_byte(0xf3);
+          }
+        | MNEMO_EI {
+            guardar_byte(0xfb);
+          }
         | MNEMO_IM valor_8bits {
             if (($2 < 0) || ($2 > 2))
               hacer_error(3);
