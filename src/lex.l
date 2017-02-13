@@ -34,13 +34,13 @@ extern char *original;
 [0-9]*"."[0-9]+ yylval.real=atof(yytext);return REAL;
 
 [1-9][0-9]* yylval.val=atoi(yytext);return NUMERO;
-#[0-9a-f]+ yytext[0]='0';yylval.val=(int)strtol(yytext,NULL,16);return NUMERO;
-$[0-9a-f]+ yytext[0]='0';yylval.val=(int)strtol(yytext,NULL,16);return NUMERO;
-0x[0-9a-f]+ yylval.val=(int)strtol(yytext,NULL,16);return NUMERO;
-[0-9][0-9a-f]*h yylval.val=(int)strtol(yytext,NULL,16);return NUMERO;
-0[0-7]* yylval.val=(int)strtol(yytext,NULL,0);return NUMERO;
-[0-7]+o yylval.val=(int)strtol(yytext,NULL,8);return NUMERO;
-[0-1]+b yylval.val=(int)strtol(yytext,NULL,2);return NUMERO;
+#[0-9a-f]+ yytext[0]='0';yylval.val=strtol(yytext,NULL,16);return NUMERO;
+$[0-9a-f]+ yytext[0]='0';yylval.val=strtol(yytext,NULL,16);return NUMERO;
+0x[0-9a-f]+ yylval.val=strtol(yytext,NULL,16);return NUMERO;
+[0-9][0-9a-f]*h yylval.val=strtol(yytext,NULL,16);return NUMERO;
+0[0-7]* yylval.val=strtol(yytext,NULL,0);return NUMERO;
+[0-7]+o yylval.val=strtol(yytext,NULL,8);return NUMERO;
+[0-1]+b yylval.val=strtol(yytext,NULL,2);return NUMERO;
 "$" yylval.val=ePC;return NUMERO;
 
 ld[ ]+sp        return MNEMO_LD_SP;

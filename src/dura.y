@@ -457,7 +457,7 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                         {
                           guardar_byte(0x52);
                           guardar_byte(0x18);
-                          guardar_byte(strlen($2) + 4);
+                          guardar_byte((int)(strlen($2) + 4));
                           guardar_texto($2);
                         }
                       }
@@ -948,13 +948,13 @@ valor: NUMERO {$$=$1;}
      | valor SHIFT_L valor {$$=$1<<$3;}
      | valor SHIFT_R valor {$$=$1>>$3;}
      | PSEUDO_RANDOM '(' valor ')' {for (;($$=d_rand()&0xff)>=$3;);}
-     | PSEUDO_INT '(' valor_real ')' { $$ = (int)$3; }
-     | PSEUDO_FIX '(' valor_real ')' { $$ = (int)($3 * 256); }
+     | PSEUDO_INT '(' valor_real ')' { $$ = $3; }
+     | PSEUDO_FIX '(' valor_real ')' { $$ = $3 * 256; }
      | PSEUDO_FIXMUL '(' valor ',' valor ')' {
-                        $$ = (int)((((float)$3 / 256) * ((float) $5 / 256)) * 256);
+                        $$ = (((float)$3 / 256) * ((float) $5 / 256)) * 256;
                       }
      | PSEUDO_FIXDIV '(' valor ',' valor ')' {
-                        $$ = (int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
+                        $$ = (((float)$3 / 256) / ((float)$5 / 256)) * 256;
                       }
 ;
 
@@ -989,13 +989,13 @@ valor_real: REAL {$$=$1;}
      | '(' valor_real ')' {$$=$2;}
 ;
 
-valor_3bits: valor {if (((int)$1<0)||((int)$1>7)) hacer_advertencia(3);$$=$1&0x07;}
+valor_3bits: valor {if (($1<0)||($1>7)) hacer_advertencia(3);$$=$1&0x07;}
 ;
 
-valor_8bits: valor {if (((int)$1>255)||((int)$1<-128)) hacer_advertencia(2);$$=$1&0xff;}
+valor_8bits: valor {if (($1>255)||($1<-128)) hacer_advertencia(2);$$=$1&0xff;}
 ;
 
-valor_16bits: valor {if (((int)$1>65535)||((int)$1<-32768)) hacer_advertencia(1);$$=$1&0xffff;}
+valor_16bits: valor {if (($1>65535)||($1<-32768)) hacer_advertencia(1);$$=$1&0xffff;}
 ;
 
 listado_8bits : valor_8bits {guardar_byte($1);}
@@ -1281,12 +1281,12 @@ void salto_relativo(int direccion)
 {
   int salto;
 
-  salto = (int)(direccion - ePC - 1);
+  salto = direccion - ePC - 1;
 
   if ((salto > 127) || (salto < -128))
     hacer_error(8);
 
-  guardar_byte((int)salto);
+  guardar_byte(salto);
 }
 
 void registrar_etiqueta(char *nombre)
@@ -1510,7 +1510,7 @@ void incluir_binario(char *nombre, int skip, int n)
       k = fgetc(fichero);
       if (!feof(fichero))
       {
-        guardar_byte((int)k);
+        guardar_byte(k);
         i++;
       }
     }
@@ -1522,7 +1522,7 @@ void incluir_binario(char *nombre, int skip, int n)
     {
       k = fgetc(fichero);
       if (!feof(fichero))
-        guardar_byte((int)k);
+        guardar_byte(k);
     }
 
   fclose(fichero);
@@ -1532,7 +1532,7 @@ void incluir_binario(char *nombre, int skip, int n)
 void write_zx_byte(int c)
 {
   int k;
-  k = (int)(c & 0xff);
+  k = c & 0xff;
   putc(k, output);
   parity ^= k;
 }
