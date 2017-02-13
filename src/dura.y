@@ -707,10 +707,34 @@ pseudo_instruccion: PSEUDO_ORG valor {
                 size=$2;
             }
           }
-        | PSEUDO_IF valor {if (conditional_level==15) hacer_error(44);conditional_level++;if ($2) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
-        | PSEUDO_IFDEF IDENTIFICADOR {if (conditional_level==15) hacer_error(44);conditional_level++;if (simbolo_definido($2)) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
-        | PSEUDO_ELSE {if (!conditional_level) hacer_error(42); conditional[conditional_level]=(conditional[conditional_level]^1)&conditional[conditional_level-1];}
-        | PSEUDO_ENDIF {if (!conditional_level) hacer_error(43); conditional_level--;}
+        | PSEUDO_IF valor {
+            if (conditional_level == 15)
+              hacer_error(44);
+            conditional_level++;
+            if ($2)
+              conditional[conditional_level] = 1 & conditional[conditional_level - 1];
+            else
+              conditional[conditional_level] = 0;
+          }
+        | PSEUDO_IFDEF IDENTIFICADOR {
+            if (conditional_level == 15)
+              hacer_error(44);
+            conditional_level++;
+            if (simbolo_definido($2))
+              conditional[conditional_level] = 1 & conditional[conditional_level - 1];
+            else
+              conditional[conditional_level] = 0;
+          }
+        | PSEUDO_ELSE {
+            if (!conditional_level)
+              hacer_error(42);
+            conditional[conditional_level] = (conditional[conditional_level] ^ 1) & conditional[conditional_level - 1];
+          }
+        | PSEUDO_ENDIF {
+            if (!conditional_level)
+              hacer_error(43);
+            conditional_level--;
+          }
         | PSEUDO_CASSETTE TEXTO {
             if (conditional[conditional_level])
             {
@@ -719,19 +743,45 @@ pseudo_instruccion: PSEUDO_ORG valor {
               cassette |= $1;
             }
           }
-        | PSEUDO_CASSETTE {if (conditional[conditional_level]) {if (!interno[0]) {strcpy(interno,binario);interno[strlen(interno)-1]=0;}cassette|=$1;}}
-        | PSEUDO_ZILOG {zilog=1;}
-        | PSEUDO_FILENAME TEXTO {strcpy(filename,$2);}
+        | PSEUDO_CASSETTE {
+            if (conditional[conditional_level])
+            {
+              if (!interno[0])
+              {
+                strcpy(interno, binario);
+                interno[strlen(interno) - 1] = 0;
+              }
+              cassette |= $1;
+            }
+          }
+        | PSEUDO_ZILOG {
+            zilog = 1;
+          }
+        | PSEUDO_FILENAME TEXTO {
+            strcpy(filename, $2);
+          }
 ;
 
-indireccion_IX: '[' REGISTRO_16_IX ']' {$$=0;}
-	| '[' REGISTRO_16_IX '+' valor_8bits ']' {$$=$4;}
-	| '[' REGISTRO_16_IX '-' valor_8bits ']' {$$=-$4;}
+indireccion_IX: '[' REGISTRO_16_IX ']' {
+            $$ = 0;
+          }
+	| '[' REGISTRO_16_IX '+' valor_8bits ']' {
+            $$ = $4;
+          }
+	| '[' REGISTRO_16_IX '-' valor_8bits ']' {
+            $$ = -$4;
+          }
 ;
 	
-indireccion_IY: '[' REGISTRO_16_IY ']' {$$=0;}
-	| '[' REGISTRO_16_IY '+' valor_8bits ']' {$$=$4;}
-	| '[' REGISTRO_16_IY '-' valor_8bits ']' {$$=-$4;}
+indireccion_IY: '[' REGISTRO_16_IY ']' {
+            $$ = 0;
+          }
+	| '[' REGISTRO_16_IY '+' valor_8bits ']' {
+            $$ = $4;
+          }
+	| '[' REGISTRO_16_IY '-' valor_8bits ']' {
+            $$ = -$4;
+          }
 ;
 	
 mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {guardar_byte(0x40|($2<<3)|$4);}
