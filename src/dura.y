@@ -383,136 +383,162 @@ struct
 /* Reglas gramaticales */
 
 entrada: /*vacío*/
-	| entrada linea
+        | entrada linea
 ;
 
-linea: pseudo_instruccion EOL
-     | mnemo_load8bit EOL
-     | mnemo_load16bit EOL
-     | mnemo_exchange EOL
-     | mnemo_arit16bit EOL
-     | mnemo_arit8bit EOL
-     | mnemo_general EOL
-     | mnemo_rotate EOL
-     | mnemo_bits EOL
-     | mnemo_io EOL
-     | mnemo_jump EOL
-     | mnemo_call EOL
-     | PREPRO_FILE TEXTO EOL {strcpy(fuente,$2);}
-     | PREPRO_LINE valor EOL {lineas=$2;}
-     | etiqueta linea
-     | etiqueta EOL
+linea:    pseudo_instruccion EOL
+        | mnemo_load8bit EOL
+        | mnemo_load16bit EOL
+        | mnemo_exchange EOL
+        | mnemo_arit16bit EOL
+        | mnemo_arit8bit EOL
+        | mnemo_general EOL
+        | mnemo_rotate EOL
+        | mnemo_bits EOL
+        | mnemo_io EOL
+        | mnemo_jump EOL
+        | mnemo_call EOL
+        | PREPRO_FILE TEXTO EOL {
+            strcpy(fuente, $2);
+          }
+        | PREPRO_LINE valor EOL {
+            lineas = $2;
+          }
+        | etiqueta linea
+        | etiqueta EOL
 ;
 
-etiqueta: IDENTIFICADOR ':' {registrar_etiqueta(strtok($1,":"));}
-        | LOCAL_IDENTIFICADOR ':' {registrar_local(strtok($1,":"));}
+etiqueta: IDENTIFICADOR ':' {
+            registrar_etiqueta(strtok($1, ":"));
+          }
+        | LOCAL_IDENTIFICADOR ':' {
+            registrar_local(strtok($1, ":"));
+          }
 ;
 
-pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2;ePC=PC;}}
-                  | PSEUDO_PHASE valor {if (conditional[conditional_level]) {ePC=$2;}}
-                  | PSEUDO_DEPHASE {if (conditional[conditional_level]) {ePC=PC;}}
-                  | PSEUDO_ROM {if (conditional[conditional_level]) {type_rom();}}
-                  | PSEUDO_MEGAROM {if (conditional[conditional_level]) {type_megarom(0);}}
-                  | PSEUDO_MEGAROM valor {
-                        if (conditional[conditional_level])
-                          type_megarom($2);
-                      }
-                  | PSEUDO_BASIC {if (conditional[conditional_level]) {type_basic();}}
-                  | PSEUDO_MSXDOS {if (conditional[conditional_level]) {type_msxdos();}}
-                  | PSEUDO_SINCLAIR {if (conditional[conditional_level]) {type_sinclair();}}
-                  | PSEUDO_BIOS {if (conditional[conditional_level]) {if (!bios) msx_bios();}}
-                  | PSEUDO_PAGE valor {if (conditional[conditional_level]) {subpage=0x100;if ($2>3) hacer_error(22); else {PC=0x4000*$2;ePC=PC;}}}
-                  | PSEUDO_SEARCH {if (conditional[conditional_level]) {if ((type!=MEGAROM)&&(type!=ROM)) hacer_error(41);localizar_32k();}}
-                  | PSEUDO_SUBPAGE valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);establecer_subpagina($2,$4);}}
-                  | PSEUDO_SELECT valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_directa($2,$4);}}
-                  | PSEUDO_SELECT REGISTRO PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_registro($2,$4);}}
-                  | PSEUDO_START valor {if (conditional[conditional_level]) {inicio=$2;}}
-                  | PSEUDO_CALLBIOS valor {
-                        if (conditional[conditional_level])
-                        {
-                          guardar_byte(0xfd);
-                          guardar_byte(0x2a);
-                          guardar_word(0xfcc0);
-                          guardar_byte(0xdd);
-                          guardar_byte(0x21);
-                          guardar_word($2);
-                          guardar_byte(0xcd);
-                          guardar_word(0x001c);
-                        }
-                      }
-                  | PSEUDO_CALLDOS valor {
-                        if (conditional[conditional_level])
-                        {
-                          if (type != MSXDOS)
-                            hacer_error(25);
-                          guardar_byte(0x0e);
-                          guardar_byte($2);
-                          guardar_byte(0xcd);
-                          guardar_word(0x0005);
-                        }
-                      }
-                  | PSEUDO_DB listado_8bits {;}
-                  | PSEUDO_DW listado_16bits {;}
-                  | PSEUDO_DS valor_16bits {if (conditional[conditional_level]) {if (dir_inicio>PC) dir_inicio=PC;PC+=$2;ePC+=$2;if (PC>0xffff) hacer_error(1);}}
-                  | PSEUDO_BYTE {if (conditional[conditional_level]) {PC++;ePC++;}}
-                  | PSEUDO_WORD {if (conditional[conditional_level]) {PC+=2;ePC+=2;}}
-                  | IDENTIFICADOR PSEUDO_EQU valor {
-                        if (conditional[conditional_level])
-                          registrar_simbolo(strtok($1, "="), $3, 2);
-                      }
-                  | IDENTIFICADOR PSEUDO_ASSIGN valor {
-                        if (conditional[conditional_level])
-                          registrar_variable(strtok($1, "="), $3);
-                      }
-                  | PSEUDO_INCBIN TEXTO {
-                        if (conditional[conditional_level])
-                          incluir_binario($2, 0, 0);
-                      }
-                  | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,$4,0);}}
-                  | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,0,$4);}}
-                  | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor PSEUDO_SIZE valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$4,$6);}}
-                  | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor PSEUDO_SKIP valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$6,$4);}}
-                  | PSEUDO_END {if (pass==3) finalizar();PC=0;ePC=0;ultima_global=0;type=0;zilog=0;if (conditional_level) hacer_error(45);}
-                  | PSEUDO_DEBUG TEXTO {
-                        if (conditional[conditional_level])
-                        {
-                          guardar_byte(0x52);
-                          guardar_byte(0x18);
-                          guardar_byte((int)(strlen($2) + 4));
-                          guardar_texto($2);
-                        }
-                      }
-                  | PSEUDO_BREAK {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x00);}}             
-                  | PSEUDO_BREAK valor {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x02);guardar_word($2);}}
-                  | PSEUDO_PRINTTEXT TEXTO {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%s\n",$2);}}}
-                  | PSEUDO_PRINT valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%d\n",(short)$2&0xffff);}}}
-                  | PSEUDO_PRINT valor_real {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",$2);}}}
-                  | PSEUDO_PRINTHEX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"$%4.4x\n",(short)$2&0xffff);}}}
-                  | PSEUDO_PRINTFIX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",((float)($2&0xffff))/256);}}}
-                  | PSEUDO_SIZE valor {
-                        if (conditional[conditional_level] && (pass == 2))
-                        {
-                          if (size > 0)
-                            hacer_error(15);
-                          else
-                            size=$2;
-                        }
-                      }
-                  | PSEUDO_IF valor {if (conditional_level==15) hacer_error(44);conditional_level++;if ($2) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
-                  | PSEUDO_IFDEF IDENTIFICADOR {if (conditional_level==15) hacer_error(44);conditional_level++;if (simbolo_definido($2)) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
-                  | PSEUDO_ELSE {if (!conditional_level) hacer_error(42); conditional[conditional_level]=(conditional[conditional_level]^1)&conditional[conditional_level-1];}
-                  | PSEUDO_ENDIF {if (!conditional_level) hacer_error(43); conditional_level--;}
-                  | PSEUDO_CASSETTE TEXTO {
-                        if (conditional[conditional_level])
-                        {
-                          if (!interno[0])
-                            strcpy(interno, $2);
-                          cassette |= $1;
-                        }
-                      }
-                  | PSEUDO_CASSETTE {if (conditional[conditional_level]) {if (!interno[0]) {strcpy(interno,binario);interno[strlen(interno)-1]=0;}cassette|=$1;}}
-                  | PSEUDO_ZILOG {zilog=1;}
-                  | PSEUDO_FILENAME TEXTO {strcpy(filename,$2);}
+pseudo_instruccion: PSEUDO_ORG valor {
+            if (conditional[conditional_level])
+            {
+              PC = $2;
+              ePC = PC;
+            }
+          }
+        | PSEUDO_PHASE valor {
+            if (conditional[conditional_level])
+              ePC = $2;
+          }
+        | PSEUDO_DEPHASE {
+            if (conditional[conditional_level])
+              ePC=PC;
+          }
+        | PSEUDO_ROM {
+            if (conditional[conditional_level])
+              type_rom();
+          }
+        | PSEUDO_MEGAROM {
+            if (conditional[conditional_level])
+              type_megarom(0);
+          }
+        | PSEUDO_MEGAROM valor {
+            if (conditional[conditional_level])
+              type_megarom($2);
+          }
+        | PSEUDO_BASIC {if (conditional[conditional_level]) {type_basic();}}
+        | PSEUDO_MSXDOS {if (conditional[conditional_level]) {type_msxdos();}}
+        | PSEUDO_SINCLAIR {if (conditional[conditional_level]) {type_sinclair();}}
+        | PSEUDO_BIOS {if (conditional[conditional_level]) {if (!bios) msx_bios();}}
+        | PSEUDO_PAGE valor {if (conditional[conditional_level]) {subpage=0x100;if ($2>3) hacer_error(22); else {PC=0x4000*$2;ePC=PC;}}}
+        | PSEUDO_SEARCH {if (conditional[conditional_level]) {if ((type!=MEGAROM)&&(type!=ROM)) hacer_error(41);localizar_32k();}}
+        | PSEUDO_SUBPAGE valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);establecer_subpagina($2,$4);}}
+        | PSEUDO_SELECT valor PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_directa($2,$4);}}
+        | PSEUDO_SELECT REGISTRO PSEUDO_AT valor {if (conditional[conditional_level]) {if (type!=MEGAROM) hacer_error(40);seleccionar_pagina_registro($2,$4);}}
+        | PSEUDO_START valor {if (conditional[conditional_level]) {inicio=$2;}}
+        | PSEUDO_CALLBIOS valor {
+              if (conditional[conditional_level])
+              {
+                guardar_byte(0xfd);
+                guardar_byte(0x2a);
+                guardar_word(0xfcc0);
+                guardar_byte(0xdd);
+                guardar_byte(0x21);
+                guardar_word($2);
+                guardar_byte(0xcd);
+                guardar_word(0x001c);
+              }
+            }
+        | PSEUDO_CALLDOS valor {
+              if (conditional[conditional_level])
+              {
+                if (type != MSXDOS)
+                  hacer_error(25);
+                guardar_byte(0x0e);
+                guardar_byte($2);
+                guardar_byte(0xcd);
+                guardar_word(0x0005);
+              }
+            }
+        | PSEUDO_DB listado_8bits {;}
+        | PSEUDO_DW listado_16bits {;}
+        | PSEUDO_DS valor_16bits {if (conditional[conditional_level]) {if (dir_inicio>PC) dir_inicio=PC;PC+=$2;ePC+=$2;if (PC>0xffff) hacer_error(1);}}
+        | PSEUDO_BYTE {if (conditional[conditional_level]) {PC++;ePC++;}}
+        | PSEUDO_WORD {if (conditional[conditional_level]) {PC+=2;ePC+=2;}}
+        | IDENTIFICADOR PSEUDO_EQU valor {
+              if (conditional[conditional_level])
+                registrar_simbolo(strtok($1, "="), $3, 2);
+            }
+        | IDENTIFICADOR PSEUDO_ASSIGN valor {
+              if (conditional[conditional_level])
+                registrar_variable(strtok($1, "="), $3);
+            }
+        | PSEUDO_INCBIN TEXTO {
+              if (conditional[conditional_level])
+                incluir_binario($2, 0, 0);
+            }
+        | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,$4,0);}}
+        | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,0,$4);}}
+        | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor PSEUDO_SIZE valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$4,$6);}}
+        | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor PSEUDO_SKIP valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$6,$4);}}
+        | PSEUDO_END {if (pass==3) finalizar();PC=0;ePC=0;ultima_global=0;type=0;zilog=0;if (conditional_level) hacer_error(45);}
+        | PSEUDO_DEBUG TEXTO {
+              if (conditional[conditional_level])
+              {
+                guardar_byte(0x52);
+                guardar_byte(0x18);
+                guardar_byte((int)(strlen($2) + 4));
+                guardar_texto($2);
+              }
+            }
+        | PSEUDO_BREAK {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x00);}}             
+        | PSEUDO_BREAK valor {if (conditional[conditional_level]) {guardar_byte(0x40);guardar_byte(0x18);guardar_byte(0x02);guardar_word($2);}}
+        | PSEUDO_PRINTTEXT TEXTO {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%s\n",$2);}}}
+        | PSEUDO_PRINT valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%d\n",(short)$2&0xffff);}}}
+        | PSEUDO_PRINT valor_real {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",$2);}}}
+        | PSEUDO_PRINTHEX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"$%4.4x\n",(short)$2&0xffff);}}}
+        | PSEUDO_PRINTFIX valor {if (conditional[conditional_level]) {if (pass==2) {if (mensajes==NULL) salida_texto();fprintf(mensajes,"%.4f\n",((float)($2&0xffff))/256);}}}
+        | PSEUDO_SIZE valor {
+              if (conditional[conditional_level] && (pass == 2))
+              {
+                if (size > 0)
+                  hacer_error(15);
+                else
+                  size=$2;
+              }
+            }
+        | PSEUDO_IF valor {if (conditional_level==15) hacer_error(44);conditional_level++;if ($2) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
+        | PSEUDO_IFDEF IDENTIFICADOR {if (conditional_level==15) hacer_error(44);conditional_level++;if (simbolo_definido($2)) conditional[conditional_level]=1&conditional[conditional_level-1]; else conditional[conditional_level]=0;}
+        | PSEUDO_ELSE {if (!conditional_level) hacer_error(42); conditional[conditional_level]=(conditional[conditional_level]^1)&conditional[conditional_level-1];}
+        | PSEUDO_ENDIF {if (!conditional_level) hacer_error(43); conditional_level--;}
+        | PSEUDO_CASSETTE TEXTO {
+              if (conditional[conditional_level])
+              {
+                if (!interno[0])
+                  strcpy(interno, $2);
+                cassette |= $1;
+              }
+            }
+        | PSEUDO_CASSETTE {if (conditional[conditional_level]) {if (!interno[0]) {strcpy(interno,binario);interno[strlen(interno)-1]=0;}cassette|=$1;}}
+        | PSEUDO_ZILOG {zilog=1;}
+        | PSEUDO_FILENAME TEXTO {strcpy(filename,$2);}
 ;
 
 indireccion_IX: '[' REGISTRO_16_IX ']' {$$=0;}
