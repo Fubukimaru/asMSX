@@ -1238,7 +1238,7 @@ void guardar_byte(unsigned int b)
       if (size && (dir_inicio + size * 1024 > 65536) && (pass == 2))
         hacer_error(1);
 
-      memory[PC++] = b;
+      memory[PC++] = (unsigned char)b;
       ePC++;
     }
     else
@@ -1249,7 +1249,7 @@ void guardar_byte(unsigned int b)
       if (PC >= pageinit + 1024 * pagesize)
         hacer_error(31);
 
-      memory[subpage * pagesize * 1024 + PC - pageinit] = b;
+      memory[subpage * pagesize * 1024 + PC - pageinit] = (unsigned char)b;
       PC++;
       ePC++;
     }
