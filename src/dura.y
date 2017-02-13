@@ -446,7 +446,10 @@ pseudo_instruccion: PSEUDO_ORG valor {if (conditional[conditional_level]) {PC=$2
                         if (conditional[conditional_level])
                           registrar_variable(strtok($1, "="), $3);
                       }
-                  | PSEUDO_INCBIN TEXTO {if (conditional[conditional_level]) {incluir_binario($2,0,0);}}
+                  | PSEUDO_INCBIN TEXTO {
+                        if (conditional[conditional_level])
+                          incluir_binario($2, 0, 0);
+                      }
                   | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,$4,0);}}
                   | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor {if (conditional[conditional_level]) {if ($4<=0) hacer_error(30);incluir_binario($2,0,$4);}}
                   | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor PSEUDO_SIZE valor {if (conditional[conditional_level]) {if (($4<=0)||($6<=0)) hacer_error(30);incluir_binario($2,$4,$6);}}
