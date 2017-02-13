@@ -1266,12 +1266,14 @@ void guardar_word(unsigned int w)
 
 void salto_relativo(int direccion)
 {
- int salto;
+  int salto;
 
- salto=direccion-ePC-1;
- if ((salto>127)||(salto<-128)) hacer_error(8);
- guardar_byte(direccion-ePC-1);
+  salto = direccion - ePC - 1;
 
+  if ((salto > 127) || (salto < -128))
+    hacer_error(8);
+
+  guardar_byte(direccion - ePC - 1);
 }
 
 void registrar_etiqueta(char *nombre)
