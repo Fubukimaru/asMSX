@@ -3214,7 +3214,6 @@ void hacer_advertencia(int codigo)
     return;
 
   printf("%s, line %d: Warning: ", strtok(fuente, "\042"), lineas);
-
   switch (codigo)
   {
     case 0:
@@ -3241,7 +3240,6 @@ void hacer_advertencia(int codigo)
     default:
       fprintf(stderr, "unexpected warning %d\n", codigo);
   }
-
   advertencias++;
 }
 
@@ -3291,9 +3289,9 @@ void guardar_byte(int b)
 
 void guardar_texto(char *texto)
 {
-  size_t i;
-  for (i=0; i < strlen(texto); i++)
-    guardar_byte((int)texto[i]);
+  size_t t;
+  for (t = 0; t < strlen(texto); t++)
+    guardar_byte((int)texto[t]);
 }
 
 void guardar_word(int w)
