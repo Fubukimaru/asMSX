@@ -153,9 +153,8 @@ FILE *wav;
 
 
 unsigned char *memory,zilog=0,pass=1,bios=0,type=0,conditional[16],conditional_level=0,parity;
-unsigned char cassette=0;
 char *fuente,*interno,*binario,*filename,*salida,*simbolos,*ensamblador,*original;
-unsigned int size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit,dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas;
+unsigned int cassette=0,size=0,ePC=0,PC=0,subpage,pagesize,usedpage[256],lastpage,mapper,pageinit,dir_inicio=0xffff,dir_final=0x0000,inicio=0,advertencias=0,lineas;
 unsigned int maxpage[4]={32,64,256,256};
 unsigned char locate32[31]={0xCD,0x38,0x1,0xF,0xF,0xE6,0x3,0x4F,0x21,0xC1,0xFC,0x85,0x6F,0x7E,0xE6,0x80,
 0xB1,0x4F,0x2C,0x2C,0x2C,0x2C,0x7E,0xE6,0xC,0xB1,0x26,0x80,0xCD,0x24,0x0};
