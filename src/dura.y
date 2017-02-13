@@ -885,7 +885,10 @@ mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {if ($2!=7) hacer_error(4);g
 mnemo_jump: MNEMO_JP valor_16bits {guardar_byte(0xc3);guardar_word($2);}
           | MNEMO_JP CONDICION ',' valor_16bits {guardar_byte(0xc2|($2<<3));guardar_word($4);}
           | MNEMO_JP REGISTRO ',' valor_16bits {if ($2!=1) hacer_error(7);guardar_byte(0xda);guardar_word($4);}
-          | MNEMO_JR valor_16bits {guardar_byte(0x18);salto_relativo($2);}
+          | MNEMO_JR valor_16bits {
+                        guardar_byte(0x18);
+                        salto_relativo($2);
+                      }
           | MNEMO_JR REGISTRO ',' valor_16bits {if ($2!=1) hacer_error(7);guardar_byte(0x38);salto_relativo($4);}
           | MNEMO_JR CONDICION ',' valor_16bits {if ($2==2) guardar_byte(0x30); else if ($2==1) guardar_byte(0x28); else if ($2==0) guardar_byte(0x20); else hacer_error(9);salto_relativo($4);}
           | MNEMO_JP REGISTRO_PAR {if ($2!=2) hacer_error(2);guardar_byte(0xe9);}
