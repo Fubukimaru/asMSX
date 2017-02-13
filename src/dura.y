@@ -2106,90 +2106,347 @@ mnemo_rotate: MNEMO_RLCA {guardar_byte(0x07);}
             guardar_byte($4 | 0x18);
           }
         | MNEMO_RR indireccion_IX {
-            guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x1e);}
-        | MNEMO_RR indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x1e);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_RR indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x18|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_RR indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x18|$2);}
-
-        | MNEMO_SLA REGISTRO {guardar_byte(0xcb);guardar_byte(0x20|$2);}
-        | MNEMO_SLA REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0x26);}
-
-        | MNEMO_SLA indireccion_IX ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x20);}
-        | MNEMO_SLA indireccion_IY ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x20);}
-
-        | MNEMO_SLA indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x26);}
-        | MNEMO_SLA indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x26);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_SLA indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x20|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_SLA indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x20|$2);}
-
-        | MNEMO_SLL REGISTRO {guardar_byte(0xcb);guardar_byte(0x30|$2);}
-        | MNEMO_SLL REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0x36);}
-
-        | MNEMO_SLL indireccion_IX ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x30);}
-        | MNEMO_SLL indireccion_IY ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x30);}
-
-        | MNEMO_SLL indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x36);}
-        | MNEMO_SLL indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x36);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_SLL indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x30|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_SLL indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x30|$2);}
-
-        | MNEMO_SRA REGISTRO {guardar_byte(0xcb);guardar_byte(0x28|$2);}
-        | MNEMO_SRA REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0x2e);}
-
-        | MNEMO_SRA indireccion_IX ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x28);}
-        | MNEMO_SRA indireccion_IY ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x28);}
-
-        | MNEMO_SRA indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x2e);}
-        | MNEMO_SRA indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x2e);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_SRA indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x28|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_SRA indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x28|$2);}
-
-        | MNEMO_SRL REGISTRO {guardar_byte(0xcb);guardar_byte(0x38|$2);}
-        | MNEMO_SRL REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0x3e);}
-
-        | MNEMO_SRL indireccion_IX ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x38);}
-        | MNEMO_SRL indireccion_IY ',' REGISTRO {if ($4==6) hacer_error(2);guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte($4 | 0x38);}
-
-        | MNEMO_SRL indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x3e);}
-        | MNEMO_SRL indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($2);guardar_byte(0x3e);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_SRL indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x38|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_SRL indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($5);guardar_byte(0x38|$2);}
-
-        | MNEMO_RLD {guardar_byte(0xed);guardar_byte(0x6f);}
-        | MNEMO_RRD {guardar_byte(0xed);guardar_byte(0x67);}
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x1e);
+          }
+        | MNEMO_RR indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x1e);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_RR indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x18 | $2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_RR indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x18 | $2);
+          }
+        | MNEMO_SLA REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0x20 | $2);
+          }
+        | MNEMO_SLA REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0x26);
+          } 
+        | MNEMO_SLA indireccion_IX ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x20);
+          }
+        | MNEMO_SLA indireccion_IY ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x20);
+          }
+        | MNEMO_SLA indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x26);
+          }
+        | MNEMO_SLA indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x26);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SLA indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x20 | $2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SLA indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x20 | $2);
+          }
+        | MNEMO_SLL REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0x30 | $2);
+          }
+        | MNEMO_SLL REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0x36);
+          }
+        | MNEMO_SLL indireccion_IX ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x30);
+          }
+        | MNEMO_SLL indireccion_IY ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x30);
+          }
+        | MNEMO_SLL indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x36);
+          }
+        | MNEMO_SLL indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x36);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SLL indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x30|$2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SLL indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x30 | $2);
+          }
+        | MNEMO_SRA REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0x28 | $2);
+          }
+        | MNEMO_SRA REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0x2e);
+          }
+        | MNEMO_SRA indireccion_IX ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x28);
+          }
+        | MNEMO_SRA indireccion_IY ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x28);
+          }
+        | MNEMO_SRA indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x2e);
+          }
+        | MNEMO_SRA indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x2e);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SRA indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x28 | $2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SRA indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x28 | $2);
+          }
+        | MNEMO_SRL REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0x38 | $2);
+          }
+        | MNEMO_SRL REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0x3e);
+          }
+        | MNEMO_SRL indireccion_IX ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x38);
+          }
+        | MNEMO_SRL indireccion_IY ',' REGISTRO {
+            if ($4 == 6)
+              hacer_error(2);
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte($4 | 0x38);
+          }
+        | MNEMO_SRL indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x3e);
+          }
+        | MNEMO_SRL indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($2);
+            guardar_byte(0x3e);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SRL indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x38 | $2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SRL indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($5);
+            guardar_byte(0x38|$2);
+          }
+        | MNEMO_RLD {
+            guardar_byte(0xed);
+            guardar_byte(0x6f);
+          }
+        | MNEMO_RRD {
+            guardar_byte(0xed);
+            guardar_byte(0x67);
+          }
 ;
 
-mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {guardar_byte(0xcb);guardar_byte(0x40|($2<<3)|($4));}
-        | MNEMO_BIT valor_3bits ',' REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0x46|($2<<3));}
-        | MNEMO_BIT valor_3bits ',' indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0x46|($2<<3));}
-        | MNEMO_BIT valor_3bits ',' indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0x46|($2<<3));}
-
-        | MNEMO_SET valor_3bits ',' REGISTRO {guardar_byte(0xcb);guardar_byte(0xc0|($2<<3)|($4));}
-        | MNEMO_SET valor_3bits ',' REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0xc6|($2<<3));}
-        | MNEMO_SET valor_3bits ',' indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0xc6|($2<<3));}
-        | MNEMO_SET valor_3bits ',' indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0xc6|($2<<3));}
-
-        | MNEMO_SET valor_3bits ',' indireccion_IX ',' REGISTRO {if ($6==6) hacer_error(2);guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0xc0|($2<<3)|$6);}
-        | MNEMO_SET valor_3bits ',' indireccion_IY ',' REGISTRO {if ($6==6) hacer_error(2);guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0xc0|($2<<3)|$6);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_SET valor_3bits ',' indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($7);guardar_byte(0xc0|($5<<3)|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_SET valor_3bits ',' indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($7);guardar_byte(0xc0|($5<<3)|$2);}
-
-        | MNEMO_RES valor_3bits ',' REGISTRO {guardar_byte(0xcb);guardar_byte(0x80|($2<<3)|($4));}
-        | MNEMO_RES valor_3bits ',' REGISTRO_IND_HL {guardar_byte(0xcb);guardar_byte(0x86|($2<<3));}
-        | MNEMO_RES valor_3bits ',' indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0x86|($2<<3));}
-        | MNEMO_RES valor_3bits ',' indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0x86|($2<<3));}
-
-        | MNEMO_RES valor_3bits ',' indireccion_IX ',' REGISTRO {if ($6==6) hacer_error(2);guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0x80|($2<<3)|$6);}
-        | MNEMO_RES valor_3bits ',' indireccion_IY ',' REGISTRO {if ($6==6) hacer_error(2);guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($4);guardar_byte(0x80|($2<<3)|$6);}
-
-        | MNEMO_LD REGISTRO ',' MNEMO_RES valor_3bits ',' indireccion_IX {guardar_byte(0xdd);guardar_byte(0xcb);guardar_byte($7);guardar_byte(0x80|($5<<3)|$2);}
-        | MNEMO_LD REGISTRO ',' MNEMO_RES valor_3bits ',' indireccion_IY {guardar_byte(0xfd);guardar_byte(0xcb);guardar_byte($7);guardar_byte(0x80|($5<<3)|$2);}
+mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0x40 | ($2 << 3) | ($4));
+          }
+        | MNEMO_BIT valor_3bits ',' REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0x46 | ($2 << 3));
+          }
+        | MNEMO_BIT valor_3bits ',' indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0x46 | ($2 << 3));
+          }
+        | MNEMO_BIT valor_3bits ',' indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0x46 | ($2 << 3));
+          }
+        | MNEMO_SET valor_3bits ',' REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0xc0 | ($2 << 3) | ($4));
+          }
+        | MNEMO_SET valor_3bits ',' REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0xc6 | ($2 << 3));
+          }
+        | MNEMO_SET valor_3bits ',' indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0xc6 | ($2 << 3));
+          }
+        | MNEMO_SET valor_3bits ',' indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0xc6 | ($2 << 3));
+          }
+        | MNEMO_SET valor_3bits ',' indireccion_IX ',' REGISTRO {
+            if ($6 == 6)
+              hacer_error(2);
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0xc0 | ($2 << 3) | $6);
+          }
+        | MNEMO_SET valor_3bits ',' indireccion_IY ',' REGISTRO {
+            if ($6 == 6)
+              hacer_error(2);
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0xc0 | ($2 << 3) | $6);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SET valor_3bits ',' indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($7);
+            guardar_byte(0xc0 | ($5 << 3) | $2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_SET valor_3bits ',' indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($7);
+            guardar_byte(0xc0 | ($5 << 3) | $2);
+          }
+        | MNEMO_RES valor_3bits ',' REGISTRO {
+            guardar_byte(0xcb);
+            guardar_byte(0x80 | ($2 << 3) | ($4));
+          }
+        | MNEMO_RES valor_3bits ',' REGISTRO_IND_HL {
+            guardar_byte(0xcb);
+            guardar_byte(0x86 | ($2 << 3));
+          }
+        | MNEMO_RES valor_3bits ',' indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0x86 | ($2 << 3));
+          }
+        | MNEMO_RES valor_3bits ',' indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0x86 | ($2 << 3));
+          }
+        | MNEMO_RES valor_3bits ',' indireccion_IX ',' REGISTRO {
+            if ($6 == 6)
+              hacer_error(2);
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0x80 | ($2 << 3) | $6);
+          }
+        | MNEMO_RES valor_3bits ',' indireccion_IY ',' REGISTRO {
+            if ($6 == 6)
+              hacer_error(2);
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($4);
+            guardar_byte(0x80 | ($2 << 3) | $6);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_RES valor_3bits ',' indireccion_IX {
+            guardar_byte(0xdd);
+            guardar_byte(0xcb);
+            guardar_byte($7);
+            guardar_byte(0x80 | ($5 << 3) | $2);
+          }
+        | MNEMO_LD REGISTRO ',' MNEMO_RES valor_3bits ',' indireccion_IY {
+            guardar_byte(0xfd);
+            guardar_byte(0xcb);
+            guardar_byte($7);
+            guardar_byte(0x80 | ($5 << 3) | $2);
+          }
 ;
 
 mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {if ($2!=7) hacer_error(4);guardar_byte(0xdb);guardar_byte($5);}
