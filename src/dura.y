@@ -126,7 +126,7 @@ void localizar_32k();
 void establecer_subpagina(unsigned int, unsigned int);
 void seleccionar_pagina_directa(unsigned int, unsigned int);
 void seleccionar_pagina_registro(unsigned int, unsigned int);
-void guardar_byte(int);
+void guardar_byte(unsigned int);
 void guardar_word(unsigned int);
 void registrar_simbolo(char *, int, int);
 void registrar_variable(char *, int);
@@ -1186,7 +1186,7 @@ void hacer_advertencia(int codigo)
 }
 
 /* Generate byte */
-void guardar_byte(int b)
+void guardar_byte(unsigned int b)
 {
   /* If the condition of this block is fulfilled, create the code */
   if ((!conditional_level) || (conditional[conditional_level]))
