@@ -1258,8 +1258,9 @@ void guardar_byte(unsigned int b)
 
 void guardar_texto(char *texto)
 {
- unsigned int i;
- for (i=0;i<strlen(texto);i++) guardar_byte(texto[i]);
+  size_t i;
+  for (i=0; i < strlen(texto); i++)
+    guardar_byte((unsigned int)texto[i]);
 }
 
 void guardar_word(unsigned int w)
