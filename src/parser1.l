@@ -176,9 +176,23 @@ int prompt_error1(int c)
 int preprocessor1(char *input_name)
 {
   /* Memory allocation for strings */
-  p1_text = malloc(256);
-  p1_name = malloc(256);
-  p1_tmpstr = malloc(256);
+  if (!(p1_text = malloc(256)))
+  {
+    fprintf(stderr, "Fatal: can't allocate memory for p1_text\n");
+	exit(1);
+  }
+
+  if (!(p1_name = malloc(256)))
+  {
+    fprintf(stderr, "Fatal: can't allocate memory for p1_name\n");
+	exit(1);
+  }
+
+  if (!(p1_tmpstr = malloc(256)))
+  {
+    fprintf(stderr, "Fatal: can't allocate memory for p1_tmpstr\n");
+	exit(1);
+  }
 
   /* Strings initialization */
   p1_text[0] = 0;
