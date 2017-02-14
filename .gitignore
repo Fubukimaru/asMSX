@@ -1,6 +1,6 @@
 # custom .gitignore file for asMSX project
 
-# asMSX compilation derivate files
+# GCC compilation derivate files
 bin/
 asmsx.exe
 asmsx
@@ -23,3 +23,9 @@ code/*.txt
 
 # add random junk that made it into repo here
 .Rhistory
+
+# Visual Studio 2015
+Debug/
+Release/
+*.VC.db
+*.VC.opendb
