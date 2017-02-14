@@ -157,7 +157,7 @@ int wav_header[44] = {
   0x20, 0x00, 0x00, 0x00
 };
 
-FILE *archivo,*mensajes,*output,*wav;
+FILE *archivo, *mensajes, *output, *wav;
 char *memory, *fuente, *interno, *binario, *filename;
 char *salida, *simbolos, *ensamblador, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
