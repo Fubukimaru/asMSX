@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6DEED082-11A2-4BA8-8294-C282670F926B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>asmsxvs2015</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="lex.parser1.c" />
+    <ClCompile Include="lex.parser2.c" />
+    <ClCompile Include="lex.parser3.c" />
+    <ClCompile Include="lex.yy.c" />
+    <ClCompile Include="dura.tab.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dura.tab.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\src\dura.y">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">win_bison.exe -d -v -odura.tab.c $(ProjectDir)..\..\src\dura.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win_bison.exe -d -v -odura.tab.c $(ProjectDir)..\..\src\dura.y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing GNU Bison processing on dura.y</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing GNU Bison processing on dura.y</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">dura.tab.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">dura.tab.c</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win_bison.exe -d -v -odura.tab.c ..\..\src\dura.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win_bison.exe -d -v -odura.tab.c ..\..\src\dura.y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing GNU Bison processing on dura.y</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing GNU Bison processing on dura.y</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">dura.tab.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">dura.tab.c</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\lex.l">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">win_flex.exe --wincompat -i -olex.yy.c $(ProjectDir)..\..\src\lex.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win_flex.exe --wincompat -i -olex.yy.c $(ProjectDir)..\..\src\lex.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing Flex processing on lex.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing Flex processing on lex.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lex.yy.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lex.yy.c</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win_flex.exe --wincompat -i -olex.yy.c ..\..\src\lex.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win_flex.exe --wincompat -i -olex.yy.c ..\..\src\lex.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing Flex processing on lex.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing Flex processing on lex.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lex.yy.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lex.yy.c</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\parser1.l">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">win_flex.exe --wincompat -i -Pparser1 -olex.parser1.c $(ProjectDir)..\..\src\parser1.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win_flex.exe --wincompat -i -Pparser1 -olex.parser1.c $(ProjectDir)..\..\src\parser1.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing GNU Flex processing on parser1.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing GNU Flex processing on parser1.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lex.parser1.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lex.parser1.c</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win_flex.exe --wincompat -i -Pparser1 -olex.parser1.c ..\..\src\parser1.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win_flex.exe --wincompat -i -Pparser1 -olex.parser1.c ..\..\src\parser1.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing GNU Flex processing on parser1.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing GNU Flex processing on parser1.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lex.parser1.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lex.parser1.c</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\parser2.l">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">win_flex.exe --wincompat -i -Pparser2 -olex.parser2.c $(ProjectDir)..\..\src\parser2.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win_flex.exe --wincompat -i -Pparser2 -olex.parser2.c $(ProjectDir)..\..\src\parser2.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing GNU Flex processing on parser2.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing GNU Flex processing on parser2.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lex.parser2.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lex.parser2.c</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win_flex.exe --wincompat -i -Pparser2 -olex.parser2.c ..\..\src\parser2.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win_flex.exe --wincompat -i -Pparser2 -olex.parser2.c ..\..\src\parser2.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing GNU Flex processing on parser2.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing GNU Flex processing on parser2.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lex.parser2.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lex.parser2.c</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\parser3.l">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">win_flex.exe --wincompat -i -Pparser3 -olex.parser3.c $(ProjectDir)..\..\src\parser3.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win_flex.exe --wincompat -i -Pparser3 -olex.parser3.c $(ProjectDir)..\..\src\parser3.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing GNU Flex processing on parser3.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing GNU Flex processing on parser3.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lex.parser3.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lex.parser3.c</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win_flex.exe --wincompat -i -Pparser3 -olex.parser3.c ..\..\src\parser3.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win_flex.exe --wincompat -i -Pparser3 -olex.parser3.c ..\..\src\parser3.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing GNU Flex processing on parser3.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing GNU Flex processing on parser3.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lex.parser3.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lex.parser3.c</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
