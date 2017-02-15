@@ -678,7 +678,8 @@ pseudo_instruccion: PSEUDO_ORG valor {
               {
                 if (mensajes == NULL)
                   salida_texto();
-                fprintf(mensajes, "%.4f\n", $2);
+				if (mensajes)
+                  fprintf(mensajes, "%.4f\n", $2);
               }
             }
           }
@@ -689,7 +690,8 @@ pseudo_instruccion: PSEUDO_ORG valor {
               {
                 if (mensajes == NULL)
                   salida_texto();
-                fprintf(mensajes, "$%4.4x\n", (short int)$2 & 0xffff);
+				if (mensajes)
+                  fprintf(mensajes, "$%4.4x\n", (short int)$2 & 0xffff);
               }
             }
           }
@@ -700,7 +702,8 @@ pseudo_instruccion: PSEUDO_ORG valor {
               {
                 if (mensajes == NULL)
                   salida_texto();
-                fprintf(mensajes, "%.4f\n", ((float)($2 & 0xffff)) / 256);
+				if (mensajes)
+                  fprintf(mensajes, "%.4f\n", ((float)($2 & 0xffff)) / 256);
               }
             }
           }
@@ -710,12 +713,15 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (size > 0)
                 hacer_error(15);
               else
-                size=$2;
+                size = $2;
             }
           }
         | PSEUDO_IF valor {
             if (conditional_level == 15)
+			{
               hacer_error(44);
+			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
+			}
             conditional_level++;
             if ($2)
               conditional[conditional_level] = 1 & conditional[conditional_level - 1];
