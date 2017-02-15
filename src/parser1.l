@@ -53,10 +53,16 @@ extern int prompt_error1(int);
                   int i;
 
                   if (p1_tmpstr == NULL)
+                  {
                     prompt_error1(5);
+                    exit(5);  /* code analyzer warning */
+                  }
 
                   if (p1_tmpstr[strlen(p1_tmpstr) - 1] <= 32)
+                  {
                     prompt_error1(1);
+                    exit(1);  /* code analyzer warning */
+                  }
 
                   if (p1_include_index >= MAX_INCLUDE_LEVEL)
                     prompt_error1(2);
@@ -72,7 +78,10 @@ extern int prompt_error1(int);
 
                   yyin = fopen(p1_tmpstr, "r");
                   if (!yyin)
+                  {
                     prompt_error1(3);
+                    exit(3);
+                  }
 
                   printf("Including file %s\n", p1_tmpstr);
                   yylineno = 1;
