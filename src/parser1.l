@@ -65,11 +65,17 @@ extern int prompt_error1(int);
                   }
 
                   if (p1_include_index >= MAX_INCLUDE_LEVEL)
+                  {
                     prompt_error1(2);
+                    exit(2);
+                  }
 
                   for (i = 0; i < p1_include_index; i++)
                     if (!strcmp(p1_tmpstr, p1_include_stack[i].name))
+                    {
                       prompt_error1(4);
+                      exit(4);
+                    }
 
                   p1_include_stack[p1_include_index].name = malloc(0x100);
                   strcpy(p1_include_stack[p1_include_index].name, p1_name);
