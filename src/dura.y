@@ -666,7 +666,8 @@ pseudo_instruccion: PSEUDO_ORG valor {
               {
                 if (mensajes == NULL)
                   salida_texto();
-                fprintf(mensajes, "%d\n", (short int)$2 & 0xffff);
+				if (mensajes)
+                  fprintf(mensajes, "%d\n", (short int)$2 & 0xffff);
               }
             }
           }
