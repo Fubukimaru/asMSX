@@ -3817,18 +3817,16 @@ void finalizar()
 
 void inicializar_memory()
 {
-  size_t t;
   const size_t memory_size = 0x1000000;	/* 16 megabytes */
 
   memory = malloc(memory_size);
   if (!memory)
   {
     fprintf(stderr, "Failed to allocate %lu bytes for pointer 'memory' in function '%s'\n", (unsigned long)memory_size, __func__);
-      exit(1);
+    exit(1);
   }
 
-  for (t = 0; t < memory_size; t++)
-    memory[t] = 0;
+  memset(memory, 0, memory_size);
 }
 
 void inicializar_sistema()
