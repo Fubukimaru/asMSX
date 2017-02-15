@@ -730,7 +730,10 @@ pseudo_instruccion: PSEUDO_ORG valor {
           }
         | PSEUDO_IFDEF IDENTIFICADOR {
             if (conditional_level == 15)
+			{
               hacer_error(44);
+			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
+			}
             conditional_level++;
             if (simbolo_definido($2))
               conditional[conditional_level] = 1 & conditional[conditional_level - 1];
@@ -3574,10 +3577,10 @@ void incluir_binario(char *nombre, int skip, int n)
       hacer_error(29);
   }
   else
-    for (; !feof(fichero); i++)
+    for (; !feof(fichero);)		/* TODO: rewrite this as while loop and test it */
     {
       k = fgetc(fichero);
-      if (!feof(fichero))
+      if (!feof(fichero))		/* TODO: can this loose the last byte from included file? */
         guardar_byte(k);
     }
 
