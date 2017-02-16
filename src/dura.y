@@ -4079,71 +4079,67 @@ void generar_cassette()
   printf("Cassette file %s saved\n",binario);
 }
 
-
-void store(int value)
+void wav_store(int value)
 {
   fputc(value & 0xff, wav);
   fputc((value >> 8) & 0xff, wav);
 }
 
-// Write one (high-state)
-
-void write_one()
+void wav_write_one()
 {
   int l;
  
   for (l = 0; l < 5 * 2; l++)
-    store(FREQ_LO);
+    wav_store(FREQ_LO);
 
   for (l = 0; l < 5 * 2; l++)
-    store(FREQ_HI);
+    wav_store(FREQ_HI);
 
   for (l = 0; l < 5 * 2; l++)
-    store(FREQ_LO);
+    wav_store(FREQ_LO);
 
   for (l = 0; l < 5 * 2; l++)
-    store(FREQ_HI);
+    wav_store(FREQ_HI);
 }
 
-void write_zero()
+void wav_write_zero()
 {
   int l;
 
   for (l = 0; l < 10 * 2; l++)
-    store(FREQ_LO);
+    wav_store(FREQ_LO);
 
   for (l = 0; l < 10 * 2; l++)
-    store(FREQ_HI);
+    wav_store(FREQ_HI);
 }
 
-void write_nothing()
+void wav_write_nothing()
 {
   int l;
 
   for (l = 0; l < 18 * 2; l++)
-    store(SILENCE);
+    wav_store(SILENCE);
 }
 
-/* Write byte */
-void write_byte(int m)
+void wav_write_byte(int m)	/* only used in generar_wav() */
 {
   int l;
 
-  write_zero();
+  wav_write_zero();
   for (l = 0; l < 8; l++) 
   {
     if (m & 1)
-      write_one();
+      wav_write_one();
     else
-      write_zero();
+      wav_write_zero();
     m = m >> 1;
   }
-  write_one();
-  write_one();
+  wav_write_one();
+  wav_write_one();
 }
 
-void generar_wav()
-{
+void generar_wav()	/* This function is broken since public GPLv3 release */
+{			/* TODO: use https://github.com/joyrex2001/castools to fix it */
   int wav_size, i;
 
   if ((type == MEGAROM) || ((type == ROM) && (dir_inicio < 0x8000)))
@@ -4177,11 +4173,11 @@ void generar_wav()
 
     /* Write long header */
     for (i = 0; i < 3968; i++)
-      write_one();
+      wav_write_one();
 
     /* Write file identifier */
     for (i = 0; i < 10; i++)
-      write_byte(0xd0);
+      wav_write_byte(0xd0);
 
     /* Write MSX name */
     if (strlen(interno) < 6)
@@ -4192,27 +4188,27 @@ void generar_wav()
     }
 
     for (i = 0; i < 6; i++)
-      write_byte(interno[i]);
+      wav_write_byte(interno[i]);
 
     /* Write blank */
     for (i = 0; i < 1500; i++)
-      write_nothing();
+      wav_write_nothing();
 
     /* Write short header */
     for (i = 0; i < 3968; i++)
-      write_one();
+      wav_write_one();
 
     /* Write init, end and start addresses */
-    write_byte(dir_inicio & 0xff);
-    write_byte((dir_inicio >> 8) & 0xff);
-    write_byte(dir_final & 0xff);
-    write_byte((dir_final >> 8) & 0xff);
-    write_byte(inicio & 0xff);
-    write_byte((inicio >> 8) & 0xff);
+    wav_write_byte(dir_inicio & 0xff);
+    wav_write_byte((dir_inicio >> 8) & 0xff);
+    wav_write_byte(dir_final & 0xff);
+    wav_write_byte((dir_final >> 8) & 0xff);
+    wav_write_byte(inicio & 0xff);
+    wav_write_byte((inicio >> 8) & 0xff);
 
     /* Write data */
     for (i = dir_inicio; i <= dir_final; i++)
-      write_byte(memory[i]);
+      wav_write_byte(memory[i]);
   }
   else if (type == Z80)
   {
@@ -4234,18 +4230,18 @@ void generar_wav()
 
     /* Write long header */
     for (i = 0; i < 3968; i++)
-      write_one();
+      wav_write_one();
 
     /* Write data */
     for (i = dir_inicio; i <= dir_final; i++)
-    write_byte(memory[i]);
+    wav_write_byte(memory[i]);
   }
   else
-    wav_size = 0;	/* Fix undefined wav_size warning in printf() below */
+    wav_size = 0;
     
   /* Write blank */
   for (i=0; i < 1500; i++)
-    write_nothing();
+    wav_write_nothing();
     
   /* Close file */
   fclose(wav);
