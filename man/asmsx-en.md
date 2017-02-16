@@ -7,7 +7,7 @@
 ### 1.1. Description
 
 asMSX is an assembler for the Z80 processor with a number of extensions to make programming for MSX easy.
-It is a cross assembler that runs on Windows or Linux PC.
+It is a cross-assembler that runs on Windows or Linux PC.
 Compile time on a modern PC is near instant comparing to native MSX assemblers.
 There is no size limit on source file size. Source can be edited in any text editor.
 
@@ -15,31 +15,31 @@ There is no size limit on source file size. Source can be edited in any text edi
 ### 1.2. Features
 
 - supports all official Z80 instructions;
-- supports all documented unofficial instructions;
+- supports all known unofficial instructions;
 - accepts standard Z80 syntax (implicit accumulator);
-- works with various radices: decimal, hex, octal and binary;
+- works with decimal, hexadecimal, octal and binary numbers;
 - supports arithmetic and logic operations in source code;
 - supports floating point decimal values by converting them to 16-bit fixed point values;
-- actual mathematical functions: trigonometric, potential etc.
+- math functions: trigonometric, potential etc.
 - supports multiple files through inclusion, nesting is allowed;
 - supports complete or partial direct inclusion of binary files;
 - supports local and global labels;
 - supports official MSX BIOS subroutines using documented names;
 - generates binary files loadable from MSX BASIC;
 - generates ROM image files;
-- supports four MegaROM types: Konami, Konami SCC, ASCII 8 and 16 KB;
-- uses internal numeric Assembler variables;
+- supports four MegaROM types: Konami, Konami SCC, ASCII8 and ASCII16;
 - generates COM files for MSX-DOS;
+- generates CAS files for emulators and WAV files for loading on real MSX computers;
+- uses internal Assembler variables;
 - generates export symbol table (SYM);
 - writes PRINT directive messages to text file (TXT);
-- integrates with BlueMSX emulator debugger;
 - supports conditional assembly;
-- generates CAS files for emulators and WAV files for loading on real MSX computers.
+- integrates with BlueMSX emulator debugger.
 
 
-### 1.3. Project goals
+### 1.3. Project goal
 
-asMSX project goals was to create Z80 cross assembler that is flexible, easy to use, reliable
+asMSX project goal was to create Z80 cross assembler that is flexible, easy to use, reliable
 and designed from ground up for the development of MSX ROM and MegaROM programs.
 This goal is fully achieved in current version.
 
