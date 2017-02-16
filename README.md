@@ -1,10 +1,10 @@
 # asMSX
 
-asMSX is a Z80 cross-assembler, originally developed by Eduardo "pitpan" Robsy Petrus.
-This project is based on [GPLv3 code release by cjv99](https://code.google.com/archive/p/asmsx-license-gpl/).
+asMSX is a Z80 cross-assembler for MSX, originally developed by Eduardo "pitpan" A. Robsy Petrus.
+This project is based on [GPLv3 code release by Lucas "cjv99"](https://code.google.com/archive/p/asmsx-license-gpl/).
 MRC wiki has an entry for [asMSX](https://www.msx.org/wiki/AsMSX).
 
-Please read [asMSX manual](man/asmsx-en.md).
+Please read [asMSX manual](man/asmsx-en.md) to learn more.
 
 # Original Spanish README
 
