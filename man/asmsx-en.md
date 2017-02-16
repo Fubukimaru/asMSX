@@ -232,16 +232,15 @@ __BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1
 
 #### 2.3.2. Operators
 
-Numeric expressions can use operators on numbers in supported numeric systems.
-Common notation is used for typical arithmetic operators. Less common operators
-borrow their syntax from C/C++ language, which is also used in Java,
-JavaScript, PHP and many other programming languages.
+Numeric expressions use operators on numbers in supported numeric systems.
+Common notation is used for typical arithmetic operators.
+Less common operators borrow from C/C++.
 
-`+` Addition
-`-` Subtraction
-`*` Multiplication
-`/` Division
-`%` Modulo (integer remainder from division)
+- `+` addition
+- `-` subtraction
+- `*` multiplication
+- `/` division
+- `%` modulus (integer remainder from division)
 
 Additional operators:
 
