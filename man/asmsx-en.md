@@ -6,24 +6,20 @@
 
 ### 1.1. Description
 
-asMSX is an assembler for the Z80 processor with a number of extensions to make
-programming for MSX easy. It is a cross assembler that runs on Windows or Linux
-PC. Compile time on a modern PC is near instant comparing to native MSX
-assemblers. There is no size limit on source file size. Source can be edited in
-text editor of your choice.
+asMSX is an assembler for the Z80 processor with a number of extensions to make programming for MSX easy.
+It is a cross assembler that runs on Windows or Linux PC.
+Compile time on a modern PC is near instant comparing to native MSX assemblers.
+There is no size limit on source file size. Source can be edited in any text editor.
 
 
 ### 1.2. Features
-
-asMSX highlights:
 
 - supports all official Z80 instructions;
 - supports all documented unofficial instructions;
 - accepts standard Z80 syntax (implicit accumulator);
 - works with various radices: decimal, hex, octal and binary;
 - supports arithmetic and logic operations in source code;
-- supports floating point decimal values by converting them to 16-bit fixed
-point values;
+- supports floating point decimal values by converting them to 16-bit fixed point values;
 - actual mathematical functions: trigonometric, potential etc.
 - supports multiple files through inclusion, nesting is allowed;
 - supports complete or partial direct inclusion of binary files;
@@ -38,79 +34,67 @@ point values;
 - writes PRINT directive messages to text file (TXT);
 - integrates with BlueMSX emulator debugger;
 - supports conditional assembly;
-- generates CAS files for emulators and WAV files for loading on real MSX
-computers.
+- generates CAS files for emulators and WAV files for loading on real MSX computers.
 
 
 ### 1.3. Project goals
 
-asMSX project goals was to create Z80 cross assembler that is flexible, easy to
-use, reliable and designed from ground up for development of MSX ROM and
-MegaROM programs. This goal is fully achieved in current version.
+asMSX project goals was to create Z80 cross assembler that is flexible, easy to use, reliable
+and designed from ground up for the development of MSX ROM and MegaROM programs.
+This goal is fully achieved in current version.
 
-asMSX is a small console program that works very fast and stable. It uses
-standard libraries present on all PCs.
+asMSX is a small console program that works very fast.
+It uses standard libraries present on all PCs.
 
 
 ### 1.4. Syntax
 
-asMSX implements Z80 assembly language slightly differently from standard Zilog
-syntax. Major difference is that square brackets [ ] are used for indirect
-address mode, instead of parentheses ( ). This design decision allows to
-support of complex mathematical expressions that use parentheses to order
-evaluation precedence.
+asMSX implements Z80 assembly language slightly differently from standard Zilog syntax.
+Major difference is that square brackets `[ ]` are used for indirect address mode, instead of parentheses `( )`.
+This design decision allows us to support complex mathematical expressions that use parentheses to order evaluation precedence.
 
-asMSX supports ZILOG directive to retain source level compatibility for
-existing code. It switches indirect address mode to use parentheses, and
-mathematical expression evaluation is switched to square brackets as
-separators.
+asMSX supports ZILOG directive to retain source level compatibility for existing code.
+It switches indirect address mode to use parentheses.
+Mathematical expression evaluation is switched to square brackets as separators.
 
 
 ### 1.5. Use
 
-asMSX is a command-line program, so the easiest way to use it is from command
-prompt. To assemble a file use the following command:
+asMSX is a command-line program, so the easiest way to use it is from command prompt.
+To assemble a file use the following command:
 
-`asmsx filename.ext`
+    asmsx filename.asm
 
-If the extension is not provided, asMSX will assume ".asm" as default. Source
-code files are expected to be plain 8-bit ASCII text files. asMSX supports text
-files generated on both Windows and Linux (CR/LF end of line vs just LF). On
-Windows you can assemble a source file by dragging it to asMSX desktop icon.
+If the extension is not provided, asMSX will assume ".asm" as default.
+Source code files are expected to be plain 8-bit ASCII text files.
+asMSX supports text files generated on both Windows and Linux (CR/LF end of line vs just LF).
+On Windows you can assemble a source file by dragging it to asMSX desktop icon.
 This method is not recommended, since long file name support may not work well.
-Also please try to avoid dots and other special characters in file names; dot
-used to separate extension is fine.
+Also please try to avoid dots and other special characters in file names.
+Dot use is fine for file extension.
 
-asMSX produces messages during assembly. If no errors are encountered,
-following files will be generated:
+asMSX produces messages during assembly.
+If no errors are encountered, following files will be generated:
 
-- filename.sym: an ASCII text file with all the symbols defined in program with
-their decimal values. This file is compatible with BlueMSX debugger. You can
-load it to make debugging easier. asMSX won't generate SYM file if no constant
-or variable symbols were defined in program.
+**filename.sym**: text file with all the symbols defined in program with their decimal values.
+This file is compatible with BlueMSX debugger.
+You can use it to make debugging easier.
+asMSX won't generate SYM file if no constant or variable symbols were defined in program.
 
-- filename.txt: an ASCII text file with messages generated by directives in
-program code. If PRINT directives are not used, file won't be generated;
+**filename.txt**: text file with messages generated by directives in program code.
+If PRINT directives are not used, file won't be generated.
 
-- filename.* [.z80/.bin/.com/.rom/.cas/.wav]: based on a choice of output type,
-generate binary file with the same file name as main source file and type
-specific extension:
+Depending on use of output type directives in your filename.asm,
+asMSX will generate one or more of the following binary files:
  
-  * filename.z80 is a binary file with no header;
-
-  * filename.bin is a binary file that can be loaded with
-`BLOAD"FILENAME.BIN",R` operator in MSX BASIC;
-
-  * filename.com is an executable file for MSX-DOS;
-
-  * filename.rom is a binary ROM or MegaROM image file;
-
-  * filename.cas is a loadable tape image file for MSX emulators. Use
-BLOAD"CAS:",R in MSX BASIC;
-
-  * filename.wav is a 16 bit 44100Hz (CD quality) stereo audio file, ready to
-be loaded on real MSX computer via "tape in" port. Use BLOAD"CAS:",R in MSX
-BASIC.
+- __filename.z80__: a binary file with no header;
+- __filename.bin__: a binary file that can be loaded with `BLOAD"FILENAME.BIN",R` operator in MSX BASIC;
+- __filename.com__: an executable file for MSX-DOS;
+- __filename.rom__: a binary ROM or MegaROM image file;
+- __filename.cas__: a loadable tape image file for MSX emulators. `Use BLOAD"CAS:",R` in MSX BASIC;
+- __filename.wav__: a 16 bit 44100Hz (CD quality) stereo audio file.
+It can be loaded on real MSX computer via "tape in" port.
+Use `BLOAD"CAS:",R` in MSX BASIC.
 
 
 ## 2. Assembly language
