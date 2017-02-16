@@ -223,7 +223,7 @@ If a hexadecimal number starts with letter, you should prefix the number with '0
     $8a $ff $10
     8ah 0ffh 10h
 
-BINARY: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
+__BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
 
 ##### Example
 
