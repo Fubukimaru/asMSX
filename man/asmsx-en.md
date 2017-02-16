@@ -282,22 +282,22 @@ Parentheses can be used to explicitly specify parsing precedence in arithmetic e
 
     ((2*8)/(1+3))<<2
 
-Same rules apply to all numbers, including non decimal. Additionally following
-functions are supported:
+Same rules apply to all numbers, including non decimal.
+Additionally following functions are supported:
 
-`SIN(X)`   Sine function, takes input in radians
-`COS(X)`   Cosine
-`TAN(X)`   Tangent
-`ACOS(X)`  Arccosine
-`ASIN(X)`  Arcsine
-`ATAN(X)`  Arctangent
-`SQR(X)`   Square
-`SQRT(X)`  Square root
-`EXP(X)`   Exponential value of X
-`POW(X,Y)` Returns X raised to the power Y
-`LOG(X)`   Logarithm
-`LN(X)`    Natural logarithm
-`ABS(X)`   Returns the absolute value of X
+- `SIN(X)`   sine function, takes input in radians;
+- `COS(X)`   cosine;
+- `TAN(X)`   tangent;
+- `ACOS(X)`  arccosine;
+- `ASIN(X)`  arcsine;
+- `ATAN(X)`  arctangent;
+- `SQR(X)`   square;
+- `SQRT(X)`  square root;
+- `EXP(X)`   exponential value of X;
+- `POW(X,Y)` returns X raised to the power Y;
+- `LOG(X)`   logarithm;
+- `LN(X)`    natural logarithm;
+- `ABS(X)`   returns the absolute value of X.
 
 Additionally, PI is an predefined double precision floating point constant. It
 can be used in numeric expressions.
