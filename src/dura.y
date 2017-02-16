@@ -4301,6 +4301,11 @@ int main(int argc, char *argv[])
   simbolos = malloc(0x100);
   salida = malloc(0x100);
   filename = malloc(0x100);
+  if (!filename)
+  {
+    fprintf(stderr, "Error: can't open file %s\n", filename);
+    exit(1);
+  }
 
   strcpy(filename, argv[1]);
   strcpy(ensamblador, filename);
