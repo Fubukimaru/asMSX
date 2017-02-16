@@ -111,9 +111,8 @@ asMSX accepts following line format in source code:
 ```
 
 Each block in brackets is optional.
-Detailed explanations are in follow up sections of this document.
 There is no limit on maximum line length.
-Preprocessor ignores spaces and tabs as white space.
+White space (tabs, spaces and empty lines) are ignored.
 
 ##### Example
 
