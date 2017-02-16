@@ -130,11 +130,12 @@ points:
 	
 ### 2.2. Labels
 
-Labels provide a way to identify a location in memory. A label is a symbolic
-name for a particular 16-bit address value. Label name charactest are
-alphanumeric, first character should be either a letter or underscore symbol _.
-Label name should always end with a colon :. Label name is case sensitive.
-LABEL: and Label: are treated as two separate labels.
+Label is a symbolic name for a memory address.
+Label name should start with either a character or an underscore `_`,
+the rest could be a character or a number.
+Label name should always end with a colon `:`.
+Label name is case sensitive:
+`LABEL:` and `Label:` are treated as two separate labels.
 
 ##### Example
 
@@ -155,13 +156,13 @@ readability. The following is valid code:
 
 ```
 Function1:
-...
+        ...
 @@loop:
-...
+        ...
 Function2:
-...
+        ...
 @@loop:
-...
+        ...
 ```
 
 
