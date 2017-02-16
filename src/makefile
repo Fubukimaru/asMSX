@@ -12,6 +12,6 @@ lex.parser2.c:	parser2.l
 lex.parser3.c:	parser3.l
 	flex -i -Pparser3 $<
 clean:
-	rm -f *.o *.tab.* lex.*.c asmsx* ~*
+	rm -f *.o *.tab.* lex.*.c asmsx asmsx.exe ~* warn*.txt
 test:	clean asmsx
 	../code/test.sh
