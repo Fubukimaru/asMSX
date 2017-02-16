@@ -378,15 +378,15 @@ same as for labels. There are no local constants.
 
 `Variable = expression` asMSX can use integer variables. Variables must be
 initialized by assigning them an integer values. It is possible to perform
-arithmetic operations with variables. Example of variable use:
+arithmetic operations with variables.
 
-```
-Value1=0
-Value1=Value1+1
-ld a,Value1
-Value1=Value1*2
-ld b,Value1
-```
+##### Example
+
+    Value1=0
+    Value1=Value1+1
+    ld a,Value1
+    Value1=Value1*2
+    ld b,Value1
 
 `.BIOS` Predefined call address for common BIOS routines, including those
 specified in the MSX, MSX2, MSX2+ and Turbo-R standards. The usual names are
@@ -469,51 +469,55 @@ sub-page n with execution entry point at x. Specific code that end up being
 used for this directive depends on selected MegaROM mapper type. It doesn't
 change the value of any record or affect interrupt mode or status flags.
 
-`.PHASE X / .DEPHASE  These two routines enable virtual memory use. Instructions
+`.PHASE X` / `.DEPHASE` These two routines enable virtual memory use. Instructions
 will be assembled to be stored at one memory address, but ready to be executed
 from another memory address. This is useful for creation of code in ROM image,
 that is copied to RAM and then executed. The effect is that label values will
 be calculated for supplied address. .DEPHASE reverts assembler behaviour to
 normal, although ORG, PAGE or SUBPAGE will have the same effect.
 
-.CALLBIOS X  Calls a BIOS routine from MSX-DOS program. It is equivalent to
+`.CALLBIOS X` Calls a BIOS routine from MSX-DOS program. It is equivalent to
 following code:
 
-LD IY,[EXPTBL-1]
-LD IX,ROUTINE
-CALL CALSLT
+```
+        LD IY,[EXPTBL-1]
+        LD IX,ROUTINE
+        CALL CALSLT
+```
 
-.CALLDOS X  Calls MSX-DOS function. It is equivalent to following code:
+`.CALLDOS X` Calls MSX-DOS function. It is equivalent to following code:
 
-LD C,CODE
-CALL 0005h
+```
+        LD C,CODE
+        CALL 0005h
+```
 
-.SIZE X  Sets the output file size in Kilobytes.
+`.SIZE X` Sets the output file size in Kilobytes.
 
-.INCLUDE "file"  Includes source code from an external file.
+`.INCLUDE "file"` Includes source code from an external file.
 
-.INCBIN "file" [SKIP X] [SIZE Y]  Injects the contents of a binary file into
+`.INCBIN "file" [SKIP X] [SIZE Y]` Injects the contents of a binary file into
 program. Optional SIZE and SKIP parameters allow to include a number of bytes,
 starting at specified offset.
 
-.RANDOM(n)  Generates a random integer number from the range of 0 to n-1.
+`.RANDOM(n)` Generates a random integer number from the range of 0 to n-1.
 Provides better entropy than the Z80 R register.
 
-.DEBUG "text"  Adds text to assembled program that is visible during debugging,
+`.DEBUG "text"` Adds text to assembled program that is visible during debugging,
 but does not affect the execution. BlueMSX debugger supports this extended
 functionality.
 
-.BREAK [X] / .BREAKPOINT [X]  Defines a breakpoint for BlueMSX debugger. It
+`.BREAK [X]` / `.BREAKPOINT [X]` Defines a breakpoint for BlueMSX debugger. It
 doesn't affect the execution, but it should be removed from the final build. If
 the direction is not indicated, the breakpoint will be executed in the position
 in which it has been defined.
 
-REPT n / ENDR  This macro allows you to repeat  a block given number of times.
+`REPT n` / `ENDR` This macro allows you to repeat  a block given number of times.
 Nesting allows generation of complex tables. There is a restriction: the number
 of repetitions must be defined as integer number, it can't be calculated from a
 numeric expression.
 
-#### Example
+##### Example
 
 ```
     REPT 16
@@ -531,130 +535,134 @@ numeric expression.
     ENDR
 ```
 
-.PRINTTEXT "text" / .PRINTSTRING "text"  Prints a text in the output text file.
+`.PRINTTEXT "text"` / `.PRINTSTRING "text"` Prints a text in the output text file.
 
-.PRINT expression / .PRINTDEC  Prints a numeric expression in decimal format.
+`.PRINT expression` / `.PRINTDEC` Prints a numeric expression in decimal format.
 
-.PRINTHEX expression  Prints a numeric expression in hexadecimal format.
+`.PRINTHEX expression` Prints a numeric expression in hexadecimal format.
 
-.PRINTFIX expression  Prints a fixed-point numeric value.
+`.PRINTFIX expression` Prints a fixed-point numeric value.
 
-.CAS ["text"] / .CASSETTE ["text"]  Generates a tape file name in output file.
+`.CAS ["text"]` / `.CASSETTE ["text"]` Generates a tape file name in output file.
 This only works if output file type is loadable BASIC program, ROM in page 2 or
 Z80 binary blob without header. Supplied name can be used to load the program
 from the tape, maximum length is 6 characters. If not explicitly specified, it
 is set to name of output file.
 
-.WAV ["text"]  Like the previous command, but instead of CAS file, it generates
+`.WAV ["text"]` Like the previous command, but instead of CAS file, it generates
 a WAV audio file that can be loaded directly on a real MSX through tape-in
 port.
 
-.FILENAME ["text"]  Using this directive will set the name of the output file.
+`.FILENAME ["text"]` Using this directive will set the name of the output file.
 If not explicitly specified, source file name will be used, plus appropriate
 extension.
 
-.SINCLAIR  This directive sets the output file type to TAP format with
+`.SINCLAIR` **Currently broken** This directive sets the output file type to TAP format with
 appropriate header. It is intended for loading on ZX Spectrum emulators or real
-hardware if you have a working playback application [header checksum problem].
+hardware if you have a working playback application.
 
 
-2.6. Comments
+### 2.6. Comments
 
 It is highly recommended to use comments throughout the assembler source code.
 asMSX supports comments in a variety of formats:
 
-; Comment
+    ; Comment
 
 Single line comment. This is the standard for assembler listings. Entire line
 up to carriage return is ignored.
 
-// Comment
+    // Comment
 
 Same as above. Two consecutive slashes is a convention from C++ and C since
 C99.
 
-/* Comments */
-{ Comments }
+    /* Comments */
+    { Comments }
 	
 C/C++ and Pascal style multi line comments. All text between the delimiters is
 skipped during assembly.
 
 
-2.7. Conditional assembly
+### 2.7. Conditional assembly
 
-asMSX includes preliminary support for conditional assembly. The format of a
-conditional assembly block is as follows:
+asMSX includes preliminary support for conditional assembly.
+The format of a conditional assembly block is as follows:
 
-IF condition
-Instruction
-ELSE
-Instruction
-ENDIF
+    IF condition
+      Instruction
+    ELSE
+      Instruction
+    ENDIF
 
-The condition can be of any type, consistent with C/C++ or Java formatting
-rules. A condition is considered true if evaluation result is not a zero.
+The condition can be of any type, consistent with C/C++ rules.
+A condition is considered true if evaluation result is non-zero.
 
-If the condition is true, it will assemble code that follows IF. If the
-condition is false, code after ELSE will be assembled.
+If condition is true, asMSX will assemble code that follows `IF`.
+If the condition is false, code after `ELSE` will be assembled.
 
-ELSE block is optional for IF. ENDIF is mandatory, it closes conditional block.
+`ELSE` block is optional for `IF`.
 
-There is no limit on nesting level of IF statements, as shown in example below:
+`ENDIF` is mandatory, it closes conditional block.
 
-IF (computer==MSX)
-	call MSX1_Init
-ELSE
-	IF (computer==MSX2)
-		call MSX2_Init
-	ELSE
-		IF (computer==MSX2plus)
-			call MSX2plus_Init
-		ELSE
-			call TurboR_Init
-		ENDIF
-	ENDIF
-ENDIF
+Current IF nesting limit is 15.
+It may become unlimited in future rewrite.
+
+##### Example
+
+    IF (computer==MSX)
+      call MSX1_Init
+    ELSE
+      IF (computer==MSX2)
+        call MSX2_Init
+      ELSE
+        IF (computer==MSX2plus)
+          call MSX2plus_Init
+        ELSE
+          call TurboR_Init
+        ENDIF
+      ENDIF
+    ENDIF
 
 In addition, all code, directives and macros will be executed according to
 conditions, this enables creation of the following structures:
 
-CARTRIDGE=1
-BINARY=2
-format=CARTRIDGE
-IF (format==CARTRIDGE)
-.page 2
-.ROM
-ELSE
-.org 8800h
-.Basic
-ENDIF
-.START Init
+    CARTRIDGE=1
+    BINARY=2
+    format=CARTRIDGE
+    IF (format==CARTRIDGE)
+      .page 2
+      .ROM
+    ELSE
+      .org 8800h
+      .Basic
+    ENDIF
+    .START Init
 
-There is a limitation on conditional instructions: IF <condition>, ELSE and
-ENDIF must appear on their own separate lines, they can't be mixed with any
-other instructions or macros. The following code would fail to be assembled:
+There is a limitation on conditional instructions:
+`IF` condition, `ELSE` and `ENDIF` must appear on their own separate lines.
+They can't be mixed with any other instructions or macros.
+The following code will fail with current asMSX:
 
-IF (variable) nop ELSE inc a ENDIF
+    IF (variable) nop ELSE inc a ENDIF
 
 It should be written as follows:
 
-IF (variable)
-nop
-ELSE
-inc a
-ENDIF
+    IF (variable)
+      nop
+    ELSE
+      inc a
+    ENDIF
 
-IFDEF conditional instruction could be used to branch code assembly depending
-on argument being a defined symbol.
+`IFDEF` condition could be used to branch code assembly
+using a defined symbol as argument.
 
 ##### Example
 
-```
     IFDEF tests
       .WAV "Test"
     ENDIF
-```
 
-This snippet will generate a WAV file if and only if the label or variable
-tests was previously defined in the source code. Note that IFDEF only recognize
-a label if it is defined before IFDEF.
+This snippet will generate a WAV file only if the label or variable
+tests was previously defined in the source code.
+`IFDEF` only recognize a label if it is defined before `IFDEF`.
