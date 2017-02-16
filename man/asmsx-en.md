@@ -233,47 +233,50 @@ __BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1
 #### 2.3.2. Operators
 
 Numeric expressions use operators on numbers in supported numeric systems.
-Common notation is used for typical arithmetic operators.
-Less common operators borrow from C/C++.
+Common notation is used for typical arithmetic operators:
 
-- `+` addition
-- `-` subtraction
-- `*` multiplication
-- `/` division
-- `%` modulus (integer remainder from division)
+- `+` addition;
+- `-` subtraction;
+- `*` multiplication;
+- `/` division;
+- `%` modulus (integer remainder from division);
 
-Additional operators:
+Less common operators borrow from C/C++:
 
-`<<` Bitwise left shift. Shifts specified number of bits left; is equivalent to
-specified number of times multiplication by 2
+- `<<` left bit shift: shifts specified number of bits left.
+It is equivalent to a number of multiplications by 2;
 
-`>>` Bitwise shift right. Shifts specified number of bits right; is equivalent to
-specified number of times division by 2
+- `>>` right bit shift: shifts specified number of bits right.
+It is equivalent to a number of divisions by 2;
 
-In addition to arithmetic, logic operators are also supported. They operate on
-bit level. Again, syntax is borrowed from C/C++. Binary operations include:
+- `|` bit-level OR;
 
-`|` Bitwise OR
-`&` Bitwise AND
-`^` Bitwise XOR
+- `&` bit-level AND;
 
-An unary `NOT` operator is supported.
+- `^` bit-level XOR;
 
-`~` Logical NOT. Returns complimenting binary number.
+- `NOT` unary negation;
 
-Also from C/C++, asMSX supports logical comparison operations:
+- `~` logical negation: returns complementing binary number;
 
-`||` Logical OR
-`&&` Logical AND
-`==` Logical equal
-`!=` Logical not equal
-`<`  Lesser
-`<=` Lesser or equal
-`>`  Greater
-`>=` Greater or equal
+- `||` logical OR;
 
-The precedence parsing order is the same as in C/C++. Parentheses can be used
-to explicitly specify parsing precedence in arithmetic expressions.
+- `&&` logical AND;
+
+- `==` logical equivalent;
+
+- `!=` logical non-equivalent;
+
+- `<`  less-than;
+
+- `<=` less-then or equal;
+
+- `>`  greater-then;
+
+- `>=` greater-then or equal.
+
+The precedence order is same as in C/C++.
+Parentheses can be used to explicitly specify parsing precedence in arithmetic expressions.
 
 ##### Example
 
