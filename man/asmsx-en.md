@@ -325,25 +325,25 @@ during execution it is equal to `PC` register.
 You can include data in your assembler program using four different directives:
 
 ```
-db data,[data...]
-defb data,[data...]
-dt "text"
-deft "text"
+        db data,[data...]
+        defb data,[data...]
+        dt "text"
+        deft "text"
 ```
 
 These instructions define data as 8-bit byte values. dt was included for
 compatibility with other Z80 assemblers. All four directives are equivalent.
 
 ```
-dw data,[data...]
-defw data,[data...]
+        dw data,[data...]
+        defw data,[data...]
 ```
 
 This will define 16-bit word data.
 
 ```
-ds X
-defs X
+        ds X
+        defs X
 ```
 
 This will reserve X bytes in memory starting with current memory address.
@@ -351,8 +351,8 @@ This will reserve X bytes in memory starting with current memory address.
 Special predefined directives are available for reserving memory for variables
 of conventional sizes, such as byte and word:
 
-`.byte`  reserve one byte of space (8 bits).
-`.word`  reserve one word of space, which is equivalent to two bytes (16 bits).
+- `.byte` reserve one byte of space (8 bits);
+- `.word` reserve one word of space, which is equivalent to two bytes (16 bits).
 
 
 ### 2.5. Directives
