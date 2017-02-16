@@ -299,25 +299,25 @@ Additionally following functions are supported:
 - `LN(X)`    natural logarithm;
 - `ABS(X)`   returns the absolute value of X.
 
-Additionally, PI is an predefined double precision floating point constant. It
-can be used in numeric expressions.
+`PI` is predefined as a double precision floating point constant.
+It can be used in numeric expressions.
 
 ##### Example
 
     sin(pi*45.0/180.0)
 
-It is important to support non-integer values in Z80 assembler programs by
-providing simple floating to fixed point conversion mechanism. This is done
-using two conversion functions:
+It is useful to support non-integer values in Z80 assembler programs
+by providing simple floating to fixed point conversion mechanism.
+This is done using two conversion functions:
 
-`FIX(X)` Convert floating point value to fixed point.
-`FIXMUL(X,Y)` Multiply two fixed point numbers.
-`FIXDIV(X,Y)` Divide X by Y.
-`INT(X)` Convert a non-integer value to integer.
+- `FIX(X)`      convert floating point value to fixed point;
+- `FIXMUL(X,Y)` multiply two fixed point numbers;
+- `FIXDIV(X,Y)` divide X by Y;
+- `INT(X)`      convert a non-integer value to integer.
 
-`$` is is a special symbol with dynamic value. During assembly of program,
-standalone $ is substituted with memory address of next opcode or data, during
-execution it is equal to PC - program counter register.
+`$` is is a special read-only variable.
+During assembly of program, `$` is replaced with memory address of next opcode or data,
+during execution it is equal to `PC` register.
 
 
 ### 2.4. Data definition
