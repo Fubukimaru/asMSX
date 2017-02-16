@@ -109,7 +109,7 @@ asMSX accepts following line format in source code:
 [label:]    [directive[parameters]]    [;comments]
 [label:]    [opcode[parameters]]       [;comments]
 ```
-      
+
 Each block in brackets is optional.
 Detailed explanations are in follow up sections of this document.
 There is no limit on maximum line length.
