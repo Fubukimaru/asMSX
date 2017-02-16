@@ -146,13 +146,14 @@ _alfanumeric:
 loop001:
 ```
 
-Colon defines a label and sets its value equal to memory address of the next
-opcode or data value. If you want to get address of label, use its name without
-the colon. You can define local labels by prefixing label name with two "at"
-symbols @@. Local label name is only valid up to next global label. This allows
-to reuse label names for trivial tasks like loops, so you don't have to invent
-a bunch of different names. This simplifies programming and improves code
-readability. The following is valid code:
+Colon defines a label and sets its value equal to memory address of the next opcode or data value.
+If you want to get address of label, use its name without the colon.
+You can define local labels by prefixing label name with two "at" symbols `@@`.
+Local label name is only valid up to next global label.
+This allows to reuse label names for trivial tasks like loops,
+so you don't have to invent a bunch of different names.
+It simplifies programming and improves code readability.
+The following is valid code:
 
 ```
 Function1:
@@ -168,57 +169,61 @@ Function2:
 
 ### 2.3. Numeric expression
 
-A numeric expression is a number or a result of simple or complex operation on
-numbers.
+A numeric expression is a number or a result of operation on numbers.
 
 
 #### 2.3.1. Numeric formats
 
-There are several popular numeric systems (radices, plural form of radix). Here
-are a few examples of syntax for such systems:
+There are several popular numeric systems (radices, plural form of radix).
+Here are a few examples of syntax for such systems:
 
-DECIMAL INTEGER: radix 10 numbers are usually expressed as a group of one or
-more decimal digits. The only restriction is that you must explicitly express
-zeroes. This is the numeric system that everyone knows.
+__DECIMAL INTEGER__: radix 10 numbers are usually expressed as a group of one or more decimal digits.
+The only restriction is that you must explicitly express zeroes.
+This is the numeric system that people use in everyday life.
 
 ##### Example
 
     0 10 25 1 255 2048
 
-DECIMAL FLOATING POINT: a decimal number with dot separating integer from
-fraction. Syntax requires dot to be present for the constant to be recognized
-as a floating point value.
+__DECIMAL FLOATING POINT__: a decimal number with dot separating integer from fraction.
+Syntax requires dot to be present for the constant to be recognized as a floating point value.
 
 ##### Example
 
     3.14 1.25 0.0 32768.0 -0.50 15.2
 
-OCTAL: radix 8 numbers could be specified using two conventions. First
-convention is similar to C, C++ and Java. The number starts with 0 and
-continues with octal digits (0..7). The second convention is native to
-assemblers and is a number with octal digits followed by letter O, lower case
-or upper case. Second mode is included for compatibility, but is not
-recommended. Upper case letterO is easy to confuse with number zero 0.
+__OCTAL__: radix 8 numbers could be specified using two conventions.
+First convention is similar to C, C++ and Java.
+The number starts with `0` and continues with octal digits `0`..`7`.
+The second convention is native to assemblers
+and is a number with octal digits followed by letter O, lower case or upper case.
+Second mode is included for compatibility, but is not recommended.
+Upper case letter `O` is easy to confuse with number zero `0`.
 
 ##### Example
 
     01 077 010 1o 77o 10o
 
-HEXADECIMAL: radix 16 numbers, very popular in assembly programming. They can
-be specified using three different conventions. C, C++ and Java convention is a
-number that starts with  0x prefix and continues with one or more hexadecimal
-digits (0-9 or A-F). Second convention is borrowed from Pascal: a group of
-hexadecimal digits prefixed with $. The third way is native to assemblers: a
-group of hexadecimal digits followed by letter 'H' (lower or upper case). Thit
-this convention requires first digit to always be numeric. If a hexadecimal
-number starts with letter, you should prefix the number with '0'.
+__HEXADECIMAL__: radix 16 numbers, very popular in assembly programming.
+They can be specified using three different conventions.
+
+C, C++ and Java convention is a number that starts with 0x prefix and
+continues with one or more hexadecimal digits: `0`..`9`, `a`..`f` or `A`..`F`.
+
+Second convention is borrowed from Pascal: a group of hexadecimal digits prefixed with $.
+
+The third convention is native to assemblers:
+a group of hexadecimal digits, followed by letter `h` or `H`.
+This convention requires first digit to always be numeric.
+If a hexadecimal number starts with letter, you should prefix the number with '0'.
 
 ##### Example
 
-    0x8a 0xff 0x10 $8a $ff $10 8ah 0ffh 10h
+    0x8a 0xff 0x10
+    $8a $ff $10
+    8ah 0ffh 10h
 
-BINARY: radix 2 numbers are specified as a group of binary digits (0 and 1)
-suffixed with letter B (lower or upper case).
+BINARY: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
 
 ##### Example
 
