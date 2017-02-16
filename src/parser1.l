@@ -77,7 +77,7 @@ extern int prompt_error1(int);
                       exit(4);
                     }
 
-                  p1_include_stack[p1_include_index].name = malloc(0x100);
+                  p1_include_stack[p1_include_index].name = malloc(256);
                   strcpy(p1_include_stack[p1_include_index].name, p1_name);
                   p1_include_stack[p1_include_index].line = yylineno;
                   p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;

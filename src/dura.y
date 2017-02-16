@@ -3832,7 +3832,7 @@ void inicializar_memory()
 void inicializar_sistema()
 {
   inicializar_memory();
-  interno = malloc(0x100);
+  interno = malloc(256);
   interno[0] = 0;
   registrar_simbolo("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 }
@@ -4294,13 +4294,13 @@ int main(int argc, char *argv[])
   }
   clock();
   inicializar_sistema();
-  ensamblador = malloc(0x100);
-  fuente = malloc(0x100);
-  original = malloc(0x100);
-  binario = malloc(0x100);
-  simbolos = malloc(0x100);
-  salida = malloc(0x100);
-  filename = malloc(0x100);
+  ensamblador = malloc(256);
+  fuente = malloc(256);
+  original = malloc(256);
+  binario = malloc(256);
+  simbolos = malloc(256);
+  salida = malloc(256);
+  filename = malloc(256);
   if (!filename)
   {
     fprintf(stderr, "Error: can't open file %s\n", filename);

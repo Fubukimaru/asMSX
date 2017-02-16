@@ -112,7 +112,7 @@ int preprocessor2()
   char *filename;
   int loop = 0;
 
-  filename = malloc(0x100);
+  filename = malloc(256);
   p2_text = malloc(0x1000);
   p2_buffer = malloc(0x4000);
   p2_text[0] = 0;
