@@ -1,5 +1,6 @@
 # asMSX - MSX cross assembler
 
+![asmsx](asmsx.png)
 
 ## 1. Introduction
 
