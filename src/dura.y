@@ -4331,4 +4331,5 @@ int main(int argc, char *argv[])
   yyparse();
 
   remove("~tmppre.?");
+  return 0;
 }
