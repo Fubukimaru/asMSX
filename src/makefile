@@ -14,4 +14,4 @@ lex.parser3.c:	parser3.l
 clean:
 	rm -f *.o *.tab.* lex.*.c asmsx asmsx.exe ~* warn*.txt
 test:	clean asmsx
-	../code/test.sh
+	bash ../code/test.sh
