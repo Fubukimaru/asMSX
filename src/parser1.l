@@ -53,26 +53,41 @@ extern int prompt_error1(int);
                   int i;
 
                   if (p1_tmpstr == NULL)
+                  {
                     prompt_error1(5);
+                    exit(5);  /* code analyzer warning */
+                  }
 
                   if (p1_tmpstr[strlen(p1_tmpstr) - 1] <= 32)
+                  {
                     prompt_error1(1);
+                    exit(1);  /* code analyzer warning */
+                  }
 
                   if (p1_include_index >= MAX_INCLUDE_LEVEL)
+                  {
                     prompt_error1(2);
+                    exit(2);
+                  }
 
                   for (i = 0; i < p1_include_index; i++)
                     if (!strcmp(p1_tmpstr, p1_include_stack[i].name))
+                    {
                       prompt_error1(4);
+                      exit(4);
+                    }
 
-                  p1_include_stack[p1_include_index].name = malloc(0x100);
+                  p1_include_stack[p1_include_index].name = malloc(256);
                   strcpy(p1_include_stack[p1_include_index].name, p1_name);
                   p1_include_stack[p1_include_index].line = yylineno;
                   p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
 
                   yyin = fopen(p1_tmpstr, "r");
                   if (!yyin)
+                  {
                     prompt_error1(3);
+                    exit(3);
+                  }
 
                   printf("Including file %s\n", p1_tmpstr);
                   yylineno = 1;
@@ -176,9 +191,23 @@ int prompt_error1(int c)
 int preprocessor1(char *input_name)
 {
   /* Memory allocation for strings */
-  p1_text = malloc(256);
-  p1_name = malloc(256);
-  p1_tmpstr = malloc(256);
+  if (!(p1_text = malloc(256)))
+  {
+    fprintf(stderr, "Fatal: can't allocate memory for p1_text\n");
+	exit(1);
+  }
+
+  if (!(p1_name = malloc(256)))
+  {
+    fprintf(stderr, "Fatal: can't allocate memory for p1_name\n");
+	exit(1);
+  }
+
+  if (!(p1_tmpstr = malloc(256)))
+  {
+    fprintf(stderr, "Fatal: can't allocate memory for p1_tmpstr\n");
+	exit(1);
+  }
 
   /* Strings initialization */
   p1_text[0] = 0;

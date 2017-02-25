@@ -1,8 +1,13 @@
 # asMSX
-AsMSX, originally developed by Pitpan. Thanks to cjv99 for releasing the source code. More info: https://www.msx.org/wiki/AsMSX.
 
+asMSX is a Z80 cross-assembler for MSX, originally developed by Eduardo "pitpan" A. Robsy Petrus.
+This project is based on [GPLv3 code release by Lucas "cjv99"](https://code.google.com/archive/p/asmsx-license-gpl/).
+MRC wiki has an entry for [asMSX](https://www.msx.org/wiki/asMSX).
 
-#Original ReadMe
+Please read [asMSX manual](man/asmsx-en.md) to learn more.
+
+# Original Spanish README
+
 Estructura de carpetas
 
 - BIN: versiones compiladas de asMSX para Windows y Linux (32 bits).
@@ -17,7 +22,6 @@ Instrucciones para compilar
 - No está de más tener UPX, aunque no es imprescindible
 - Tienes un MAKEFILE sin extensión, compila asMSX para Linux
 - MAKEFILE.WIN (tienes que quitarle la extensión), compila asMSX para Windows
-
 
 Muchas gracias a pitpan el auténtico y genuino creador del compilador asmsx.
 cjv99 un humilde servidor que libera asmsx abierta para su distribución de forma gratuita.
