@@ -20,7 +20,7 @@ static char *p3_text;
 %s line
 %s zilog
 
-%%
+%%          
 
 <INITIAL>"#"line[ \t]*[0-9]+\n {
                   strcat(p3_text, yytext);
@@ -36,12 +36,13 @@ static char *p3_text;
 
 <line>.?zilog[ \t]*\n {
                   strcat(p3_text, yytext);
-                  BEGIN(zilog);
+                  printf("Using standard Zilog syntax\n");
+                  BEGIN(zilog); //Done in main
                 }
 
 <line>.         {
                   strcat(p3_text, yytext);
-                  BEGIN(INITIAL);
+                  BEGIN(INITIAL);                     
                 }
 
 <zilog>\42[^\42\n]+\42  strcat(p3_text, yytext);
@@ -58,7 +59,7 @@ static char *p3_text;
 
 %%
 
-int preprocessor3()
+int preprocessor3(int zilogVal)
 {
   const char* tmp0 = "~tmppre.0";
   FILE *input;
@@ -75,6 +76,13 @@ int preprocessor3()
   yyin = input;
  
   p3_output = fopen("~tmppre.1","w");
+
+	
+
+  if(zilogVal) {
+	printf("Using standard Zilog syntax\n");
+	BEGIN(zilog);
+  }   
 
   yylex();
 

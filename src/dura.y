@@ -70,6 +70,8 @@
 	 v.0.18.1: [11/02/2017]
 	 	Fixed multiple compilation warnings by specifying function parameters and return type explicitly
                 Fixed a problem with cassette file name generation due to uninitialized variable 'binario'
+	 v.0.18.2: [25/05/2017]
+	 	Added -z flag. This flag allows using standard Zilog syntax without setting .ZILOG on the code.
 
 */
 
@@ -4288,14 +4290,24 @@ int d_rand()
 int main(int argc, char *argv[])
 {
   size_t i;
+  int fileArg = 1;
   printf("-------------------------------------------------------------------------------\n");
   printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
-  printf("-------------------------------------------------------------------------------\n");
-  if (argc != 2)
+  printf("-------------------------------------------------------------------------------\n");  
+  if (argc > 3 || argc < 2 )
   {
-    printf("Syntax: asMSX [file.asm]\n");
+    printf("Syntax: asMSX [-z] [file.asm]\n");
     exit(0);
-  }
+  } else if (argc == 3){
+   if (strcmp(argv[1], "-z") == 0) {
+	 zilog = 1;
+	 fileArg = 2;
+   } else {
+	 printf("Syntax: asMSX [-z] [file.asm]\n");
+	 exit(0);
+   }
+  }   
+  
   clock();
   inicializar_sistema();
   ensamblador = malloc(256);
@@ -4311,7 +4323,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  strcpy(filename, argv[1]);
+  strcpy(filename, argv[fileArg]);
   strcpy(ensamblador, filename);
 
   for (i = strlen(filename) - 1; (filename[i] != '.') && i; i--);
@@ -4325,7 +4337,7 @@ int main(int argc, char *argv[])
   strcpy(binario, filename);
 
   preprocessor1(ensamblador);
-  preprocessor3();
+  preprocessor3(zilog);
   sprintf(original, "~tmppre.%i", preprocessor2());
  
   printf("Assembling source file %s\n", ensamblador);
