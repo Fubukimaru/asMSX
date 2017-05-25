@@ -109,7 +109,7 @@ extern FILE *yyin;		/* yyin is defined in Flex-generated lexer */
 extern int yylex(void);
 int preprocessor1(char *);	/* defined in parser1.l */
 int preprocessor2();		/* defined in parser2.l */
-int preprocessor3();		/* defined in parser3.l */
+int preprocessor3(int);		/* defined in parser3.l */
 
 /* forward function declarations to address GCC -Wimplicit-function-declaration warnings */
 void yyerror(char *);
