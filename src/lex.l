@@ -287,65 +287,65 @@ m               {
                       
 0"/"1           return MODO_MULTIPLE;
 
-.?db/[ \t]+     return PSEUDO_DB;
-.?defb/[ \t]+   return PSEUDO_DB;
-.?dt/[ \t]+     return PSEUDO_DB;
-.?deft/[ \t]+   return PSEUDO_DB;
-.?dw/[ \t]+     return PSEUDO_DW;
-.?defw/[ \t]+   return PSEUDO_DW;
-.?ds/[ \t]+     return PSEUDO_DS;
-.?defs/[ \t]+   return PSEUDO_DS;
-.?equ/[ \t]+    return PSEUDO_EQU;
+"."?db/[ \t]+     return PSEUDO_DB;
+"."?defb/[ \t]+   return PSEUDO_DB;
+"."?dt/[ \t]+     return PSEUDO_DB;
+"."?deft/[ \t]+   return PSEUDO_DB;
+"."?dw/[ \t]+     return PSEUDO_DW;
+"."?defw/[ \t]+   return PSEUDO_DW;
+"."?ds/[ \t]+     return PSEUDO_DS;
+"."?defs/[ \t]+   return PSEUDO_DS;
+"."?equ/[ \t]+    return PSEUDO_EQU;
 "="             return PSEUDO_ASSIGN;
-.?page/[ \t\n]+         return PSEUDO_PAGE;
-.?basic/[ \t\n]+        return PSEUDO_BASIC;
-.?rom/[ \t\n]+          return PSEUDO_ROM;
-.?megarom/[ \t\n]+      return PSEUDO_MEGAROM;
-.?msxdos/[ \t\n]+       return PSEUDO_MSXDOS;
-.?sinclair/[ \t\n]+	return PSEUDO_SINCLAIR;
-.?bios/[ \t\n]+         return PSEUDO_BIOS;
-.?org/[ \t\n]+          return PSEUDO_ORG;
-.?start/[ \t\n]+        return PSEUDO_START;
-.?byte/[ \t\n]+         return PSEUDO_BYTE;
-.?word/[ \t\n]+         return PSEUDO_WORD;
-.?incbin/[ \042\t\n]+   return PSEUDO_INCBIN;
-.?skip/[ \t\n]+         return PSEUDO_SKIP;
-.?debug/[ \t\n]+        return PSEUDO_DEBUG;
-.?break/[ \t\n]+        return PSEUDO_BREAK;
-.?breakpoint/[ \t\n]+   return PSEUDO_BREAK;
-.?print/[ \t\n]+        return PSEUDO_PRINT;
-.printdec/[ \t\n]+      return PSEUDO_PRINT;
-.?printhex/[ \t\n]+     return PSEUDO_PRINTHEX;
-.?printfix/[ \t\n]+     return PSEUDO_PRINTFIX;
-.?printtext/[ \042\t\n]+        return PSEUDO_PRINTTEXT;
+"."?page/[ \t\n]+         return PSEUDO_PAGE;
+"."?basic/[ \t\n]+        return PSEUDO_BASIC;
+"."?rom/[ \t\n]+          return PSEUDO_ROM;
+"."?megarom/[ \t\n]+      return PSEUDO_MEGAROM;
+"."?msxdos/[ \t\n]+       return PSEUDO_MSXDOS;
+"."?sinclair/[ \t\n]+	return PSEUDO_SINCLAIR;
+"."?bios/[ \t\n]+         return PSEUDO_BIOS;
+"."?org/[ \t\n]+          return PSEUDO_ORG;
+"."?start/[ \t\n]+        return PSEUDO_START;
+"."?byte/[ \t\n]+         return PSEUDO_BYTE;
+"."?word/[ \t\n]+         return PSEUDO_WORD;
+"."?incbin/[ \042\t\n]+   return PSEUDO_INCBIN;
+"."?skip/[ \t\n]+         return PSEUDO_SKIP;
+"."?debug/[ \t\n]+        return PSEUDO_DEBUG;
+"."?break/[ \t\n]+        return PSEUDO_BREAK;
+"."?breakpoint/[ \t\n]+   return PSEUDO_BREAK;
+"."?print/[ \t\n]+        return PSEUDO_PRINT;
+"."printdec/[ \t\n]+      return PSEUDO_PRINT;
+"."?printhex/[ \t\n]+     return PSEUDO_PRINTHEX;
+"."?printfix/[ \t\n]+     return PSEUDO_PRINTFIX;
+"."?printtext/[ \042\t\n]+        return PSEUDO_PRINTTEXT;
 .printstring/[ \042\t\n]+       return PSEUDO_PRINTTEXT;
-.?size/[ \t\n]+         return PSEUDO_SIZE;
-.?callbios/[ \t\n]+     return PSEUDO_CALLBIOS;
-.?calldos/[ \t\n]+      return PSEUDO_CALLDOS;
-.?phase/[ \t\n]+        return PSEUDO_PHASE;
-.?dephase/[ \t\n]+      return PSEUDO_DEPHASE;
-.?subpage/[ \t\n]+      return PSEUDO_SUBPAGE;
-.?select/[ \t\n]+       return PSEUDO_SELECT;
-.?search/[ \t\n]+       return PSEUDO_SEARCH;
-.?zilog/[ \t\n]+        return PSEUDO_ZILOG;
-.?filename/[ \042\t\n]+ return PSEUDO_FILENAME;
+"."?size/[ \t\n]+         return PSEUDO_SIZE;
+"."?callbios/[ \t\n]+     return PSEUDO_CALLBIOS;
+"."?calldos/[ \t\n]+      return PSEUDO_CALLDOS;
+"."?phase/[ \t\n]+        return PSEUDO_PHASE;
+"."?dephase/[ \t\n]+      return PSEUDO_DEPHASE;
+"."?subpage/[ \t\n]+      return PSEUDO_SUBPAGE;
+"."?select/[ \t\n]+       return PSEUDO_SELECT;
+"."?search/[ \t\n]+       return PSEUDO_SEARCH;
+"."?zilog/[ \t\n]+        return PSEUDO_ZILOG;
+"."?filename/[ \042\t\n]+ return PSEUDO_FILENAME;
 
-.?if/[ \t\n]+           return  PSEUDO_IF;
-.?ifdef/[ \t\n]+        return  PSEUDO_IFDEF;
-.?else/[ \t\n]+         return  PSEUDO_ELSE;
-.?endif/[ \t\n]+        return  PSEUDO_ENDIF;
+"."?if/[ \t\n]+           return  PSEUDO_IF;
+"."?ifdef/[ \t\n]+        return  PSEUDO_IFDEF;
+"."?else/[ \t\n]+         return  PSEUDO_ELSE;
+"."?endif/[ \t\n]+        return  PSEUDO_ENDIF;
 
-.?cas/[ \042\t\n]+ {
+"."?cas/[ \042\t\n]+ {
                   yylval.val = 1;
                   return PSEUDO_CASSETTE;
                 }
 
-.?cassette/[ \042\t\n]+ {
+"."?cassette/[ \042\t\n]+ {
                   yylval.val = 1;
                   return PSEUDO_CASSETTE;
                 }
 
-.?wav/[ \042\t\n]+ {
+"."?wav/[ \042\t\n]+ {
                   yylval.val = 2;
                   return PSEUDO_CASSETTE;
                 }
@@ -416,6 +416,7 @@ random          return PSEUDO_RANDOM;
                   yylval.tex = yytext;
                   return IDENTIFICADOR;
                 }
+
 
 "@@"[a-z0-9_]+  {
                   yylval.tex = yytext;
