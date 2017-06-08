@@ -60,6 +60,7 @@
 			- R800/Z80/8080/Gameboy support
 			- Sinclair ZX Spectrum TAP/TZX file format supported
 			
+	 [Post-Rosby versions]
 	 v.0.17: [19/12/2013]
 		[FIX] Issue 1: Crash on Linux when including additional .asm files (by theNestruo)
 		[FIX] Issue 5: Non-zero exit code on errors (by theNestruo)
@@ -73,7 +74,8 @@
 	 v.0.18.2: [25/05/2017]
 	 	Added -z flag. This flag allows using standard Zilog syntax without setting .ZILOG on the code.
 	 	Now local labels can be also set using .Local_Label along the previous @@Local_Label.
-
+		Now .instruction are correctly parsed. For instance, before it was allowed to set "azilog", "bzilog"
+		instead of only allowing ".zilog" or "zilog". 
 */
 
 /* Cabecera y definiciones para C */
