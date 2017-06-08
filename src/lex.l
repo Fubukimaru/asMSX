@@ -418,7 +418,8 @@ random          return PSEUDO_RANDOM;
                 }
 
 
-"@@"[a-z0-9_]+  {
+("@@"|".")[a-z0-9_]+  {
+				  //v.0.18.2 Labels are checked the last, therfore we can use "." freely.
                   yylval.tex = yytext;
                   return LOCAL_IDENTIFICADOR;
                 }

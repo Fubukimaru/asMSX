@@ -72,6 +72,7 @@
                 Fixed a problem with cassette file name generation due to uninitialized variable 'binario'
 	 v.0.18.2: [25/05/2017]
 	 	Added -z flag. This flag allows using standard Zilog syntax without setting .ZILOG on the code.
+	 	Now local labels can be also set using .Local_Label along the previous @@Local_Label.
 
 */
 
