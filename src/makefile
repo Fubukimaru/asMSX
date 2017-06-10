@@ -18,3 +18,5 @@ clean:
 	rm -f *.o *.tab.* lex.*.c asmsx asmsx.exe ~* warn*.txt
 test:	clean asmsx
 	bash ../code/test.sh
+install:	asmsx
+	sudo cp asmsx /usr/local/bin

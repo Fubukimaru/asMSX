@@ -40,14 +40,19 @@ extern int prompt_error1(int);
 
 <INITIAL>\42[^\42]*\42  strcat(p1_text, yytext);
 
-<INITIAL>.?include/[ \042\t]+ {
+<INITIAL>"."?include/[ \042\t]+ {
+				  printf("DEBUG: NULL to p1_tmpstr\n");
+                  //if (p1_tmpstr != NULL) free(p1_tmpstr); //DEBUG
                   p1_tmpstr = NULL;
                   BEGIN(inclusion);
                 }
 
 <inclusion>[ \t]*       /* strip spaces and tabs */
 
-<inclusion>[^ \t\n]+    p1_tmpstr = strtok(yytext, "\42");
+<inclusion>[^ \t\n]+    {
+					printf("DEBUG: ASSIGN strok to p1_tmpstr\n");
+					p1_tmpstr = strtok(yytext, "\42");
+				}
 
 <inclusion>\n   {
                   int i;
@@ -82,6 +87,9 @@ extern int prompt_error1(int);
                   p1_include_stack[p1_include_index].line = yylineno;
                   p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
 
+				  printf("DEBUG: INCLUDING FILE!!\n");
+
+				printf("DEBUG: LOADING p1_tmpstr\n");
                   yyin = fopen(p1_tmpstr, "r");
                   if (!yyin)
                   {
@@ -90,10 +98,14 @@ extern int prompt_error1(int);
                   }
 
                   printf("Including file %s\n", p1_tmpstr);
-                  yylineno = 1;
+                  yylineno = 1;                  
+                  printf("DEBUG: STR COPY p1_tmpstr\n");
                   strcpy(p1_name, p1_tmpstr);
+                  printf("DEBUG: AFTER STR COPY\n");
                   fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
                   yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+                  
+                  printf("DEBUG: DONE INCLUDING FILE!!\n");
                   BEGIN(INITIAL);
                 }
 
@@ -131,6 +143,7 @@ extern int prompt_error1(int);
 <pascal_comment>"}"     BEGIN(INITIAL);
 
 <INITIAL>\42    {
+				  printf("DEBUG: INITIAL!!\n");
                   strcat(p1_text, yytext);
                   BEGIN(chain);
                 }
@@ -203,11 +216,15 @@ int preprocessor1(char *input_name)
 	exit(1);
   }
 
+  printf("DEBUG: MALLOC p1_tmpstr\n");
+  /*
   if (!(p1_tmpstr = malloc(256)))
   {
     fprintf(stderr, "Fatal: can't allocate memory for p1_tmpstr\n");
 	exit(1);
-  }
+  }*/ // Fix 0.18.3 - It doesn't use this as strtok already gives the reserved memory
+	  // ToDo: Check with valgrind.
+  
 
   /* Strings initialization */
   p1_text[0] = 0;
@@ -239,7 +256,8 @@ int preprocessor1(char *input_name)
   /* Free string pointers */
   free(p1_text);
   free(p1_name);
-  free(p1_tmpstr);
+  //free(p1_tmpstr); // 0.18.3 - Not needed as malloc is not done.
+  
 
   return 0;
 }
