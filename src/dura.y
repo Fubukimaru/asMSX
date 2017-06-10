@@ -90,8 +90,8 @@
 #include <time.h>
 #include <math.h>
 
-#define VERSION "0.18.1"
-#define DATE "11/02/2017"
+#define VERSION "0.18.3"
+#define DATE "10/06/2017"
 
 #define Z80 0
 #define ROM 1
