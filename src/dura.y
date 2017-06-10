@@ -76,6 +76,9 @@
 	 	Now local labels can be also set using .Local_Label along the previous @@Local_Label.
 		Now .instruction are correctly parsed. For instance, before it was allowed to set "azilog", "bzilog"
 		instead of only allowing ".zilog" or "zilog". 
+	 v.0.18.3: [10/06/2017]
+		Fixed induced bug of February 5th. Parser 1 p1_tmpstr wasn't using malloc memory. Instead it uses
+		strtok allocated memory. This is never deleted, we must check this in the future to prevent memory leaks.
 */
 
 /* Cabecera y definiciones para C */
