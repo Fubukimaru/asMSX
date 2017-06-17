@@ -64,7 +64,7 @@ Mathematical expression evaluation is switched to square brackets as separators.
 asMSX is a command-line program, so the easiest way to use it is from command prompt.
 To assemble a file use the following command:
 
-    asmsx filename.asm
+    asmsx [Optional params] filename.asm
 
 If the extension is not provided, asMSX will assume ".asm" as default.
 Source code files are expected to be plain 8-bit ASCII text files.
@@ -97,6 +97,11 @@ asMSX will generate one or more of the following binary files:
 - __filename.wav__: a 16 bit 44100Hz (CD quality) stereo audio file.
 It can be loaded on real MSX computer via "tape in" port.
 Use `BLOAD"CAS:",R` in MSX BASIC.
+
+#### 1.5.1 Commandline parameters
+In asMSX there are the following allowed parameters:
+
+- -z: Enables standard Z80 Zilog syntax without having .zilog directive in the code. 
 
 
 ## 2. Assembly language
@@ -149,7 +154,7 @@ loop001:
 
 Colon defines a label and sets its value equal to memory address of the next opcode or data value.
 If you want to get address of label, use its name without the colon.
-You can define local labels by prefixing label name with two "at" symbols `@@`.
+You can define local labels by prefixing label name with two "at" symbols `@@` or one "dot".
 Local label name is only valid up to next global label.
 This allows to reuse label names for trivial tasks like loops,
 so you don't have to invent a bunch of different names.
@@ -159,13 +164,27 @@ The following is valid code:
 ```
 Function1:
         ...
-@@loop:
+@@loop: 
         ...
 Function2:
         ...
 @@loop:
         ...
 ```
+
+OR
+
+```
+Function1:
+        ...
+.loop:	
+        ...
+Function2:
+        ...
+.loop:
+        ...
+```
+
 
 
 ### 2.3. Numeric expression
