@@ -77,7 +77,7 @@
 		Now .instruction are correctly parsed. For instance, before it was allowed to set "azilog", "bzilog"
 		instead of only allowing ".zilog" or "zilog". 
 	 v.0.18.3: [10/06/2017]
-		Fixed induced bug of February 5th. Parser 1 p1_tmpstr wasn't using malloc memory. Instead it uses
+		Fixed induced bug of February 5th when using INCLUDE. Parser 1 p1_tmpstr wasn't using malloc memory. Instead it uses
 		strtok allocated memory. This is never deleted, we must check this in the future to prevent memory leaks.
 	 v.0.18.4: [18/06/2017]
 		Unterminated string hotfix. Find a better way to solve it. Probably a more flex-like fix.
