@@ -412,7 +412,7 @@ random          return PSEUDO_RANDOM;
                   return TEXTO;
                 }
 
-[a-z_]+[a-z0-9_]* {
+[a-z_][a-z0-9_]* {
                   yylval.tex = yytext;
                   return IDENTIFICADOR;
                 }
