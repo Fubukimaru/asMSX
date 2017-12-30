@@ -6,6 +6,8 @@ MRC wiki has an entry for [asMSX](https://www.msx.org/wiki/asMSX).
 
 Please read [asMSX manual](man/asmsx-en.md) to learn more.
 
+You can find latest releade [here](https://github.com/Fubukimaru/asMSX/releases/).
+
 # Original Spanish README
 
 Estructura de carpetas
