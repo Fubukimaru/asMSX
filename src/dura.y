@@ -121,7 +121,7 @@ int preprocessor3(int);		/* defined in parser3.l */
 
 /* forward function declarations to address GCC -Wimplicit-function-declaration warnings */
 void yyerror(char *);
-void registrar_etiqueta(char *);
+void register_label(char *);
 void registrar_local(char *);
 void type_rom();
 void type_megarom(int);
@@ -418,7 +418,7 @@ linea:    pseudo_instruccion EOL
 ;
 
 etiqueta: IDENTIFICADOR ':' {
-            registrar_etiqueta(strtok($1, ":"));
+            register_label(strtok($1, ":"));
           }
         | LOCAL_IDENTIFICADOR ':' {
             registrar_local(strtok($1, ":"));
@@ -3333,7 +3333,7 @@ void salto_relativo(int direccion)
   guardar_byte(salto);
 }
 
-void registrar_etiqueta(char *nombre)
+void register_label(char *nombre)
 {
   int i;
 
