@@ -131,7 +131,7 @@ void type_sinclair();
 void msx_bios();
 void error_message(int);
 void locate_32k();
-void establecer_subpagina(int, int);
+void create_subpage(int, int);
 void seleccionar_pagina_directa(int, int);
 void seleccionar_pagina_registro(int, int);
 void guardar_byte(int);
@@ -487,7 +487,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if (type != MEGAROM)
                 error_message(40);
-              establecer_subpagina($2, $4);
+              create_subpage($2, $4);
             }
           }
         | PSEUDO_SELECT valor PSEUDO_AT valor {
@@ -3942,7 +3942,7 @@ void type_msxdos()
   ePC = 0x0100;
 }
 
-void establecer_subpagina(int n, int dir)
+void create_subpage(int n, int dir)
 {
   if (n > lastpage)
     lastpage = n;
