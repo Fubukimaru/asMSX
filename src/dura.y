@@ -135,7 +135,7 @@ void create_subpage(int, int);
 void select_page_direct(int, int);
 void select_page_register(int, int);
 void write_byte(int);
-void guardar_word(int);
+void write_word(int);
 void registrar_simbolo(char *, int, int);
 void registrar_variable(char *, int);
 void incluir_binario(char *, int, int);
@@ -515,12 +515,12 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               write_byte(0xfd);
               write_byte(0x2a);
-              guardar_word(0xfcc0);
+              write_word(0xfcc0);
               write_byte(0xdd);
               write_byte(0x21);
-              guardar_word($2);
+              write_word($2);
               write_byte(0xcd);
-              guardar_word(0x001c);
+              write_word(0x001c);
             }
           }
         | PSEUDO_CALLDOS valor {
@@ -531,7 +531,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               write_byte(0x0e);
               write_byte($2);
               write_byte(0xcd);
-              guardar_word(0x0005);
+              write_word(0x0005);
             }
           }
         | PSEUDO_DB listado_8bits {
@@ -643,7 +643,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               write_byte(0x40);
               write_byte(0x18);
               write_byte(0x02);
-              guardar_word($2);
+              write_word($2);
             }
           }
         | PSEUDO_PRINTTEXT TEXTO {
@@ -903,7 +903,7 @@ mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {
             if ($2 != 7)
               error_message(4);
             write_byte(0x3a);
-            guardar_word($5);
+            write_word($5);
           }
         | MNEMO_LD REGISTRO_IND_BC ',' REGISTRO {
             if ($4 != 7)
@@ -919,7 +919,7 @@ mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {
             if ($6 != 7)
               error_message(5);
             write_byte(0x32);
-            guardar_word($3);
+            write_word($3);
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_I {
             if ($2 != 7)
@@ -949,17 +949,17 @@ mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {
 
 mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
             write_byte(0x01 | ($2 << 4));
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_LD REGISTRO_16_IX ',' valor_16bits {
             write_byte(0xdd);
             write_byte(0x21);
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_LD REGISTRO_16_IY ',' valor_16bits {
             write_byte(0xfd);
             write_byte(0x21);
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_LD REGISTRO_PAR ',' '[' valor_16bits ']' {
             if ($2 != 2)
@@ -969,17 +969,17 @@ mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
             }
             else 
               write_byte(0x2a);
-            guardar_word($5);
+            write_word($5);
           }
         | MNEMO_LD REGISTRO_16_IX ',' '[' valor_16bits ']' {
             write_byte(0xdd);
             write_byte(0x2a);
-            guardar_word($5);
+            write_word($5);
           }
         | MNEMO_LD REGISTRO_16_IY ',' '[' valor_16bits ']' {
             write_byte(0xfd);
             write_byte(0x2a);
-            guardar_word($5);
+            write_word($5);
           }
         | MNEMO_LD '[' valor_16bits ']' ',' REGISTRO_PAR {
             if ($6 != 2)
@@ -989,26 +989,26 @@ mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
             }
             else
               write_byte(0x22);
-            guardar_word($3);
+            write_word($3);
           }
         | MNEMO_LD '[' valor_16bits ']' ',' REGISTRO_16_IX {
             write_byte(0xdd);
             write_byte(0x22);
-            guardar_word($3);
+            write_word($3);
           }
         | MNEMO_LD '[' valor_16bits ']' ',' REGISTRO_16_IY {
             write_byte(0xfd);
             write_byte(0x22);
-            guardar_word($3);
+            write_word($3);
           }
         | MNEMO_LD_SP ',' '[' valor_16bits ']' {
             write_byte(0xed);
             write_byte(0x7b);
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_LD_SP ',' valor_16bits {
             write_byte(0x31);
-            guardar_word($3);
+            write_word($3);
           }
         | MNEMO_LD_SP ',' REGISTRO_PAR {
             if ($3 != 2)
@@ -2587,17 +2587,17 @@ mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
 
 mnemo_jump: MNEMO_JP valor_16bits {
             write_byte(0xc3);
-            guardar_word($2);
+            write_word($2);
           }
         | MNEMO_JP CONDICION ',' valor_16bits {
             write_byte(0xc2 | ($2 << 3));
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_JP REGISTRO ',' valor_16bits {
             if ($2 != 1)
               error_message(7);
             write_byte(0xda);
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_JR valor_16bits {
             write_byte(0x18);
@@ -2652,17 +2652,17 @@ mnemo_jump: MNEMO_JP valor_16bits {
 
 mnemo_call: MNEMO_CALL valor_16bits {
             write_byte(0xcd);
-            guardar_word($2);
+            write_word($2);
           }
         | MNEMO_CALL CONDICION ',' valor_16bits {
             write_byte(0xc4 | ($2 << 3));
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_CALL REGISTRO ',' valor_16bits {
             if ($2 != 1)
               error_message(7);
             write_byte(0xdc);
-            guardar_word($4);
+            write_word($4);
           }
         | MNEMO_RET {
             write_byte(0xc9);
@@ -2921,13 +2921,13 @@ listado_8bits : valor_8bits {
 ;
 
 listado_16bits : valor_16bits {
-            guardar_word($1);
+            write_word($1);
           }
         | TEXTO {
             guardar_texto($1);
           }
         | listado_16bits ',' valor_16bits {
-            guardar_word($3);
+            write_word($3);
           }
         | listado_16bits ',' TEXTO {
             guardar_texto($3);
@@ -3305,7 +3305,7 @@ void guardar_texto(char *texto)
     write_byte((int)texto[t]);
 }
 
-void guardar_word(int w)
+void write_word(int w)
 {
   write_byte(w & 0xff);
   write_byte((w >> 8) & 0xff);
@@ -3647,7 +3647,7 @@ void guardar_binario()
   {
     binario = strcat(binario, ".rom");
     PC = dir_inicio + 2;
-    guardar_word(inicio);
+    write_word(inicio);
     if (!size)
       size = 8 * ((dir_final - dir_inicio + 8191) / 8192);
   }
@@ -3661,7 +3661,7 @@ void guardar_binario()
     PC = 0x4002;
     subpage = 0x00;
     pageinit = 0x4000;
-    guardar_word(inicio);
+    write_word(inicio);
   }
   else if (type == SINCLAIR)
     binario = strcat(binario, ".tap");
@@ -4020,7 +4020,7 @@ void select_page_direct(int n, int dir)
   write_byte(0x3e);
   write_byte(n);
   write_byte(0x32);
-  guardar_word(sel);
+  write_word(sel);
   write_byte(0xf1);
 }
 
@@ -4037,7 +4037,7 @@ void select_page_register(int r, int dir)
   }
 
   write_byte(0x32);
-  guardar_word(sel);
+  write_word(sel);
 
   if (r != 7)
     write_byte(0xf1);			/* POP AF */
