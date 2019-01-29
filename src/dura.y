@@ -129,7 +129,7 @@ void type_basic();
 void type_msxdos();
 void type_sinclair();
 void msx_bios();
-void hacer_error(int);
+void error_message(int);
 void localizar_32k();
 void establecer_subpagina(int, int);
 void seleccionar_pagina_directa(int, int);
@@ -476,7 +476,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               subpage = 0x100;
               if ($2 > 3)
-                hacer_error(22);
+                error_message(22);
               else
               {
                 PC = 0x4000 * $2;
@@ -488,7 +488,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if ((type != MEGAROM) && (type != ROM))
-                hacer_error(41);
+                error_message(41);
               localizar_32k();
             }
           }
@@ -496,7 +496,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if (type != MEGAROM)
-                hacer_error(40);
+                error_message(40);
               establecer_subpagina($2, $4);
             }
           }
@@ -504,7 +504,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if (type != MEGAROM)
-                hacer_error(40);
+                error_message(40);
               seleccionar_pagina_directa($2, $4);
             }
           }
@@ -512,7 +512,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if (type != MEGAROM)
-                hacer_error(40);
+                error_message(40);
               seleccionar_pagina_registro($2, $4);
             }
           }
@@ -537,7 +537,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if (type != MSXDOS)
-                hacer_error(25);
+                error_message(25);
               guardar_byte(0x0e);
               guardar_byte($2);
               guardar_byte(0xcd);
@@ -558,7 +558,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               PC += $2;
               ePC += $2;
               if (PC > 0xffff)
-                hacer_error(1);
+                error_message(1);
             }
           }
         | PSEUDO_BYTE {
@@ -591,7 +591,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if ($4 <= 0)
-                hacer_error(30);
+                error_message(30);
               incluir_binario($2, $4, 0);
             }
           }
@@ -599,7 +599,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if ($4 <= 0)
-                hacer_error(30);
+                error_message(30);
               incluir_binario($2, 0, $4);
             }
           }
@@ -607,7 +607,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if (($4 <= 0) || ($6 <= 0))
-                hacer_error(30);
+                error_message(30);
               incluir_binario($2,$4,$6);
             }
           }
@@ -615,7 +615,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level])
             {
               if (($4 <= 0) || ($6 <= 0))
-                hacer_error(30);
+                error_message(30);
               incluir_binario($2, $6, $4);
             }
           }
@@ -628,7 +628,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             type = 0;
             zilog = 0;
             if (conditional_level)
-              hacer_error(45);
+              error_message(45);
           }
         | PSEUDO_DEBUG TEXTO {
             if (conditional[conditional_level])
@@ -720,7 +720,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             if (conditional[conditional_level] && (pass == 2))
             {
               if (size > 0)
-                hacer_error(15);
+                error_message(15);
               else
                 size = $2;
             }
@@ -728,7 +728,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
         | PSEUDO_IF valor {
             if (conditional_level == 15)
 			{
-              hacer_error(44);
+              error_message(44);
 			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
 			}
             conditional_level++;
@@ -740,7 +740,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
         | PSEUDO_IFDEF IDENTIFICADOR {
             if (conditional_level == 15)
 			{
-              hacer_error(44);
+              error_message(44);
 			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
 			}
             conditional_level++;
@@ -751,12 +751,12 @@ pseudo_instruccion: PSEUDO_ORG valor {
           }
         | PSEUDO_ELSE {
             if (!conditional_level)
-              hacer_error(42);
+              error_message(42);
             conditional[conditional_level] = (conditional[conditional_level] ^ 1) & conditional[conditional_level - 1];
           }
         | PSEUDO_ENDIF {
             if (!conditional_level)
-              hacer_error(43);
+              error_message(43);
             conditional_level--;
           }
         | PSEUDO_CASSETTE TEXTO {
@@ -813,13 +813,13 @@ mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_IX {
             if (($2 > 3) && ($2 != 7))
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0x40 | ($2 << 3) | $4);
           }
         | MNEMO_LD REGISTRO_IX ',' REGISTRO {
             if (($4 > 3) && ($4 != 7))
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0x40 | ($2 << 3) | $4);
           }
@@ -829,13 +829,13 @@ mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_IY {
             if (($2 > 3) && ($2 != 7))
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0x40 | ($2 << 3) | $4);
           }
         | MNEMO_LD REGISTRO_IY ',' REGISTRO {
             if (($4 > 3) && ($4 != 7))
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0x40 | ($2 << 3) | $4);
           }
@@ -901,57 +901,57 @@ mnemo_load8bit: MNEMO_LD REGISTRO ',' REGISTRO {
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_IND_BC {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x0a);
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_IND_DE {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x1a);
           }
         | MNEMO_LD REGISTRO ',' '[' valor_16bits ']' {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x3a);
             guardar_word($5);
           }
         | MNEMO_LD REGISTRO_IND_BC ',' REGISTRO {
             if ($4 != 7)
-              hacer_error(5);
+              error_message(5);
             guardar_byte(0x02);
           }
         | MNEMO_LD REGISTRO_IND_DE ',' REGISTRO {
             if ($4 != 7)
-              hacer_error(5);
+              error_message(5);
             guardar_byte(0x12);
           }
         | MNEMO_LD '[' valor_16bits ']' ',' REGISTRO {
             if ($6 != 7)
-              hacer_error(5);
+              error_message(5);
             guardar_byte(0x32);
             guardar_word($3);
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_I {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xed);
             guardar_byte(0x57);
           }
         | MNEMO_LD REGISTRO ',' REGISTRO_R {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xed);
             guardar_byte(0x5f);
           }
         | MNEMO_LD REGISTRO_I ',' REGISTRO {
             if ($4 != 7)
-              hacer_error(5);
+              error_message(5);
             guardar_byte(0xed);
             guardar_byte(0x47);
           }
         | MNEMO_LD REGISTRO_R ',' REGISTRO {
             if ($4 != 7)
-              hacer_error(5);
+              error_message(5);
             guardar_byte(0xed);
             guardar_byte(0x4f);
           }
@@ -1022,7 +1022,7 @@ mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
           }
         | MNEMO_LD_SP ',' REGISTRO_PAR {
             if ($3 != 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xf9);
           }
         | MNEMO_LD_SP ',' REGISTRO_16_IX {
@@ -1035,7 +1035,7 @@ mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
           }
         | MNEMO_PUSH REGISTRO_PAR {
             if ($2 == 3)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xc5 | ($2 << 4));
           }
         | MNEMO_PUSH REGISTRO_AF {
@@ -1051,7 +1051,7 @@ mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
           }
         | MNEMO_POP REGISTRO_PAR {
             if ($2 == 3)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xc1 | ($2 << 4));
           }
         | MNEMO_POP REGISTRO_AF {
@@ -1069,7 +1069,7 @@ mnemo_load16bit: MNEMO_LD REGISTRO_PAR ',' valor_16bits {
 
 mnemo_exchange: MNEMO_EX REGISTRO_PAR ',' REGISTRO_PAR {
             if ((($2 != 1) || ($4 != 2)) && (($2 != 2) || ($4 != 1)))
-              hacer_error(2);
+              error_message(2);
             if (zilog && ($2 != 1))
               hacer_advertencia(5);
             guardar_byte(0xeb);
@@ -1082,7 +1082,7 @@ mnemo_exchange: MNEMO_EX REGISTRO_PAR ',' REGISTRO_PAR {
           }
         | MNEMO_EX REGISTRO_IND_SP ',' REGISTRO_PAR {
             if ($4 != 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xe3);
           }
         | MNEMO_EX REGISTRO_IND_SP ',' REGISTRO_16_IX {
@@ -1129,98 +1129,98 @@ mnemo_exchange: MNEMO_EX REGISTRO_PAR ',' REGISTRO_PAR {
 
 mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x80|$4);
           }
         | MNEMO_ADD REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdd);
             guardar_byte(0x80 | $4);
           }
         | MNEMO_ADD REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xfd);
             guardar_byte(0x80 | $4);
           }
         | MNEMO_ADD REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xc6);
             guardar_byte($4);
           }
         | MNEMO_ADD REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x86);
           }
         | MNEMO_ADD REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdd);
             guardar_byte(0x86);
             guardar_byte($4);
           }
         | MNEMO_ADD REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xfd);
             guardar_byte(0x86);
             guardar_byte($4);
           }
         | MNEMO_ADC REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x88 | $4);
           }
         | MNEMO_ADC REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdd);
             guardar_byte(0x88 | $4);
           }
         | MNEMO_ADC REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xfd);
             guardar_byte(0x88 | $4);
           }
         | MNEMO_ADC REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xce);
             guardar_byte($4);
           }
         | MNEMO_ADC REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x8e);
           }
         | MNEMO_ADC REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdd);
             guardar_byte(0x8e);
             guardar_byte($4);
           }
         | MNEMO_ADC REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xfd);
             guardar_byte(0x8e);
             guardar_byte($4);
           }
         | MNEMO_SUB REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0x90 | $4);
           }
         | MNEMO_SUB REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1228,7 +1228,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_SUB REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1236,7 +1236,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_SUB REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xd6);
@@ -1244,14 +1244,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_SUB REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0x96);
           }
         | MNEMO_SUB REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1260,7 +1260,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_SUB REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1269,56 +1269,56 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_SBC REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x98 | $4);
           }
         | MNEMO_SBC REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdd);
             guardar_byte(0x98 | $4);
           }
         | MNEMO_SBC REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xfd);
             guardar_byte(0x98 | $4);
           }
         | MNEMO_SBC REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xde);
             guardar_byte($4);
           }
         | MNEMO_SBC REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0x9e);
           }
         | MNEMO_SBC REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdd);
             guardar_byte(0x9e);
             guardar_byte($4);
           }
         | MNEMO_SBC REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xfd);
             guardar_byte(0x9e);
             guardar_byte($4);
           }
         | MNEMO_AND REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xa0 | $4);
           }
         | MNEMO_AND REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1326,7 +1326,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_AND REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1334,7 +1334,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_AND REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xe6);
@@ -1342,14 +1342,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_AND REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xa6);
           }
         | MNEMO_AND REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1358,7 +1358,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_AND REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1367,14 +1367,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_OR REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xb0 | $4);
           }
         | MNEMO_OR REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog) 
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1382,7 +1382,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_OR REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1390,7 +1390,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_OR REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xf6);
@@ -1398,14 +1398,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_OR REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xb6);
           }
         | MNEMO_OR REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1414,7 +1414,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_OR REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1423,14 +1423,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_XOR REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xa8 | $4);
           }
         | MNEMO_XOR REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1438,7 +1438,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_XOR REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1446,7 +1446,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_XOR REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xee);
@@ -1454,14 +1454,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_XOR REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xae);
           }
         | MNEMO_XOR REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1470,7 +1470,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_XOR REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1479,14 +1479,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_CP REGISTRO ',' REGISTRO {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xb8 | $4);
           }
         | MNEMO_CP REGISTRO ',' REGISTRO_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
               guardar_byte(0xdd);
@@ -1494,7 +1494,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_CP REGISTRO ',' REGISTRO_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1502,7 +1502,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_CP REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfe);
@@ -1510,14 +1510,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_CP REGISTRO ',' REGISTRO_IND_HL {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xbe);
           }
         | MNEMO_CP REGISTRO ',' indireccion_IX {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdd);
@@ -1526,7 +1526,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
           }
         | MNEMO_CP REGISTRO ',' indireccion_IY {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xfd);
@@ -1851,24 +1851,24 @@ mnemo_arit8bit: MNEMO_ADD REGISTRO ',' REGISTRO {
 
 mnemo_arit16bit: MNEMO_ADD REGISTRO_PAR ',' REGISTRO_PAR {
             if ($2 != 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0x09 | ($4 << 4));
           }
         | MNEMO_ADC REGISTRO_PAR ',' REGISTRO_PAR {
             if ($2 != 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xed);
             guardar_byte(0x4a | ($4 << 4));
           }
         | MNEMO_SBC REGISTRO_PAR ',' REGISTRO_PAR {
             if ($2 != 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xed);
             guardar_byte(0x42 | ($4 << 4));
           }
         | MNEMO_ADD REGISTRO_16_IX ',' REGISTRO_PAR {
             if ($4 == 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0x09 | ($4 << 4));
           }
@@ -1878,7 +1878,7 @@ mnemo_arit16bit: MNEMO_ADD REGISTRO_PAR ',' REGISTRO_PAR {
           }
         | MNEMO_ADD REGISTRO_16_IY ',' REGISTRO_PAR {
             if ($4 == 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0x09 | ($4 << 4));
           }
@@ -1940,7 +1940,7 @@ mnemo_general: MNEMO_DAA {
           }
         | MNEMO_IM valor_8bits {
             if (($2 < 0) || ($2 > 2))
-              hacer_error(3);
+              error_message(3);
             guardar_byte(0xed);
             if ($2 == 0)
               guardar_byte(0x46);
@@ -1973,7 +1973,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RLC indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -1981,7 +1981,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RLC indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2021,7 +2021,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RL indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2029,7 +2029,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RL indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2069,7 +2069,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RRC indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2077,7 +2077,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RRC indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2117,7 +2117,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RR indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2125,7 +2125,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_RR indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2165,7 +2165,7 @@ mnemo_rotate: MNEMO_RLCA {
           } 
         | MNEMO_SLA indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2173,7 +2173,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SLA indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2213,7 +2213,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SLL indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2221,7 +2221,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SLL indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2261,7 +2261,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SRA indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2269,7 +2269,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SRA indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2309,7 +2309,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SRL indireccion_IX ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2317,7 +2317,7 @@ mnemo_rotate: MNEMO_RLCA {
           }
         | MNEMO_SRL indireccion_IY ',' REGISTRO {
             if ($4 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($2);
@@ -2399,7 +2399,7 @@ mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
           }
         | MNEMO_SET valor_3bits ',' indireccion_IX ',' REGISTRO {
             if ($6 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($4);
@@ -2407,7 +2407,7 @@ mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
           }
         | MNEMO_SET valor_3bits ',' indireccion_IY ',' REGISTRO {
             if ($6 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($4);
@@ -2447,7 +2447,7 @@ mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
           }
         | MNEMO_RES valor_3bits ',' indireccion_IX ',' REGISTRO {
             if ($6 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xdd);
             guardar_byte(0xcb);
             guardar_byte($4);
@@ -2455,7 +2455,7 @@ mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
           }
         | MNEMO_RES valor_3bits ',' indireccion_IY ',' REGISTRO {
             if ($6 == 6)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xfd);
             guardar_byte(0xcb);
             guardar_byte($4);
@@ -2477,13 +2477,13 @@ mnemo_bits: MNEMO_BIT valor_3bits ',' REGISTRO {
 
 mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             guardar_byte(0xdb);
             guardar_byte($5);
           }
         | MNEMO_IN REGISTRO ',' valor_8bits {
             if ($2 != 7)
-              hacer_error(4);
+              error_message(4);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xdb);
@@ -2491,13 +2491,13 @@ mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
           }
         | MNEMO_IN REGISTRO ',' '[' REGISTRO ']' {
             if ($5 != 1)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xed);
             guardar_byte(0x40 | ($2 << 3));
           }
         | MNEMO_IN '[' REGISTRO ']'{
             if ($3 != 1)
-              hacer_error(2);
+              error_message(2);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xed);
@@ -2505,7 +2505,7 @@ mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
           }
         | MNEMO_IN REGISTRO_F ',' '[' REGISTRO ']' {
             if ($5 != 1)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xed);
             guardar_byte(0x70);
           }
@@ -2527,13 +2527,13 @@ mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
           }
         | MNEMO_OUT '[' valor_8bits ']' ',' REGISTRO {
             if ($6 != 7)
-              hacer_error(5);
+              error_message(5);
             guardar_byte(0xd3);
             guardar_byte($3);
           }
         | MNEMO_OUT valor_8bits ',' REGISTRO {
             if ($4 != 7)
-              hacer_error(5);
+              error_message(5);
             if (zilog)
               hacer_advertencia(5);
             guardar_byte(0xd3);
@@ -2541,15 +2541,15 @@ mnemo_io: MNEMO_IN REGISTRO ',' '[' valor_8bits ']' {
           }
         | MNEMO_OUT '[' REGISTRO ']' ',' REGISTRO {
             if ($3 != 1)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xed);
             guardar_byte(0x41 | ($6 << 3));
           }
         | MNEMO_OUT '[' REGISTRO ']' ',' valor_8bits {
             if ($3 != 1)
-              hacer_error(2);
+              error_message(2);
             if ($6 != 0)
-              hacer_error(6);
+              error_message(6);
             guardar_byte(0xed);
             guardar_byte(0x71);
           }
@@ -2605,7 +2605,7 @@ mnemo_jump: MNEMO_JP valor_16bits {
           }
         | MNEMO_JP REGISTRO ',' valor_16bits {
             if ($2 != 1)
-              hacer_error(7);
+              error_message(7);
             guardar_byte(0xda);
             guardar_word($4);
           }
@@ -2615,7 +2615,7 @@ mnemo_jump: MNEMO_JP valor_16bits {
           }
         | MNEMO_JR REGISTRO ',' valor_16bits {
             if ($2 != 1)
-              hacer_error(7);
+              error_message(7);
             guardar_byte(0x38);
             salto_relativo($4);
           }
@@ -2627,12 +2627,12 @@ mnemo_jump: MNEMO_JP valor_16bits {
             else if ($2 == 0)
               guardar_byte(0x20);
             else
-              hacer_error(9);
+              error_message(9);
             salto_relativo($4);
           }
         | MNEMO_JP REGISTRO_PAR {
             if ($2 != 2)
-              hacer_error(2);
+              error_message(2);
             guardar_byte(0xe9);
           }
         | MNEMO_JP REGISTRO_IND_HL {
@@ -2670,7 +2670,7 @@ mnemo_call: MNEMO_CALL valor_16bits {
           }
         | MNEMO_CALL REGISTRO ',' valor_16bits {
             if ($2 != 1)
-              hacer_error(7);
+              error_message(7);
             guardar_byte(0xdc);
             guardar_word($4);
           }
@@ -2682,7 +2682,7 @@ mnemo_call: MNEMO_CALL valor_16bits {
           }
         | MNEMO_RET REGISTRO {
             if ($2 != 1)
-              hacer_error(7);
+              error_message(7);
             guardar_byte(0xd8);
           }
         | MNEMO_RETI {
@@ -2695,7 +2695,7 @@ mnemo_call: MNEMO_CALL valor_16bits {
           }
         | MNEMO_RST valor_8bits {
             if (($2 % 8 != 0) || ($2 / 8 > 7) || ($2 / 8 < 0))
-              hacer_error(10);
+              error_message(10);
             guardar_byte(0xc7 | (($2 / 8) << 3));
           }
 
@@ -2745,13 +2745,13 @@ valor: NUMERO {
           }
         | valor '/' valor {
             if (!$3)
-              hacer_error(1);
+              error_message(1);
             else
               $$ = $1 / $3;
           }
         | valor '%' valor {
             if (!$3)
-              hacer_error(1);
+              error_message(1);
             else
               $$ = $1 % $3;
           }
@@ -2814,7 +2814,7 @@ valor_real: REAL {
           }
         | valor_real '/' valor_real {
             if (!$3)
-              hacer_error(1);
+              error_message(1);
             else
               $$ = $1 / $3;
           }
@@ -2829,7 +2829,7 @@ valor_real: REAL {
           }
         | valor '/' valor_real {
             if ($3 < 1e-6)
-              hacer_error(1);
+              error_message(1);
             else
               $$ = (double)$1 / $3;
           }
@@ -2844,7 +2844,7 @@ valor_real: REAL {
           }
         | valor_real '/' valor {
             if (!$3)
-              hacer_error(1);
+              error_message(1);
             else
               $$ = $1 / (double)$3;
           }
@@ -3077,7 +3077,7 @@ void msx_bios()
   registrar_simbolo("PCMREC", 0x0189, 0);
 }
 
-void hacer_error(int codigo)
+void error_message(int codigo)
 {
   printf("%s, line %d: ", strtok(fuente, "\042"), lineas);
   switch (codigo)
@@ -3273,10 +3273,10 @@ void guardar_byte(int b)
     if (type != MEGAROM)
     {
       if (PC >= 0x10000)
-        hacer_error(1);
+        error_message(1);
 
       if ((type == ROM) && (PC >= 0xC000))
-        hacer_error(28);
+        error_message(28);
 
       if (dir_inicio > PC)
         dir_inicio = PC;
@@ -3285,10 +3285,10 @@ void guardar_byte(int b)
         dir_final = PC;
 
       if (size && (PC >= dir_inicio + size * 1024) && (pass == 2))
-        hacer_error(17);
+        error_message(17);
 
       if (size && (dir_inicio + size * 1024 > 65536) && (pass == 2))
-        hacer_error(1);
+        error_message(1);
 
       memory[PC++] = (char)b;
       ePC++;
@@ -3296,10 +3296,10 @@ void guardar_byte(int b)
     else
     {	/* if (type==MEGAROM) */
       if (subpage == 0x100)
-        hacer_error(35);
+        error_message(35);
 
       if (PC >= pageinit + 1024 * pagesize)
-        hacer_error(31);
+        error_message(31);
 
       memory[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
       PC++;
@@ -3328,7 +3328,7 @@ void salto_relativo(int direccion)
   salto = direccion - ePC - 1;
 
   if ((salto > 127) || (salto < -128))
-    hacer_error(8);
+    error_message(8);
 
   guardar_byte(salto);
 }
@@ -3347,10 +3347,10 @@ void register_label(char *nombre)
 
   for (i = 0; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
-      hacer_error(14);
+      error_message(14);
 
   if (++maxima == MAX_ID)
-    hacer_error(11);
+    error_message(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
   strcpy(lista_identificadores[maxima - 1].nombre, nombre);
@@ -3369,10 +3369,10 @@ void register_local(char *nombre)
 
   for (i = ultima_global; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
-      hacer_error(14);
+      error_message(14);
 
   if (++maxima == MAX_ID)
-    hacer_error(11);
+    error_message(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
   strcpy(lista_identificadores[maxima - 1].nombre, nombre);
@@ -3392,12 +3392,12 @@ void registrar_simbolo(char *nombre, int numero, int type)
   for (i = 0; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
     {
-      hacer_error(14);
+      error_message(14);
       return;
     }
 
   if (++maxima == MAX_ID)
-    hacer_error(11);
+    error_message(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
 
@@ -3428,7 +3428,7 @@ void registrar_variable(char *nombre, int numero)
     }
 
   if (++maxima == MAX_ID)
-    hacer_error(11);
+    error_message(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
   strcpy(lista_identificadores[maxima - 1].nombre, strtok(nombre, " "));
@@ -3447,8 +3447,8 @@ int leer_etiqueta(char *nombre)
   if ((pass == 1) && (i == maxima))
     return ePC;
 
-  hacer_error(12);
-  exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
+  error_message(12);
+  exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
 int leer_local(char *nombre)
@@ -3462,8 +3462,8 @@ int leer_local(char *nombre)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return lista_identificadores[i].valor;
 
-  hacer_error(13);
-  exit(0);	/* hacer_error() never returns; add exit() to stop compiler warnings about bad return value */
+  error_message(13);
+  exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
 void salida_texto()
@@ -3493,8 +3493,8 @@ void salvar_simbolos()
   {
     if ((fichero = fopen(simbolos, "wt")) == NULL)
 	{
-      hacer_error(0);
-	  exit(1); /* this is unreachable due to hacer_error() never returning; use it to prevent code analyzer warning */
+      error_message(0);
+	  exit(1); /* this is unreachable due to error_message() never returning; use it to prevent code analyzer warning */
 	}
 
     fprintf(fichero, "; Symbol table from %s\n", ensamblador);
@@ -3550,7 +3550,7 @@ void yyerror(char *s)
 {
   /* print bison error message */
   fprintf(stderr, "Parsing error: %s\n", s);
-  hacer_error(0);
+  error_message(0);
 }
 
 void incluir_binario(char *nombre, int skip, int n)
@@ -3560,7 +3560,7 @@ void incluir_binario(char *nombre, int skip, int n)
   int i;
 
   if ((fichero = fopen(nombre, "rb")) == NULL)
-    hacer_error(18);
+    error_message(18);
 
   if (pass == 1)
     printf("Including binary file %s", nombre);
@@ -3579,7 +3579,7 @@ void incluir_binario(char *nombre, int skip, int n)
       k = fgetc(fichero);
  
   if (skip && feof(fichero))
-    hacer_error(29);
+    error_message(29);
  
   if (n)
   {
@@ -3593,7 +3593,7 @@ void incluir_binario(char *nombre, int skip, int n)
       }
     }
     if (i < n)
-      hacer_error(29);
+      error_message(29);
   }
   else
     for (; !feof(fichero);)		/* TODO: rewrite this as while loop and test it */
@@ -3649,7 +3649,7 @@ void guardar_binario()
   int i, j;
 
   if ((dir_inicio > dir_final) && (type != MEGAROM))
-    hacer_error(24);
+    error_message(24);
 
   if (type == Z80)
     binario = strcat(binario, ".z80");
@@ -3859,7 +3859,7 @@ void inicializar_sistema()
 void type_sinclair()
 {
   if ((type) && (type != SINCLAIR))
-    hacer_error(46);
+    error_message(46);
   type = SINCLAIR;
   if (!dir_inicio)
   {
@@ -3871,10 +3871,10 @@ void type_sinclair()
 void type_rom()
 {
   if ((pass == 1) && (!dir_inicio))
-    hacer_error(19);
+    error_message(19);
 
   if ((type) && (type != ROM))
-    hacer_error(20);
+    error_message(20);
 
   type = ROM;
   guardar_byte(65);
@@ -3894,16 +3894,16 @@ void type_megarom(int n)
       usedpage[i] = 0;
 
   if ((pass == 1) && (!dir_inicio))
-    hacer_error(19);
+    error_message(19);
 /* 
   if ((pass == 1) && ((!PC) || (!ePC)))
-    hacer_error(19); 
+    error_message(19); 
 */
   if ((type) && (type != MEGAROM))
-    hacer_error(20);
+    error_message(20);
 
   if ((n < 0) || (n > 3))
-    hacer_error(33);
+    error_message(33);
 
   type = MEGAROM;
 
@@ -3932,10 +3932,10 @@ void type_megarom(int n)
 void type_basic()
 {
   if ((pass == 1) && (!dir_inicio))
-    hacer_error(21);
+    error_message(21);
 
   if ((type) && (type != BASIC))
-    hacer_error(20);
+    error_message(20);
 
   type = BASIC;
 }
@@ -3943,10 +3943,10 @@ void type_basic()
 void type_msxdos()
 {
   if ((pass == 1) && (!dir_inicio))
-    hacer_error(23);
+    error_message(23);
 
   if ((type) && (type != MSXDOS))
-    hacer_error(20);
+    error_message(20);
   type = MSXDOS;
   PC = 0x0100;
   ePC = 0x0100;
@@ -3958,18 +3958,18 @@ void establecer_subpagina(int n, int dir)
     lastpage = n;
 
   if (!n)
-    hacer_error(32);
+    error_message(32);
 
   if (usedpage[n] == pass)
-    hacer_error(37);
+    error_message(37);
   else
     usedpage[n] = pass;
 
   if ((dir < 0x4000) || (dir > 0xbfff))
-    hacer_error(35);
+    error_message(35);
 
   if (n > maxpage[mapper])
-    hacer_error(36);
+    error_message(36);
 
   subpage = n;
   pageinit = (dir / pagesize) * pagesize;
@@ -3989,7 +3989,7 @@ int selector(int dir)
   dir = (dir / pagesize) * pagesize;
 
   if ((mapper == KONAMI) && (dir == 0x4000))
-    hacer_error(38);
+    error_message(38);
 
   if (mapper == KONAMISCC)
     dir += 0x1000;
@@ -4014,7 +4014,7 @@ void seleccionar_pagina_directa(int n, int dir)
   sel = selector(dir);
  
   if ((pass == 2) && (!usedpage[n]))
-    hacer_error(39);
+    error_message(39);
 
   guardar_byte(0xf5);
   guardar_byte(0x3e);

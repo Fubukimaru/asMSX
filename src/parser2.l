@@ -15,7 +15,7 @@ static char *p2_text, *p2_buffer;
 static int p2_number, p2_lines, p2_level, p2_nested=0;
 
 int prompt_error2(int);
-extern void hacer_error(int);
+extern void error_message(int);
 %}
 
 %option noinput nounput noyywrap
@@ -75,7 +75,7 @@ extern void hacer_error(int);
 
 <rept>\n        p2_buffer = strcat(p2_buffer, yytext);
 
-<rept><<EOF>>   hacer_error(2);
+<rept><<EOF>>   error_message(2);
 
 <repnum>.       prompt_error2(1);
 
