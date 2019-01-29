@@ -139,7 +139,7 @@ void write_word(int);
 void register_symbol(char *, int, int);
 void register_variable(char *, int);
 void include_binary(char *, int, int);
-void finalizar();
+void finalize();
 void guardar_texto(char *);
 void salida_texto();
 int simbolo_definido(char *);
@@ -611,7 +611,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
           }
         | PSEUDO_END {
             if (pass==3)
-              finalizar();
+              finalize();
             PC = 0;
             ePC = 0;
             ultima_global = 0;
@@ -3794,7 +3794,7 @@ void guardar_binario()
   fclose(output);
 }
 
-void finalizar()
+void finalize()
 {
   /* Generate the name of file with symbolic information */
   strcpy(simbolos, filename);
