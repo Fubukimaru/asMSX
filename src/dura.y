@@ -137,7 +137,7 @@ void select_page_register(int, int);
 void write_byte(int);
 void write_word(int);
 void register_symbol(char *, int, int);
-void registrar_variable(char *, int);
+void register_variable(char *, int);
 void incluir_binario(char *, int, int);
 void finalizar();
 void guardar_texto(char *);
@@ -571,7 +571,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
           }
         | IDENTIFICADOR PSEUDO_ASSIGN valor {
             if (conditional[conditional_level])
-              registrar_variable(strtok($1, "="), $3);
+              register_variable(strtok($1, "="), $3);
           }
         | PSEUDO_INCBIN TEXTO {
             if (conditional[conditional_level])
@@ -3406,7 +3406,7 @@ void register_symbol(char *nombre, int numero, int type)
   lista_identificadores[maxima - 1].type = type;
 }
 
-void registrar_variable(char *nombre, int numero)
+void register_variable(char *nombre, int numero)
 {
   int i;
 
