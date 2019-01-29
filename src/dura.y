@@ -132,7 +132,7 @@ void msx_bios();
 void error_message(int);
 void locate_32k();
 void create_subpage(int, int);
-void seleccionar_pagina_directa(int, int);
+void select_page_direct(int, int);
 void seleccionar_pagina_registro(int, int);
 void guardar_byte(int);
 void guardar_word(int);
@@ -495,7 +495,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if (type != MEGAROM)
                 error_message(40);
-              seleccionar_pagina_directa($2, $4);
+              select_page_direct($2, $4);
             }
           }
         | PSEUDO_SELECT REGISTRO PSEUDO_AT valor {
@@ -4007,7 +4007,7 @@ int selector(int dir)
 }
 
 
-void seleccionar_pagina_directa(int n, int dir)
+void select_page_direct(int n, int dir)
 {
   int sel;
  
