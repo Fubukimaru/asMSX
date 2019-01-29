@@ -83,7 +83,7 @@
 		Unterminated string hotfix. Find a better way to solve it. Probably a more flex-like fix.
 */
 
-/* Cabecera y definiciones para C */
+/* C headers and definitions */
 
 %{
 #include <stdio.h>
@@ -205,7 +205,7 @@ struct
   char *tex;
 }
 
-/* Elementos principales */
+/* Main elements */
 
 %left '+' '-' OP_OR OP_XOR
 %left SHIFT_L SHIFT_R
@@ -389,9 +389,9 @@ struct
 
 %%
 
-/* Reglas gramaticales */
+/* Gramar rules */
 
-entrada: /*vacío*/
+entrada: /* empty */
         | entrada linea
 ;
 
@@ -2651,7 +2651,8 @@ mnemo_jump: MNEMO_JP valor_16bits {
             guardar_byte(0xe9);
           }
         | MNEMO_JP '[' REGISTRO_16_IY ']' {
-            guardar_byte(0xfd);guardar_byte(0xe9);
+            guardar_byte(0xfd);
+            guardar_byte(0xe9);
           }
         | MNEMO_DJNZ valor_16bits {
             guardar_byte(0x10);
@@ -2863,7 +2864,7 @@ valor_real: REAL {
             $$ = sqrt($3);
           }
         | PSEUDO_PI {
-            $$ = asin(1) * 2;	/* TODO: replace with actual constant to avoid slightly different ROMs depending on compiler */
+            $$ = 3.14159265358979323846;	/* use this instead of M_PI to avoid slightly different ROMs depending on compiler */
           }
         | PSEUDO_ABS '(' valor_real ')' {
             $$ = abs((int)$3);
@@ -2945,11 +2946,11 @@ listado_16bits : valor_16bits {
 
 %%
 
-/* Funciones adicionales en C */
+/* Additional C functions */
 void msx_bios()
 {
   bios = 1;
-  /* Rutinas de la BIOS */
+  /* BIOS routines */
   registrar_simbolo("CHKRAM", 0x0000, 0);
   registrar_simbolo("SYNCHR", 0x0008, 0);
   registrar_simbolo("RDSLT" , 0x000c, 0);
@@ -3467,7 +3468,7 @@ int leer_local(char *nombre)
 
 void salida_texto()
 {
-  /* Obtener nombre del archivo de salida */
+  /* Generate the name of output file */
   strcpy(salida, filename);
   salida = strcat(salida, ".txt");
   mensajes = fopen(salida, "wt");
@@ -3509,7 +3510,7 @@ void salvar_simbolos()
       for (i = 0; i < maxima; i++)
         if (lista_identificadores[i].type == 1)
         {
-          if (type!=MEGAROM)
+          if (type != MEGAROM)
             fprintf(fichero, "%4.4Xh %s\n", lista_identificadores[i].valor, lista_identificadores[i].nombre);
           else
             fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", lista_identificadores[i].pagina & 0xff, lista_identificadores[i].valor, lista_identificadores[i].nombre);
@@ -3805,7 +3806,7 @@ void guardar_binario()
 
 void finalizar()
 {
-  /* Obtener nombre del archivo de simbolos */
+  /* Generate the name of file with symbolic information */
   strcpy(simbolos, filename);
   simbolos = strcat(simbolos, ".sym");
  
@@ -4341,7 +4342,7 @@ int main(int argc, char *argv[])
   else
     strcat(ensamblador, ".asm");
 
-  // Obtener nombre de la salida binaria
+  /* Generate the name of binary file */
   strcpy(binario, filename);
 
   preprocessor1(ensamblador);
