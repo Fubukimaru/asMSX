@@ -107,7 +107,7 @@
 #define ASCII8 2
 #define ASCII16 3
 
-#define max_id 32000
+#define MAX_ID 32000
 
 #define FREQ_HI 0x7FFF
 #define FREQ_LO 0x8000
@@ -195,7 +195,7 @@ struct
   int valor;
   int type;
   int pagina;
-} lista_identificadores[max_id];
+} lista_identificadores[MAX_ID];
 %}
 
 %union
@@ -3349,7 +3349,7 @@ void registrar_etiqueta(char *nombre)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       hacer_error(14);
 
-  if (++maxima == max_id)
+  if (++maxima == MAX_ID)
     hacer_error(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
@@ -3371,7 +3371,7 @@ void registrar_local(char *nombre)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       hacer_error(14);
 
-  if (++maxima == max_id)
+  if (++maxima == MAX_ID)
     hacer_error(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
@@ -3396,7 +3396,7 @@ void registrar_simbolo(char *nombre, int numero, int type)
       return;
     }
 
-  if (++maxima == max_id)
+  if (++maxima == MAX_ID)
     hacer_error(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
@@ -3427,7 +3427,7 @@ void registrar_variable(char *nombre, int numero)
       return;
     }
 
-  if (++maxima == max_id)
+  if (++maxima == MAX_ID)
     hacer_error(11);
 
   lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
