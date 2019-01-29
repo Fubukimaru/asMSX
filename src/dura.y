@@ -130,7 +130,7 @@ void type_msxdos();
 void type_sinclair();
 void msx_bios();
 void error_message(int);
-void localizar_32k();
+void locate_32k();
 void establecer_subpagina(int, int);
 void seleccionar_pagina_directa(int, int);
 void seleccionar_pagina_registro(int, int);
@@ -489,7 +489,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if ((type != MEGAROM) && (type != ROM))
                 error_message(41);
-              localizar_32k();
+              locate_32k();
             }
           }
         | PSEUDO_SUBPAGE valor PSEUDO_AT valor {
@@ -3977,7 +3977,7 @@ void establecer_subpagina(int n, int dir)
   ePC = PC;
 }
 
-void localizar_32k()
+void locate_32k()
 {
   int i;
   for (i = 0; i < 31; i++)
