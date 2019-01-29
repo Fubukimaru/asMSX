@@ -122,7 +122,7 @@ int preprocessor3(int);		/* defined in parser3.l */
 /* forward function declarations to address GCC -Wimplicit-function-declaration warnings */
 void yyerror(char *);
 void register_label(char *);
-void registrar_local(char *);
+void register_local(char *);
 void type_rom();
 void type_megarom(int);
 void type_basic();
@@ -421,7 +421,7 @@ etiqueta: IDENTIFICADOR ':' {
             register_label(strtok($1, ":"));
           }
         | LOCAL_IDENTIFICADOR ':' {
-            registrar_local(strtok($1, ":"));
+            register_local(strtok($1, ":"));
           }
 ;
 
@@ -3360,7 +3360,7 @@ void register_label(char *nombre)
   ultima_global = maxima - 1;
 }
 
-void registrar_local(char *nombre)
+void register_local(char *nombre)
 {
   int i;
 
