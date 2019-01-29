@@ -138,7 +138,7 @@ void write_byte(int);
 void write_word(int);
 void register_symbol(char *, int, int);
 void register_variable(char *, int);
-void incluir_binario(char *, int, int);
+void include_binary(char *, int, int);
 void finalizar();
 void guardar_texto(char *);
 void salida_texto();
@@ -575,14 +575,14 @@ pseudo_instruccion: PSEUDO_ORG valor {
           }
         | PSEUDO_INCBIN TEXTO {
             if (conditional[conditional_level])
-              incluir_binario($2, 0, 0);
+              include_binary($2, 0, 0);
           }
         | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor {
             if (conditional[conditional_level])
             {
               if ($4 <= 0)
                 error_message(30);
-              incluir_binario($2, $4, 0);
+              include_binary($2, $4, 0);
             }
           }
         | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor {
@@ -590,7 +590,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if ($4 <= 0)
                 error_message(30);
-              incluir_binario($2, 0, $4);
+              include_binary($2, 0, $4);
             }
           }
         | PSEUDO_INCBIN TEXTO PSEUDO_SKIP valor PSEUDO_SIZE valor {
@@ -598,7 +598,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if (($4 <= 0) || ($6 <= 0))
                 error_message(30);
-              incluir_binario($2,$4,$6);
+              include_binary($2,$4,$6);
             }
           }
         | PSEUDO_INCBIN TEXTO PSEUDO_SIZE valor PSEUDO_SKIP valor {
@@ -606,7 +606,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if (($4 <= 0) || ($6 <= 0))
                 error_message(30);
-              incluir_binario($2, $6, $4);
+              include_binary($2, $6, $4);
             }
           }
         | PSEUDO_END {
@@ -3543,7 +3543,7 @@ void yyerror(char *s)
   error_message(0);
 }
 
-void incluir_binario(char *nombre, int skip, int n)
+void include_binary(char *nombre, int skip, int n)
 {
   FILE *fichero;
   int k;
