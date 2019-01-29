@@ -133,7 +133,7 @@ void error_message(int);
 void locate_32k();
 void create_subpage(int, int);
 void select_page_direct(int, int);
-void seleccionar_pagina_registro(int, int);
+void select_page_register(int, int);
 void guardar_byte(int);
 void guardar_word(int);
 void registrar_simbolo(char *, int, int);
@@ -503,7 +503,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if (type != MEGAROM)
                 error_message(40);
-              seleccionar_pagina_registro($2, $4);
+              select_page_register($2, $4);
             }
           }
         | PSEUDO_START valor {
@@ -4024,7 +4024,7 @@ void select_page_direct(int n, int dir)
   guardar_byte(0xf1);
 }
 
-void seleccionar_pagina_registro(int r, int dir)
+void select_page_register(int r, int dir)
 {
   int sel;
 
