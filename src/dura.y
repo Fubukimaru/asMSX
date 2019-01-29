@@ -140,7 +140,7 @@ void register_symbol(char *, int, int);
 void register_variable(char *, int);
 void include_binary(char *, int, int);
 void finalize();
-void guardar_texto(char *);
+void write_string(char *);
 void salida_texto();
 int simbolo_definido(char *);
 void warning_message(int);
@@ -626,7 +626,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               write_byte(0x52);
               write_byte(0x18);
               write_byte((int)(strlen($2) + 4));
-              guardar_texto($2);
+              write_string($2);
             }
           }
         | PSEUDO_BREAK {
@@ -2910,13 +2910,13 @@ listado_8bits : valor_8bits {
             write_byte($1);
           }
         | TEXTO {
-            guardar_texto($1);
+            write_string($1);
           }
         | listado_8bits ',' valor_8bits {
             write_byte($3);
           }
         | listado_8bits ',' TEXTO {
-            guardar_texto($3);
+            write_string($3);
           }
 ;
 
@@ -2924,13 +2924,13 @@ listado_16bits : valor_16bits {
             write_word($1);
           }
         | TEXTO {
-            guardar_texto($1);
+            write_string($1);
           }
         | listado_16bits ',' valor_16bits {
             write_word($3);
           }
         | listado_16bits ',' TEXTO {
-            guardar_texto($3);
+            write_string($3);
           }
 ;
 
@@ -3298,11 +3298,11 @@ void write_byte(int b)
   }
 }
 
-void guardar_texto(char *texto)
+void write_string(char *str)
 {
   size_t t;
-  for (t = 0; t < strlen(texto); t++)
-    write_byte((int)texto[t]);
+  for (t = 0; t < strlen(str); t++)
+    write_byte((int)str[t]);
 }
 
 void write_word(int w)
