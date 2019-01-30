@@ -145,7 +145,7 @@ void create_text_file();
 int is_defined_symbol(char *);
 void warning_message(int);
 void relative_jump(int);
-int leer_etiqueta(char *);
+int read_label(char *);
 int leer_local(char *);
 void guardar_binario();
 void generar_cassette();
@@ -2693,7 +2693,7 @@ valor: NUMERO {
             $$ = $1;
           }
         | IDENTIFICADOR {
-            $$ = leer_etiqueta($1);
+            $$ = read_label($1);
           }
         | LOCAL_IDENTIFICADOR {
             $$ = leer_local($1);
@@ -3426,7 +3426,7 @@ void register_variable(char *nombre, int numero)
   lista_identificadores[maxima - 1].type = 3;
 }
 
-int leer_etiqueta(char *nombre)
+int read_label(char *nombre)
 {
   int i;
 
