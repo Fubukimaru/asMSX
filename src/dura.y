@@ -147,7 +147,7 @@ void warning_message(int);
 void relative_jump(int);
 int read_label(char *);
 int read_local(char *);
-void guardar_binario();
+void write_binary();
 void generar_cassette();
 void generar_wav();
 int d_rand();
@@ -3634,7 +3634,7 @@ void write_zx_number(int i)
   write_zx_byte(i + 48);
 }
 
-void guardar_binario()
+void write_binary()
 {
   int i, j;
 
@@ -3800,7 +3800,7 @@ void finalize()
   strcpy(simbolos, filename);
   simbolos = strcat(simbolos, ".sym");
  
-  guardar_binario();
+  write_binary();
 
   if (cassette & 1)
     generar_cassette();
