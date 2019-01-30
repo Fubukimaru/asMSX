@@ -146,7 +146,7 @@ int is_defined_symbol(char *);
 void warning_message(int);
 void relative_jump(int);
 int read_label(char *);
-int leer_local(char *);
+int read_local(char *);
 void guardar_binario();
 void generar_cassette();
 void generar_wav();
@@ -2696,7 +2696,7 @@ valor: NUMERO {
             $$ = read_label($1);
           }
         | LOCAL_IDENTIFICADOR {
-            $$ = leer_local($1);
+            $$ = read_local($1);
           }
         | '-' valor %prec NEGATIVO {
             $$ =- $2;
@@ -3441,7 +3441,7 @@ int read_label(char *nombre)
   exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
-int leer_local(char *nombre)
+int read_local(char *nombre)
 {
   int i;
 
