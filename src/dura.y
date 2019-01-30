@@ -144,7 +144,7 @@ void write_string(char *);
 void create_text_file();
 int is_defined_symbol(char *);
 void warning_message(int);
-void salto_relativo(int);
+void relative_jump(int);
 int leer_etiqueta(char *);
 int leer_local(char *);
 void guardar_binario();
@@ -2601,13 +2601,13 @@ mnemo_jump: MNEMO_JP valor_16bits {
           }
         | MNEMO_JR valor_16bits {
             write_byte(0x18);
-            salto_relativo($2);
+            relative_jump($2);
           }
         | MNEMO_JR REGISTRO ',' valor_16bits {
             if ($2 != 1)
               error_message(7);
             write_byte(0x38);
-            salto_relativo($4);
+            relative_jump($4);
           }
         | MNEMO_JR CONDICION ',' valor_16bits {
             if ($2 == 2)
@@ -2618,7 +2618,7 @@ mnemo_jump: MNEMO_JP valor_16bits {
               write_byte(0x20);
             else
               error_message(9);
-            salto_relativo($4);
+            relative_jump($4);
           }
         | MNEMO_JP REGISTRO_PAR {
             if ($2 != 2)
@@ -2646,7 +2646,7 @@ mnemo_jump: MNEMO_JP valor_16bits {
           }
         | MNEMO_DJNZ valor_16bits {
             write_byte(0x10);
-            salto_relativo($2);
+            relative_jump($2);
           }
 ;
 
@@ -3311,7 +3311,7 @@ void write_word(int w)
   write_byte((w >> 8) & 0xff);
 }
 
-void salto_relativo(int direccion)
+void relative_jump(int direccion)
 {
   int salto;
 
