@@ -142,7 +142,7 @@ void include_binary(char *, int, int);
 void finalize();
 void write_string(char *);
 void create_text_file();
-int simbolo_definido(char *);
+int is_defined_symbol(char *);
 void warning_message(int);
 void salto_relativo(int);
 int leer_etiqueta(char *);
@@ -734,7 +734,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
 			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
 			}
             conditional_level++;
-            if (simbolo_definido($2))
+            if (is_defined_symbol($2))
               conditional[conditional_level] = 1 & conditional[conditional_level - 1];
             else
               conditional[conditional_level] = 0;
@@ -4269,7 +4269,7 @@ void generar_wav()	/* This function is broken since public GPLv3 release */
 }
 
 
-int simbolo_definido(char *nombre)
+int is_defined_symbol(char *nombre)
 {
   int i;
 
