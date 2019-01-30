@@ -141,7 +141,7 @@ void register_variable(char *, int);
 void include_binary(char *, int, int);
 void finalize();
 void write_string(char *);
-void salida_texto();
+void create_text_file();
 int simbolo_definido(char *);
 void warning_message(int);
 void salto_relativo(int);
@@ -652,7 +652,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (mensajes == NULL)
-                  salida_texto();	/* TODO: check if salida_texto() changes mensajes; if not, use if-then-else */
+                  create_text_file();
 				if (mensajes)
                   fprintf(mensajes, "%s\n", $2);
               }
@@ -664,7 +664,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (mensajes == NULL)
-                  salida_texto();
+                  create_text_file();
 				if (mensajes)
                   fprintf(mensajes, "%d\n", (short int)$2 & 0xffff);
               }
@@ -676,7 +676,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (mensajes == NULL)
-                  salida_texto();
+                  create_text_file();
 				if (mensajes)
                   fprintf(mensajes, "%.4f\n", $2);
               }
@@ -688,7 +688,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (mensajes == NULL)
-                  salida_texto();
+                  create_text_file();
 				if (mensajes)
                   fprintf(mensajes, "$%4.4x\n", (short int)$2 & 0xffff);
               }
@@ -700,7 +700,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (mensajes == NULL)
-                  salida_texto();
+                  create_text_file();
 				if (mensajes)
                   fprintf(mensajes, "%.4f\n", ((float)($2 & 0xffff)) / 256);
               }
@@ -3456,9 +3456,9 @@ int leer_local(char *nombre)
   exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
-void salida_texto()
+void create_text_file()
 {
-  /* Generate the name of output file */
+  /* Generate the name of output text file */
   strcpy(salida, filename);
   salida = strcat(salida, ".txt");
   mensajes = fopen(salida, "wt");
