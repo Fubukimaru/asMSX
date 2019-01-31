@@ -141,7 +141,7 @@ void register_variable(char *, int);
 void include_binary(char *, int, int);
 void finalize();
 void write_string(char *);
-void create_text_file();
+void create_txt();
 int is_defined_symbol(char *);
 void warning_message(int);
 void relative_jump(int);
@@ -652,7 +652,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (fmsg == NULL)
-                  create_text_file();
+                  create_txt();
 				if (fmsg)
                   fprintf(fmsg, "%s\n", $2);
               }
@@ -664,7 +664,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (fmsg == NULL)
-                  create_text_file();
+                  create_txt();
 				if (fmsg)
                   fprintf(fmsg, "%d\n", (short int)$2 & 0xffff);
               }
@@ -676,7 +676,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (fmsg == NULL)
-                  create_text_file();
+                  create_txt();
 				if (fmsg)
                   fprintf(fmsg, "%.4f\n", $2);
               }
@@ -688,7 +688,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (fmsg == NULL)
-                  create_text_file();
+                  create_txt();
 				if (fmsg)
                   fprintf(fmsg, "$%4.4x\n", (short int)$2 & 0xffff);
               }
@@ -700,7 +700,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               if (pass == 2)
               {
                 if (fmsg == NULL)
-                  create_text_file();
+                  create_txt();
 				if (fmsg)
                   fprintf(fmsg, "%.4f\n", ((float)($2 & 0xffff)) / 256);
               }
@@ -3456,7 +3456,7 @@ int read_local(char *nombre)
   exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
-void create_text_file()
+void create_txt()
 {
   /* Generate the name of output text file */
   strcpy(salida, filename);
