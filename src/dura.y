@@ -149,7 +149,7 @@ int read_label(char *);
 int read_local(char *);
 void write_bin();
 void write_cas();
-void generar_wav();
+void write_wav();
 int d_rand();
 
 int wav_header[44] = {
@@ -3806,7 +3806,7 @@ void finalize()
     write_cas();
 
   if (cassette & 2)
-    generar_wav();
+    write_wav();
 
   if (maxima > 0)
     salvar_simbolos();
@@ -4140,7 +4140,7 @@ void wav_write_nothing()
     wav_store(SILENCE);
 }
 
-void wav_write_byte(int m)	/* only used in generar_wav() */
+void wav_write_byte(int m)	/* only used in write_wav() */
 {
   int l;
 
@@ -4157,7 +4157,7 @@ void wav_write_byte(int m)	/* only used in generar_wav() */
   wav_write_one();
 }
 
-void generar_wav()	/* This function is broken since public GPLv3 release */
+void write_wav()	/* This function is broken since public GPLv3 release */
 {			/* TODO: use https://github.com/joyrex2001/castools to fix it */
   int wav_size, i;
 
