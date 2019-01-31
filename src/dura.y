@@ -148,7 +148,7 @@ void relative_jump(int);
 int read_label(char *);
 int read_local(char *);
 void write_bin();
-void generar_cassette();
+void write_cas();
 void generar_wav();
 int d_rand();
 
@@ -3803,7 +3803,7 @@ void finalize()
   write_bin();
 
   if (cassette & 1)
-    generar_cassette();
+    write_cas();
 
   if (cassette & 2)
     generar_wav();
@@ -4043,7 +4043,7 @@ void select_page_register(int r, int dir)
     write_byte(0xf1);			/* POP AF */
 }
 
-void generar_cassette()
+void write_cas()
 {
   FILE *salida;
   int i;
