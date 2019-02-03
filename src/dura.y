@@ -152,8 +152,8 @@ void write_cas();
 void write_wav();
 int d_rand();
 
-FILE *archivo, *fmsg, *output, *wav;
-char *memory, *fuente, *interno, *binario, *filename;
+FILE *fmsg, *fbin, *fwav;
+char *memory, *fname_src, *interno, *binario, *filename;
 char *salida, *simbolos, *ensamblador, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -384,7 +384,7 @@ linea:    pseudo_instruccion EOL
         | mnemo_jump EOL
         | mnemo_call EOL
         | PREPRO_FILE TEXTO EOL {
-            strcpy(fuente, $2);
+            strcpy(fname_src, $2);
           }
         | PREPRO_LINE valor EOL {
             lineas = $2;
@@ -3055,7 +3055,7 @@ void msx_bios()
 
 void error_message(int codigo)
 {
-  printf("%s, line %d: ", strtok(fuente, "\042"), lineas);
+  printf("%s, line %d: ", strtok(fname_src, "\042"), lineas);
   switch (codigo)
   {
     case 0:
@@ -3210,7 +3210,7 @@ void warning_message(int codigo)
   if (pass != 2)
     return;
 
-  printf("%s, line %d: Warning: ", strtok(fuente, "\042"), lineas);
+  printf("%s, line %d: Warning: ", strtok(fname_src, "\042"), lineas);
   switch (codigo)
   {
     case 0:
@@ -3587,7 +3587,7 @@ void write_zx_byte(int c)
 {
   int k;
   k = c & 0xff;
-  putc(k, output);
+  putc(k, fbin);
   parity ^= k;
 }
 
@@ -3662,26 +3662,26 @@ void write_bin()
   }
 
   printf("Binary file %s saved\n", binario);
-  output = fopen(binario, "wb");
+  fbin = fopen(binario, "wb");
   if (type == BASIC)
   {
-    putc(0xfe, output);
-    putc(dir_inicio & 0xff, output);
-    putc((dir_inicio >> 8) & 0xff, output);
-    putc(dir_final & 0xff, output);
-    putc((dir_final >> 8) & 0xff, output);
+    putc(0xfe, fbin);
+    putc(dir_inicio & 0xff, fbin);
+    putc((dir_inicio >> 8) & 0xff, fbin);
+    putc(dir_final & 0xff, fbin);
+    putc((dir_final >> 8) & 0xff, fbin);
     if (!inicio)
       inicio = dir_inicio;
-    putc(inicio & 0xff, output);
-    putc((inicio >> 8) & 0xff, output);
+    putc(inicio & 0xff, fbin);
+    putc((inicio >> 8) & 0xff, fbin);
   }
   else if (type == SINCLAIR)
   {
     if (inicio)
     {
-      putc(0x13, output);
-      putc(0, output);
-      putc(0, output);
+      putc(0x13, fbin);
+      putc(0, fbin);
+      putc(0, fbin);
       parity = 0x20;
       write_zx_byte(0);
 
@@ -3729,9 +3729,9 @@ void write_bin()
       write_zx_byte(parity);
     }
 
-    putc(19, output);		/* Header len */
-    putc(0, output);		/* MSB of len */
-    putc(0, output);		/* Header is 0 */
+    putc(19, fbin);		/* Header len */
+    putc(0, fbin);		/* MSB of len */
+    putc(0, fbin);		/* Header is 0 */
     parity = 0;
 
     write_zx_byte(3);		/* Filetype (Code) */
@@ -3765,19 +3765,19 @@ void write_bin()
     {
       if (type != MEGAROM)
         for (i = dir_inicio; i <= dir_final; i++)
-          putc(memory[i], output);
+          putc(memory[i], fbin);
       else
         for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
-          putc(memory[i], output);
+          putc(memory[i], fbin);
     } else if (type != MEGAROM)
       for (i = dir_inicio; i < dir_inicio + size * 1024; i++)
-        putc(memory[i], output);
+        putc(memory[i], fbin);
     else
       for (i = 0; i < size * 1024; i++)
-        putc(memory[i], output);
+        putc(memory[i], fbin);
   }
 
-  fclose(output);
+  fclose(fbin);
 }
 
 void finalize()
@@ -3810,7 +3810,7 @@ void finalize()
   exit(0);
 }
 
-void inicializar_memory()
+void initialize_memory()
 {
   const size_t memory_size = 0x1000000;	/* 16 megabytes */
 
@@ -3824,9 +3824,9 @@ void inicializar_memory()
   memset(memory, 0, memory_size);
 }
 
-void inicializar_sistema()
+void initialize_system()
 {
-  inicializar_memory();
+  initialize_memory();
   interno = malloc(256);
   interno[0] = 0;
   register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
@@ -4086,8 +4086,8 @@ void write_cas()
 
 void wav_store(int value)
 {
-  fputc(value & 0xff, wav);
-  fputc((value >> 8) & 0xff, wav);
+  fputc(value & 0xff, fwav);
+  fputc((value >> 8) & 0xff, fwav);
 }
 
 void wav_write_one()
@@ -4169,7 +4169,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
   binario[strlen(binario) - 3] = 0;
   binario = strcat(binario, "wav");
 
-  wav = fopen(binario, "wb");
+  fwav = fopen(binario, "wb");
 
   if ((type == BASIC) || (type == ROM))
   {
@@ -4187,7 +4187,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
-      fputc(wav_header[i], wav);
+      fputc(wav_header[i], fwav);
 
     /* Write long header */
     for (i = 0; i < 3968; i++)
@@ -4244,7 +4244,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
 
     /* Write WAV header */
     for (i = 0; i < 44; i++)
-      fputc(wav_header[i], wav);
+      fputc(wav_header[i], fwav);
 
     /* Write long header */
     for (i = 0; i < 3968; i++)
@@ -4262,7 +4262,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
     wav_write_nothing();
     
   /* Close file */
-  fclose(wav);
+  fclose(fwav);
   
   printf("Audio file %s saved [%2.2f sec]\n", binario, (float)wav_size/176400);
 }
@@ -4297,6 +4297,7 @@ int d_rand()
 
 int main(int argc, char *argv[])
 {
+  FILE *f;
   size_t i;
   int fileArg = 1;
   printf("-------------------------------------------------------------------------------\n");
@@ -4317,9 +4318,9 @@ int main(int argc, char *argv[])
   }   
   
   clock();
-  inicializar_sistema();
+  initialize_system();
   ensamblador = malloc(256);
-  fuente = malloc(256);
+  fname_src = malloc(256);
   original = malloc(256);
   binario = malloc(256);
   simbolos = malloc(256);
@@ -4352,9 +4353,9 @@ int main(int argc, char *argv[])
 
   conditional[0] = 1;
 
-  archivo = fopen(original, "r");
+  f = fopen(original, "r");
 
-  yyin = archivo;
+  yyin = f;
 
   yyparse();
 
