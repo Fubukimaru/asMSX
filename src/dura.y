@@ -187,7 +187,7 @@ struct
 %left SHIFT_L SHIFT_R
 %left '*' '/' '%' '&'
 %left OP_OR_LOG OP_AND_LOG
-%left NEGATIVO
+%left NEGATIVE
 %left NEGACION OP_NEG_LOG
 %left OP_EQUAL OP_MINOR_EQUAL OP_MINOR OP_MAJOR OP_MAJOR_EQUAL OP_NON_EQUAL
 
@@ -2684,7 +2684,7 @@ value: NUMERO {
         | LOCAL_IDENTIFICADOR {
             $$ = read_local($1);
           }
-        | '-' value %prec NEGATIVO {
+        | '-' value %prec NEGATIVE {
             $$ =- $2;
           }
         | value OP_EQUAL value {
