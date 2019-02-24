@@ -365,7 +365,7 @@ struct
 
 %%
 
-/* Gramar rules */
+/* Grammar rules */
 
 entrada: /* empty */
         | entrada linea
