@@ -3053,10 +3053,10 @@ void msx_bios()
   register_symbol("PCMREC", 0x0189, 0);
 }
 
-void error_message(int codigo)
+void error_message(int n)
 {
   printf("%s, line %d: ", strtok(fname_src, "\042"), lines);
-  switch (codigo)
+  switch (n)
   {
     case 0:
       fprintf(stderr, "syntax error\n");
@@ -3199,19 +3199,19 @@ void error_message(int codigo)
       fprintf(stderr, "Sinclair directive should preceed any code\n");
       break;
     default:
-      fprintf(stderr, "Unexpected error code %d\n", codigo);
+      fprintf(stderr, "Unexpected error code %d\n", n);
   }
   remove("~tmppre.?");
-  exit(codigo + 1);
+  exit(n + 1);
 }
 
-void warning_message(int codigo)
+void warning_message(int n)
 {
   if (pass != 2)
     return;
 
   printf("%s, line %d: Warning: ", strtok(fname_src, "\042"), lines);
-  switch (codigo)
+  switch (n)
   {
     case 0:
       fprintf(stderr, "undefined error\n");
@@ -3235,7 +3235,7 @@ void warning_message(int codigo)
       fprintf(stderr, "undocumented Zilog instruction\n");
       break;
     default:
-      fprintf(stderr, "unexpected warning %d\n", codigo);
+      fprintf(stderr, "unexpected warning %d\n", n);
   }
   warnings++;
 }
