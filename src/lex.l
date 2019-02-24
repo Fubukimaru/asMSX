@@ -409,7 +409,7 @@ random          return PSEUDO_RANDOM;
 \42[^\42\n]+\42 {
                   yylval.txt = strtok(yytext, "\42");
                   yylval.txt = strtok(yytext, "\42");
-                  return TEXTO;
+                  return TEXT;
                 }
 
 [a-z_][a-z0-9_]* {

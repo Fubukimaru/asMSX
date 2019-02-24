@@ -192,7 +192,7 @@ struct
 %left OP_EQUAL OP_LESS_OR_EQUAL OP_LESS OP_MORE OP_MORE_OR_EQUAL OP_NOT_EQUAL
 
 %token <txt> APOSTROPHE
-%token <txt> TEXTO
+%token <txt> TEXT
 %token <txt> IDENTIFICADOR
 %token <txt> LOCAL_IDENTIFICADOR
 
@@ -383,7 +383,7 @@ line:    pseudo_instruction EOL
         | mnemo_io EOL
         | mnemo_jump EOL
         | mnemo_call EOL
-        | PREPRO_FILE TEXTO EOL {
+        | PREPRO_FILE TEXT EOL {
             strcpy(fname_src, $2);
           }
         | PREPRO_LINE value EOL {
@@ -559,11 +559,11 @@ pseudo_instruction: PSEUDO_ORG value {
             if (conditional[conditional_level])
               register_variable(strtok($1, "="), $3);
           }
-        | PSEUDO_INCBIN TEXTO {
+        | PSEUDO_INCBIN TEXT {
             if (conditional[conditional_level])
               include_binary($2, 0, 0);
           }
-        | PSEUDO_INCBIN TEXTO PSEUDO_SKIP value {
+        | PSEUDO_INCBIN TEXT PSEUDO_SKIP value {
             if (conditional[conditional_level])
             {
               if ($4 <= 0)
@@ -571,7 +571,7 @@ pseudo_instruction: PSEUDO_ORG value {
               include_binary($2, $4, 0);
             }
           }
-        | PSEUDO_INCBIN TEXTO PSEUDO_SIZE value {
+        | PSEUDO_INCBIN TEXT PSEUDO_SIZE value {
             if (conditional[conditional_level])
             {
               if ($4 <= 0)
@@ -579,7 +579,7 @@ pseudo_instruction: PSEUDO_ORG value {
               include_binary($2, 0, $4);
             }
           }
-        | PSEUDO_INCBIN TEXTO PSEUDO_SKIP value PSEUDO_SIZE value {
+        | PSEUDO_INCBIN TEXT PSEUDO_SKIP value PSEUDO_SIZE value {
             if (conditional[conditional_level])
             {
               if (($4 <= 0) || ($6 <= 0))
@@ -587,7 +587,7 @@ pseudo_instruction: PSEUDO_ORG value {
               include_binary($2,$4,$6);
             }
           }
-        | PSEUDO_INCBIN TEXTO PSEUDO_SIZE value PSEUDO_SKIP value {
+        | PSEUDO_INCBIN TEXT PSEUDO_SIZE value PSEUDO_SKIP value {
             if (conditional[conditional_level])
             {
               if (($4 <= 0) || ($6 <= 0))
@@ -606,7 +606,7 @@ pseudo_instruction: PSEUDO_ORG value {
             if (conditional_level)
               error_message(45);
           }
-        | PSEUDO_DEBUG TEXTO {
+        | PSEUDO_DEBUG TEXT {
             if (conditional[conditional_level])
             {
               write_byte(0x52);
@@ -632,7 +632,7 @@ pseudo_instruction: PSEUDO_ORG value {
               write_word($2);
             }
           }
-        | PSEUDO_PRINTTEXT TEXTO {
+        | PSEUDO_PRINTTEXT TEXT {
             if (conditional[conditional_level])
             {
               if (pass == 2)
@@ -735,7 +735,7 @@ pseudo_instruction: PSEUDO_ORG value {
               error_message(43);
             conditional_level--;
           }
-        | PSEUDO_CASSETTE TEXTO {
+        | PSEUDO_CASSETTE TEXT {
             if (conditional[conditional_level])
             {
               if (!fname_int[0])
@@ -757,7 +757,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_ZILOG {
             zilog = 1;
           }
-        | PSEUDO_FILENAME TEXTO {
+        | PSEUDO_FILENAME TEXT {
             strcpy(fname_no_ext, $2);
           }
 ;
@@ -2895,13 +2895,13 @@ value_16bits: value {
 listado_8bits : value_8bits {
             write_byte($1);
           }
-        | TEXTO {
+        | TEXT {
             write_string($1);
           }
         | listado_8bits ',' value_8bits {
             write_byte($3);
           }
-        | listado_8bits ',' TEXTO {
+        | listado_8bits ',' TEXT {
             write_string($3);
           }
 ;
@@ -2909,13 +2909,13 @@ listado_8bits : value_8bits {
 listado_16bits : value_16bits {
             write_word($1);
           }
-        | TEXTO {
+        | TEXT {
             write_string($1);
           }
         | listado_16bits ',' value_16bits {
             write_word($3);
           }
-        | listado_16bits ',' TEXTO {
+        | listado_16bits ',' TEXT {
             write_string($3);
           }
 ;
