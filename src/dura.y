@@ -3331,8 +3331,8 @@ void register_label(char *name)
   id_list[total_global - 1].name = malloc(strlen(name) + 4);
   strcpy(id_list[total_global - 1].name, name);
   id_list[total_global - 1].value = ePC;
-  id_list[total_global-1].type = 1;
-  id_list[total_global-1].page = subpage;
+  id_list[total_global - 1].type = 1;
+  id_list[total_global - 1].page = subpage;
   last_global = total_global - 1;
 }
 
@@ -3456,7 +3456,7 @@ void create_txt()
   printf("Output text file %s saved\n", fname_txt);
 }
 
-void salvar_simbolos()
+void write_sym()
 {
   int i, j;
   FILE *f;
@@ -3795,7 +3795,7 @@ void finalize()
     write_wav();
 
   if (total_global > 0)
-    salvar_simbolos();
+    write_sym();
 
   printf("Completed in %.2f seconds", (float)clock() / (float)CLOCKS_PER_SEC);
 
