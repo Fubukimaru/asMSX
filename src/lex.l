@@ -22,7 +22,7 @@ extern char *fname_p2;
 "=="            return OP_EQUAL;
 "<="            return OP_LESS_OR_EQUAL;
 "<"             return OP_LESS;
-">="            return OP_MAJOR_EQUAL;
+">="            return OP_MORE_OR_EQUAL;
 ">"             return OP_MORE;
 "!="            return OP_NON_EQUAL;
 "||"            return OP_OR_LOG;
