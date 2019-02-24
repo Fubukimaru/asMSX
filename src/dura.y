@@ -348,7 +348,7 @@ struct
 %token <val> REGISTER_16_IY
 %token <val> REGISTER_PAIR
 %token <val> MULTI_MODE
-%token <val> CONDICION
+%token <val> CONDITION
 
 %token <val> NUMERO
 %token <val> EOL
@@ -2575,7 +2575,7 @@ mnemo_jump: MNEMO_JP value_16bits {
             write_byte(0xc3);
             write_word($2);
           }
-        | MNEMO_JP CONDICION ',' value_16bits {
+        | MNEMO_JP CONDITION ',' value_16bits {
             write_byte(0xc2 | ($2 << 3));
             write_word($4);
           }
@@ -2595,7 +2595,7 @@ mnemo_jump: MNEMO_JP value_16bits {
             write_byte(0x38);
             relative_jump($4);
           }
-        | MNEMO_JR CONDICION ',' value_16bits {
+        | MNEMO_JR CONDITION ',' value_16bits {
             if ($2 == 2)
               write_byte(0x30);
             else if ($2 == 1)
@@ -2640,7 +2640,7 @@ mnemo_call: MNEMO_CALL value_16bits {
             write_byte(0xcd);
             write_word($2);
           }
-        | MNEMO_CALL CONDICION ',' value_16bits {
+        | MNEMO_CALL CONDITION ',' value_16bits {
             write_byte(0xc4 | ($2 << 3));
             write_word($4);
           }
@@ -2653,7 +2653,7 @@ mnemo_call: MNEMO_CALL value_16bits {
         | MNEMO_RET {
             write_byte(0xc9);
           }
-        | MNEMO_RET CONDICION {
+        | MNEMO_RET CONDITION {
             write_byte(0xc0 | ($2 << 3));
           }
         | MNEMO_RET REGISTER {

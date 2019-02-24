@@ -247,42 +247,42 @@ af              return REGISTER_AF;
 
 nz              {
                   yylval.val=0;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 z               {
                   yylval.val=1;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 nc              {
                   yylval.val = 2;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 cc              {
                   yylval.val = 3;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 po              {
                   yylval.val = 4;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 pe              {
                   yylval.val = 5;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 p               {
                   yylval.val = 6;
-                  return CONDICION;
+                  return CONDITION;
                 }
 
 m               {
                   yylval.val = 7;
-                  return CONDICION;
+                  return CONDITION;
                 }
                       
 0"/"1           return MULTI_MODE;
