@@ -167,7 +167,7 @@ int maxpage[4] = {32, 64, 256, 256};
 
 struct
 {
-  char *nombre;
+  char *name;
   int valor;
   int type;
   int pagina;
@@ -3309,34 +3309,34 @@ void relative_jump(int direccion)
   write_byte(salto);
 }
 
-void register_label(char *nombre)
+void register_label(char *name)
 {
   int i;
 
   if (pass == 2)
     for (i = 0; i < total_global; i++)
-      if (!strcmp(nombre, id_list[i].nombre))
+      if (!strcmp(name, id_list[i].name))
       {
         last_global = i;
         return;
       }
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, id_list[i].nombre))
+    if (!strcmp(name, id_list[i].name))
       error_message(14);
 
   if (++total_global == MAX_ID)
     error_message(11);
 
-  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 4);
-  strcpy(id_list[total_global - 1].nombre, nombre);
+  id_list[total_global - 1].name = malloc(strlen(name) + 4);
+  strcpy(id_list[total_global - 1].name, name);
   id_list[total_global - 1].valor = ePC;
   id_list[total_global-1].type = 1;
   id_list[total_global-1].pagina = subpage;
   last_global = total_global - 1;
 }
 
-void register_local(char *nombre)
+void register_local(char *name)
 {
   int i;
 
@@ -3344,20 +3344,20 @@ void register_local(char *nombre)
     return;
 
   for (i = last_global; i < total_global; i++)
-    if (!strcmp(nombre, id_list[i].nombre))
+    if (!strcmp(name, id_list[i].name))
       error_message(14);
 
   if (++total_global == MAX_ID)
     error_message(11);
 
-  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 4);
-  strcpy(id_list[total_global - 1].nombre, nombre);
+  id_list[total_global - 1].name = malloc(strlen(name) + 4);
+  strcpy(id_list[total_global - 1].name, name);
   id_list[total_global - 1].valor = ePC;
   id_list[total_global - 1].type = 1;
   id_list[total_global - 1].pagina = subpage;
 }
 
-void register_symbol(char *nombre, int numero, int type)
+void register_symbol(char *name, int numero, int type)
 {
   int i;
   char *_nombre;
@@ -3366,7 +3366,7 @@ void register_symbol(char *nombre, int numero, int type)
     return;
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, id_list[i].nombre))
+    if (!strcmp(name, id_list[i].name))
     {
       error_message(14);
       return;
@@ -3375,29 +3375,29 @@ void register_symbol(char *nombre, int numero, int type)
   if (++total_global == MAX_ID)
     error_message(11);
 
-  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 1);
+  id_list[total_global - 1].name = malloc(strlen(name) + 1);
 
   /* guarantees we won't pass string literal to strtok(), which causes SEGFAULT on GCC 6.2.0 */
-  _nombre = strdup(nombre);
+  _nombre = strdup(name);
   if (!_nombre)
   {
     printf("Error: can't allocate memory with strdup() in %s\n", __func__);
     exit(1);
   }
 
-  strcpy(id_list[total_global - 1].nombre, strtok(_nombre, " "));
+  strcpy(id_list[total_global - 1].name, strtok(_nombre, " "));
   free(_nombre);
 
   id_list[total_global - 1].valor = numero;
   id_list[total_global - 1].type = type;
 }
 
-void register_variable(char *nombre, int numero)
+void register_variable(char *name, int numero)
 {
   int i;
 
   for (i = 0; i < total_global; i++)
-    if ((!strcmp(nombre, id_list[i].nombre)) && (id_list[i].type == 3))
+    if ((!strcmp(name, id_list[i].name)) && (id_list[i].type == 3))
     {
       id_list[i].valor = numero;
       return;
@@ -3406,18 +3406,18 @@ void register_variable(char *nombre, int numero)
   if (++total_global == MAX_ID)
     error_message(11);
 
-  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 1);
-  strcpy(id_list[total_global - 1].nombre, strtok(nombre, " "));
+  id_list[total_global - 1].name = malloc(strlen(name) + 1);
+  strcpy(id_list[total_global - 1].name, strtok(name, " "));
   id_list[total_global - 1].valor = numero;
   id_list[total_global - 1].type = 3;
 }
 
-int read_label(char *nombre)
+int read_label(char *name)
 {
   int i;
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, id_list[i].nombre))
+    if (!strcmp(name, id_list[i].name))
       return id_list[i].valor;
 
   if ((pass == 1) && (i == total_global))
@@ -3427,7 +3427,7 @@ int read_label(char *nombre)
   exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
 
-int read_local(char *nombre)
+int read_local(char *name)
 {
   int i;
 
@@ -3435,7 +3435,7 @@ int read_local(char *nombre)
     return ePC;
 
   for (i = last_global; i < total_global; i++)
-    if (!strcmp(nombre, id_list[i].nombre))
+    if (!strcmp(name, id_list[i].name))
       return id_list[i].valor;
 
   error_message(13);
@@ -3487,9 +3487,9 @@ void salvar_simbolos()
         if (id_list[i].type == 1)
         {
           if (type != MEGAROM)
-            fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].nombre);
+            fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].name);
           else
-            fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", id_list[i].pagina & 0xff, id_list[i].valor, id_list[i].nombre);
+            fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", id_list[i].pagina & 0xff, id_list[i].valor, id_list[i].name);
         }
     }
 
@@ -3502,7 +3502,7 @@ void salvar_simbolos()
       fprintf(fichero, "; other identifiers\n");
       for (i = 0; i < total_global; i++)
         if (id_list[i].type == 2)
-          fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].nombre);
+          fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].name);
     }
 
     j = 0;
@@ -3514,7 +3514,7 @@ void salvar_simbolos()
       fprintf(fichero, "; variables - value on exit\n");
       for (i = 0; i < total_global; i++)
         if (id_list[i].type == 3)
-          fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].nombre);
+          fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].name);
     }
 
     fclose(fichero);
@@ -3529,17 +3529,17 @@ void yyerror(char *s)
   error_message(0);
 }
 
-void include_binary(char *nombre, int skip, int n)
+void include_binary(char *fname, int skip, int n)
 {
   FILE *fichero;
   int k;
   int i;
 
-  if ((fichero = fopen(nombre, "rb")) == NULL)
+  if ((fichero = fopen(fname, "rb")) == NULL)
     error_message(18);
 
   if (pass == 1)
-    printf("Including binary file %s", nombre);
+    printf("Including binary file %s", fname);
 
   if ((pass == 1) && (skip))
     printf(", skipping %i bytes", skip);
@@ -4268,12 +4268,12 @@ void write_wav()	/* This function is broken since public GPLv3 release */
 }
 
 
-int is_defined_symbol(char *nombre)
+int is_defined_symbol(char *name)
 {
   int i;
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, id_list[i].nombre))
+    if (!strcmp(name, id_list[i].name))
       return 1;
 
   return 0;
