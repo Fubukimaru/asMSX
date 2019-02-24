@@ -407,20 +407,20 @@ random          return PSEUDO_RANDOM;
 		}
 
 \42[^\42\n]+\42 {
-                  yylval.tex = strtok(yytext, "\42");
-                  yylval.tex = strtok(yytext, "\42");
+                  yylval.txt = strtok(yytext, "\42");
+                  yylval.txt = strtok(yytext, "\42");
                   return TEXTO;
                 }
 
 [a-z_][a-z0-9_]* {
-                  yylval.tex = yytext;
+                  yylval.txt = yytext;
                   return IDENTIFICADOR;
                 }
 
 
 ("@@"|".")[a-z0-9_]+  {
 				  //v.0.18.2 Labels are checked the last, therfore we can use "." freely.
-                  yylval.tex = yytext;
+                  yylval.txt = yytext;
                   return LOCAL_IDENTIFICADOR;
                 }
 

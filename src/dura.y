@@ -178,7 +178,7 @@ struct
 {
   int val;
   double real;
-  char *tex;
+  char *txt;
 }
 
 /* Main elements */
@@ -191,10 +191,10 @@ struct
 %left NEGATION OP_NEG_LOG
 %left OP_EQUAL OP_LESS_OR_EQUAL OP_LESS OP_MORE OP_MORE_OR_EQUAL OP_NOT_EQUAL
 
-%token <tex> APOSTROPHE
-%token <tex> TEXTO
-%token <tex> IDENTIFICADOR
-%token <tex> LOCAL_IDENTIFICADOR
+%token <txt> APOSTROPHE
+%token <txt> TEXTO
+%token <txt> IDENTIFICADOR
+%token <txt> LOCAL_IDENTIFICADOR
 
 %token <val> PREPRO_LINE
 %token <val> PREPRO_FILE
