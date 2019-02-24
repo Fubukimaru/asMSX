@@ -189,7 +189,7 @@ struct
 %left OP_OR_LOG OP_AND_LOG
 %left NEGATIVE
 %left NEGATION OP_NEG_LOG
-%left OP_EQUAL OP_MINOR_EQUAL OP_MINOR OP_MAJOR OP_MAJOR_EQUAL OP_NON_EQUAL
+%left OP_EQUAL OP_LESS_OR_EQUAL OP_MINOR OP_MAJOR OP_MAJOR_EQUAL OP_NON_EQUAL
 
 %token <tex> COMILLA
 %token <tex> TEXTO
@@ -2690,7 +2690,7 @@ value: NUMERO {
         | value OP_EQUAL value {
             $$ = ($1 == $3);
           }
-        | value OP_MINOR_EQUAL value {
+        | value OP_LESS_OR_EQUAL value {
             $$ = ($1 <= $3);
           }
         | value OP_MINOR value {
