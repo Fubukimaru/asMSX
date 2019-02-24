@@ -24,7 +24,7 @@ extern char *fname_p2;
 "<"             return OP_LESS;
 ">="            return OP_MORE_OR_EQUAL;
 ">"             return OP_MORE;
-"!="            return OP_NON_EQUAL;
+"!="            return OP_NOT_EQUAL;
 "||"            return OP_OR_LOG;
 "&&"            return OP_AND_LOG;
 '!'             return OP_NEG_LOG;
