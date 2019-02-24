@@ -3541,7 +3541,7 @@ void include_binary(char *fname, int skip, int n)
   if (pass == 1)
     printf("Including binary file %s", fname);
 
-  if ((pass == 1) && (skip))
+  if ((pass == 1) && skip)
     printf(", skipping %i bytes", skip);
 
   if ((pass == 1) && n)
@@ -3575,7 +3575,7 @@ void include_binary(char *fname, int skip, int n)
     for (; !feof(f);)		/* TODO: rewrite this as while loop and test it */
     {
       k = fgetc(f);
-      if (!feof(f))		/* TODO: can this loose the last byte from included file? */
+      if (!feof(f))		/* TODO: can this lose the last byte from included file? */
         write_byte(k);
     }
 
