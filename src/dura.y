@@ -154,7 +154,7 @@ int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
 char *memory, *fname_src, *fname_int, *fname_bin, *fname_no_ext;
-char *fname_txt, *fname_sym, *fname_asm, *original;
+char *fname_txt, *fname_sym, *fname_asm, *fname_p2;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
@@ -4321,7 +4321,7 @@ int main(int argc, char *argv[])
   initialize_system();
   fname_asm = malloc(256);
   fname_src = malloc(256);
-  original = malloc(256);
+  fname_p2 = malloc(256);
   fname_bin = malloc(256);
   fname_sym = malloc(256);
   fname_txt = malloc(256);
@@ -4347,13 +4347,14 @@ int main(int argc, char *argv[])
 
   preprocessor1(fname_asm);
   preprocessor3(zilog);
-  sprintf(original, "~tmppre.%i", preprocessor2());
+  sprintf(fname_p2, "~tmppre.%i", preprocessor2());
+  printf("fname_p2 = %s\n", fname_p2);	// debug junk
  
   printf("Assembling source file %s\n", fname_asm);
 
   conditional[0] = 1;
 
-  f = fopen(original, "r");
+  f = fopen(fname_p2, "r");
 
   yyin = f;
 

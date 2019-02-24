@@ -2,7 +2,7 @@
 #include "dura.tab.h"
 
 extern int ePC, pass;
-extern char *original;
+extern char *fname_p2;
 %}
 
 %option noinput noyywrap
@@ -401,7 +401,7 @@ random          return PSEUDO_RANDOM;
                   if (pass == 2)
                     printf("Assembling labels, calls and jumps\n");
 
-                  yyin = fopen(original, "r");
+                  yyin = fopen(fname_p2, "r");
 
                   return PSEUDO_END;
 		}
