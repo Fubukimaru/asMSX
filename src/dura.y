@@ -154,7 +154,7 @@ int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
 char *memory, *fname_src, *fname_int, *fname_bin, *fname;
-char *fname_txt, *simbolos, *fname_asm, *original;
+char *fname_txt, *fname_sym, *fname_asm, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
@@ -3467,7 +3467,7 @@ void salvar_simbolos()
 
   if (j > 0)
   {
-    if ((fichero = fopen(simbolos, "wt")) == NULL)
+    if ((fichero = fopen(fname_sym, "wt")) == NULL)
 	{
       error_message(0);
 	  exit(1); /* this is unreachable due to error_message() never returning; use it to prevent code analyzer warning */
@@ -3518,7 +3518,7 @@ void salvar_simbolos()
     }
 
     fclose(fichero);
-    printf("Symbol file %s saved\n", simbolos);
+    printf("Symbol file %s saved\n", fname_sym);
   }
 }
 
@@ -3783,8 +3783,8 @@ void write_bin()
 void finalize()
 {
   /* Generate the name of file with symbolic information */
-  strcpy(simbolos, fname);
-  simbolos = strcat(simbolos, ".sym");
+  strcpy(fname_sym, fname);
+  fname_sym = strcat(fname_sym, ".sym");
  
   write_bin();
 
@@ -4323,7 +4323,7 @@ int main(int argc, char *argv[])
   fname_src = malloc(256);
   original = malloc(256);
   fname_bin = malloc(256);
-  simbolos = malloc(256);
+  fname_sym = malloc(256);
   fname_txt = malloc(256);
   fname = malloc(256);
   if (!fname)
