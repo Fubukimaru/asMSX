@@ -4216,7 +4216,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
     for (i = 0; i < 3968; i++)
       wav_write_one();
 
-    /* Write init, end and start addresses */
+    /* Write start, end and run addresses */
     wav_write_byte(start_address & 0xff);
     wav_write_byte((start_address >> 8) & 0xff);
     wav_write_byte(end_address & 0xff);
