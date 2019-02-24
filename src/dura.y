@@ -520,10 +520,10 @@ pseudo_instruction: PSEUDO_ORG value {
               write_word(0x0005);
             }
           }
-        | PSEUDO_DB listado_8bits {
+        | PSEUDO_DB list_8bits {
             ;
           }
-        | PSEUDO_DW listado_16bits {
+        | PSEUDO_DW list_16bits {
             ;
           }
         | PSEUDO_DS value_16bits {
@@ -584,7 +584,7 @@ pseudo_instruction: PSEUDO_ORG value {
             {
               if (($4 <= 0) || ($6 <= 0))
                 error_message(30);
-              include_binary($2,$4,$6);
+              include_binary($2, $4, $6);
             }
           }
         | PSEUDO_INCBIN TEXT PSEUDO_SIZE value PSEUDO_SKIP value {
@@ -596,7 +596,7 @@ pseudo_instruction: PSEUDO_ORG value {
             }
           }
         | PSEUDO_END {
-            if (pass==3)
+            if (pass == 3)
               finalize();
             PC = 0;
             ePC = 0;
@@ -1624,7 +1624,7 @@ mnemo_math8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_SBC REGISTER {
             if (zilog)
               warning_message(5);
-            write_byte(0x98|$2);
+            write_byte(0x98 | $2);
           }
         | MNEMO_SBC REGISTER_IX {
             if (zilog)
@@ -1920,7 +1920,7 @@ mnemo_general: MNEMO_DAA {
             write_byte(0xed);
             if ($2 == 0)
               write_byte(0x46);
-            else if ($2==1)
+            else if ($2 == 1)
               write_byte(0x56);
             else
               write_byte(0x5e);
@@ -2219,7 +2219,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
-            write_byte(0x30|$2);
+            write_byte(0x30 | $2);
           }
         | MNEMO_LD REGISTER ',' MNEMO_SLL indirect_IY {
             write_byte(0xfd);
@@ -2685,7 +2685,7 @@ value: NUMBER {
             $$ = read_local($1);
           }
         | '-' value %prec NEGATIVE {
-            $$ =- $2;
+            $$ = -$2;
           }
         | value OP_EQUAL value {
             $$ = ($1 == $3);
@@ -2777,7 +2777,7 @@ value_real: REAL {
             $$ = $1;
           }
         | '-' value_real {
-            $$ =- $2;
+            $$ = -$2;
           }
         | value_real '+' value_real {
             $$ = $1 + $3;
@@ -2892,30 +2892,30 @@ value_16bits: value {
           }
 ;
 
-listado_8bits : value_8bits {
+list_8bits : value_8bits {
             write_byte($1);
           }
         | TEXT {
             write_string($1);
           }
-        | listado_8bits ',' value_8bits {
+        | list_8bits ',' value_8bits {
             write_byte($3);
           }
-        | listado_8bits ',' TEXT {
+        | list_8bits ',' TEXT {
             write_string($3);
           }
 ;
 
-listado_16bits : value_16bits {
+list_16bits : value_16bits {
             write_word($1);
           }
         | TEXT {
             write_string($1);
           }
-        | listado_16bits ',' value_16bits {
+        | list_16bits ',' value_16bits {
             write_word($3);
           }
-        | listado_16bits ',' TEXT {
+        | list_16bits ',' TEXT {
             write_string($3);
           }
 ;
