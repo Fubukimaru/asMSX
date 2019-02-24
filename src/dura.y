@@ -2892,7 +2892,7 @@ value_16bits: value {
           }
 ;
 
-list_8bits : value_8bits {
+list_8bits: value_8bits {
             write_byte($1);
           }
         | TEXT {
@@ -2906,7 +2906,7 @@ list_8bits : value_8bits {
           }
 ;
 
-list_16bits : value_16bits {
+list_16bits: value_16bits {
             write_word($1);
           }
         | TEXT {
@@ -3297,16 +3297,16 @@ void write_word(int w)
   write_byte((w >> 8) & 0xff);
 }
 
-void relative_jump(int direccion)
+void relative_jump(int direction)
 {
-  int salto;
+  int jump;
 
-  salto = direccion - ePC - 1;
+  jump = direction - ePC - 1;
 
-  if ((salto > 127) || (salto < -128))
+  if ((jump > 127) || (jump < -128))
     error_message(8);
 
-  write_byte(salto);
+  write_byte(jump);
 }
 
 void register_label(char *name)
