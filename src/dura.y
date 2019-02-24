@@ -70,7 +70,7 @@
 	 
 	 v.0.18.1: [11/02/2017]
 	 	Fixed multiple compilation warnings by specifying function parameters and return type explicitly
-                Fixed a problem with cassette file name generation due to uninitialized variable 'binario'
+                Fixed a problem with cassette file name generation due to uninitialized variable 'fname_bin'
 	 v.0.18.2: [25/05/2017]
 	 	Added -z flag. This flag allows using standard Zilog syntax without setting .ZILOG on the code.
 	 	Now local labels can be also set using .Local_Label along the previous @@Local_Label.
@@ -153,7 +153,7 @@ void write_wav();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *memory, *fname_src, *fname_int, *binario, *filename;
+char *memory, *fname_src, *fname_int, *fname_bin, *filename;
 char *salida, *simbolos, *ensamblador, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -748,7 +748,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             {
               if (!fname_int[0])
               {
-                strcpy(fname_int, binario);
+                strcpy(fname_int, fname_bin);
                 fname_int[strlen(fname_int) - 1] = 0;
               }
               cassette |= $1;
@@ -3628,29 +3628,29 @@ void write_bin()
     error_message(24);
 
   if (type == Z80)
-    binario = strcat(binario, ".z80");
+    fname_bin = strcat(fname_bin, ".z80");
   else if (type == ROM)
   {
-    binario = strcat(binario, ".rom");
+    fname_bin = strcat(fname_bin, ".rom");
     PC = dir_inicio + 2;
     write_word(inicio);
     if (!size)
       size = 8 * ((dir_final - dir_inicio + 8191) / 8192);
   }
   else if (type == BASIC)
-    binario = strcat(binario, ".bin");
+    fname_bin = strcat(fname_bin, ".bin");
   else if (type == MSXDOS)
-    binario = strcat(binario, ".com");
+    fname_bin = strcat(fname_bin, ".com");
   else if (type == MEGAROM)
   {
-    binario = strcat(binario, ".rom");
+    fname_bin = strcat(fname_bin, ".rom");
     PC = 0x4002;
     subpage = 0x00;
     pageinit = 0x4000;
     write_word(inicio);
   }
   else if (type == SINCLAIR)
-    binario = strcat(binario, ".tap");
+    fname_bin = strcat(fname_bin, ".tap");
 
   if (type == MEGAROM)
   {
@@ -3661,8 +3661,8 @@ void write_bin()
       fprintf(stderr, "Warning: %i out of %i megaROM pages are not defined\n", lastpage - j, lastpage);
   }
 
-  printf("Binary file %s saved\n", binario);
-  fbin = fopen(binario, "wb");
+  printf("Binary file %s saved\n", fname_bin);
+  fbin = fopen(fname_bin, "wb");
   if (type == BASIC)
   {
     putc(0xfe, fbin);
@@ -4043,10 +4043,10 @@ void write_cas()
     return;
   }
 
-  binario[strlen(binario) - 3] = 0;
-  binario = strcat(binario, "cas");
+  fname_bin[strlen(fname_bin) - 3] = 0;
+  fname_bin = strcat(fname_bin, "cas");
 
-  salida = fopen(binario, "wb");
+  salida = fopen(fname_bin, "wb");
 
   for (i = 0; i < 8; i++)
     fputc(cas[i], salida);
@@ -4081,7 +4081,7 @@ void write_cas()
     putc(memory[i], salida);
 
   fclose(salida);
-  printf("Cassette file %s saved\n",binario);
+  printf("Cassette file %s saved\n",fname_bin);
 }
 
 void wav_store(int value)
@@ -4166,10 +4166,10 @@ void write_wav()	/* This function is broken since public GPLv3 release */
     return;
   }
 
-  binario[strlen(binario) - 3] = 0;
-  binario = strcat(binario, "wav");
+  fname_bin[strlen(fname_bin) - 3] = 0;
+  fname_bin = strcat(fname_bin, "wav");
 
-  fwav = fopen(binario, "wb");
+  fwav = fopen(fname_bin, "wb");
 
   if ((type == BASIC) || (type == ROM))
   {
@@ -4264,7 +4264,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
   /* Close file */
   fclose(fwav);
   
-  printf("Audio file %s saved [%2.2f sec]\n", binario, (float)wav_size/176400);
+  printf("Audio file %s saved [%2.2f sec]\n", fname_bin, (float)wav_size/176400);
 }
 
 
@@ -4322,7 +4322,7 @@ int main(int argc, char *argv[])
   ensamblador = malloc(256);
   fname_src = malloc(256);
   original = malloc(256);
-  binario = malloc(256);
+  fname_bin = malloc(256);
   simbolos = malloc(256);
   salida = malloc(256);
   filename = malloc(256);
@@ -4343,7 +4343,7 @@ int main(int argc, char *argv[])
     strcat(ensamblador, ".asm");
 
   /* Generate the name of binary file */
-  strcpy(binario, filename);
+  strcpy(fname_bin, filename);
 
   preprocessor1(ensamblador);
   preprocessor3(zilog);
