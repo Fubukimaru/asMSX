@@ -3506,7 +3506,7 @@ void salvar_simbolos()
     }
 
     j = 0;
-    for (i=0; i < total_global; i++)
+    for (i = 0; i < total_global; i++)
       if (id_list[i].type == 3)
         j++;
     if (j > 0)
@@ -4258,7 +4258,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
     wav_size = 0;
     
   /* Write blank */
-  for (i=0; i < 1500; i++)
+  for (i = 0; i < 1500; i++)
     wav_write_nothing();
     
   /* Close file */
