@@ -158,7 +158,7 @@ char *fname_txt, *fname_sym, *fname_asm, *fname_p2;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
-int start_address = 0xffff, dir_final = 0x0000;
+int start_address = 0xffff, end_address = 0x0000;
 int inicio = 0, advertencias = 0, lineas, parity;
 int zilog = 0, pass = 1, bios = 0, type = 0;
 int conditional[16];
@@ -3257,8 +3257,8 @@ void write_byte(int b)
       if (start_address > PC)
         start_address = PC;
 
-      if (dir_final < PC)
-        dir_final = PC;
+      if (end_address < PC)
+        end_address = PC;
 
       if (size && (PC >= start_address + size * 1024) && (pass == 2))
         error_message(17);
@@ -3624,7 +3624,7 @@ void write_bin()
 {
   int i, j;
 
-  if ((start_address > dir_final) && (type != MEGAROM))
+  if ((start_address > end_address) && (type != MEGAROM))
     error_message(24);
 
   if (type == Z80)
@@ -3635,7 +3635,7 @@ void write_bin()
     PC = start_address + 2;
     write_word(inicio);
     if (!size)
-      size = 8 * ((dir_final - start_address + 8191) / 8192);
+      size = 8 * ((end_address - start_address + 8191) / 8192);
   }
   else if (type == BASIC)
     fname_bin = strcat(fname_bin, ".bin");
@@ -3668,8 +3668,8 @@ void write_bin()
     putc(0xfe, fbin);
     putc(start_address & 0xff, fbin);
     putc((start_address >> 8) & 0xff, fbin);
-    putc(dir_final & 0xff, fbin);
-    putc((dir_final >> 8) & 0xff, fbin);
+    putc(end_address & 0xff, fbin);
+    putc((end_address >> 8) & 0xff, fbin);
     if (!inicio)
       inicio = start_address;
     putc(inicio & 0xff, fbin);
@@ -3745,16 +3745,16 @@ void write_bin()
           write_zx_byte(0x20);
     }
 
-    write_zx_word(dir_final - start_address + 1);
+    write_zx_word(end_address - start_address + 1);
     write_zx_word(start_address);	/* load address */
     write_zx_word(0);		/* offset */
     write_zx_byte(parity);
 
-    write_zx_word(dir_final - start_address + 3);	/* Length of next block */
+    write_zx_word(end_address - start_address + 3);	/* Length of next block */
     parity = 0;
     write_zx_byte(255);		/* Data... */
 
-    for (i = start_address; i <= dir_final; i++)
+    for (i = start_address; i <= end_address; i++)
       write_zx_byte(memory[i]);
     write_zx_byte(parity);
   }
@@ -3764,7 +3764,7 @@ void write_bin()
     if (!size)
     {
       if (type != MEGAROM)
-        for (i = start_address; i <= dir_final; i++)
+        for (i = start_address; i <= end_address; i++)
           putc(memory[i], fbin);
       else
         for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
@@ -4071,13 +4071,13 @@ void write_cas()
 
     putc(start_address & 0xff, f);
     putc((start_address >> 8) & 0xff, f);
-    putc(dir_final & 0xff, f);
-    putc((dir_final >> 8) & 0xff, f);
+    putc(end_address & 0xff, f);
+    putc((end_address >> 8) & 0xff, f);
     putc(inicio & 0xff, f);
     putc((inicio >> 8) & 0xff, f);
   }
 
-  for (i = start_address; i <= dir_final; i++)
+  for (i = start_address; i <= end_address; i++)
     putc(memory[i], f);
 
   fclose(f);
@@ -4173,7 +4173,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
 
   if ((type == BASIC) || (type == ROM))
   {
-    wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + dir_final - start_address + 1)) * 40;
+    wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + end_address - start_address + 1)) * 40;
     wav_size = wav_size << 1;
 
     wav_header[4] = (wav_size + 36) & 0xff;
@@ -4219,18 +4219,18 @@ void write_wav()	/* This function is broken since public GPLv3 release */
     /* Write init, end and start addresses */
     wav_write_byte(start_address & 0xff);
     wav_write_byte((start_address >> 8) & 0xff);
-    wav_write_byte(dir_final & 0xff);
-    wav_write_byte((dir_final >> 8) & 0xff);
+    wav_write_byte(end_address & 0xff);
+    wav_write_byte((end_address >> 8) & 0xff);
     wav_write_byte(inicio & 0xff);
     wav_write_byte((inicio >> 8) & 0xff);
 
     /* Write data */
-    for (i = start_address; i <= dir_final; i++)
+    for (i = start_address; i <= end_address; i++)
       wav_write_byte(memory[i]);
   }
   else if (type == Z80)
   {
-    wav_size = (3968 * 1 + 1500 * 1 + 11 * (dir_final - start_address + 1)) * 36;
+    wav_size = (3968 * 1 + 1500 * 1 + 11 * (end_address - start_address + 1)) * 36;
     wav_size = wav_size << 1;
 
     wav_header[4] = (wav_size + 36) & 0xff;
@@ -4251,7 +4251,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
       wav_write_one();
 
     /* Write data */
-    for (i = start_address; i <= dir_final; i++)
+    for (i = start_address; i <= end_address; i++)
     wav_write_byte(memory[i]);
   }
   else
