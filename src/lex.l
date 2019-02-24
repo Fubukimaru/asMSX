@@ -419,7 +419,7 @@ random          return PSEUDO_RANDOM;
 
 
 ("@@"|".")[a-z0-9_]+  {
-				  //v.0.18.2 Labels are checked the last, therfore we can use "." freely.
+				  /* v.0.18.2 Labels are checked the last, therfore we can use "." freely */
                   yylval.txt = yytext;
                   return LOCAL_IDENTIFICATOR;
                 }
