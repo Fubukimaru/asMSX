@@ -414,14 +414,14 @@ random          return PSEUDO_RANDOM;
 
 [a-z_][a-z0-9_]* {
                   yylval.txt = yytext;
-                  return IDENTIFICADOR;
+                  return IDENTIFICATOR;
                 }
 
 
 ("@@"|".")[a-z0-9_]+  {
 				  //v.0.18.2 Labels are checked the last, therfore we can use "." freely.
                   yylval.txt = yytext;
-                  return LOCAL_IDENTIFICADOR;
+                  return LOCAL_IDENTIFICATOR;
                 }
 
 [^\n^|]         return yytext[0];

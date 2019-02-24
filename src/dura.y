@@ -193,8 +193,8 @@ struct
 
 %token <txt> APOSTROPHE
 %token <txt> TEXT
-%token <txt> IDENTIFICADOR
-%token <txt> LOCAL_IDENTIFICADOR
+%token <txt> IDENTIFICATOR
+%token <txt> LOCAL_IDENTIFICATOR
 
 %token <val> PREPRO_LINE
 %token <val> PREPRO_FILE
@@ -393,10 +393,10 @@ line:    pseudo_instruction EOL
         | label EOL
 ;
 
-label: IDENTIFICADOR ':' {
+label: IDENTIFICATOR ':' {
             register_label(strtok($1, ":"));
           }
-        | LOCAL_IDENTIFICADOR ':' {
+        | LOCAL_IDENTIFICATOR ':' {
             register_local(strtok($1, ":"));
           }
 ;
@@ -551,11 +551,11 @@ pseudo_instruction: PSEUDO_ORG value {
               ePC += 2;
             }
           }
-        | IDENTIFICADOR PSEUDO_EQU value {
+        | IDENTIFICATOR PSEUDO_EQU value {
             if (conditional[conditional_level])
               register_symbol(strtok($1, "="), $3, 2);
           }
-        | IDENTIFICADOR PSEUDO_ASSIGN value {
+        | IDENTIFICATOR PSEUDO_ASSIGN value {
             if (conditional[conditional_level])
               register_variable(strtok($1, "="), $3);
           }
@@ -713,7 +713,7 @@ pseudo_instruction: PSEUDO_ORG value {
             else
               conditional[conditional_level] = 0;
           }
-        | PSEUDO_IFDEF IDENTIFICADOR {
+        | PSEUDO_IFDEF IDENTIFICATOR {
             if (conditional_level == 15)
 			{
               error_message(44);
@@ -2678,10 +2678,10 @@ mnemo_call: MNEMO_CALL value_16bits {
 value: NUMERO {
             $$ = $1;
           }
-        | IDENTIFICADOR {
+        | IDENTIFICATOR {
             $$ = read_label($1);
           }
-        | LOCAL_IDENTIFICADOR {
+        | LOCAL_IDENTIFICATOR {
             $$ = read_local($1);
           }
         | '-' value %prec NEGATIVE {
