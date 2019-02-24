@@ -188,7 +188,7 @@ struct
 %left '*' '/' '%' '&'
 %left OP_OR_LOG OP_AND_LOG
 %left NEGATIVE
-%left NEGACION OP_NEG_LOG
+%left NEGATION OP_NEG_LOG
 %left OP_EQUAL OP_MINOR_EQUAL OP_MINOR OP_MAJOR OP_MAJOR_EQUAL OP_NON_EQUAL
 
 %token <tex> COMILLA
@@ -2734,7 +2734,7 @@ value: NUMERO {
         | '(' value ')' {
             $$ = $2;
           }
-        | '~' value %prec NEGACION {
+        | '~' value %prec NEGATION {
             $$ =~ $2;
           }
         | '!' value %prec OP_NEG_LOG {
