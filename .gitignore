@@ -29,3 +29,4 @@ Debug/
 Release/
 *.VC.db
 *.VC.opendb
+*.vcxproj.user
