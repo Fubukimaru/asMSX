@@ -367,8 +367,8 @@ struct
 
 /* Grammar rules */
 
-entrada: /* empty */
-        | entrada line
+start: /* empty */
+        | start line
 ;
 
 line:    pseudo_instruccion EOL
