@@ -153,7 +153,7 @@ void write_wav();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *memory, *fname_src, *interno, *binario, *filename;
+char *memory, *fname_src, *fname_int, *binario, *filename;
 char *salida, *simbolos, *ensamblador, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -738,18 +738,18 @@ pseudo_instruccion: PSEUDO_ORG valor {
         | PSEUDO_CASSETTE TEXTO {
             if (conditional[conditional_level])
             {
-              if (!interno[0])
-                strcpy(interno, $2);
+              if (!fname_int[0])
+                strcpy(fname_int, $2);
               cassette |= $1;
             }
           }
         | PSEUDO_CASSETTE {
             if (conditional[conditional_level])
             {
-              if (!interno[0])
+              if (!fname_int[0])
               {
-                strcpy(interno, binario);
-                interno[strlen(interno) - 1] = 0;
+                strcpy(fname_int, binario);
+                fname_int[strlen(fname_int) - 1] = 0;
               }
               cassette |= $1;
             }
@@ -3827,8 +3827,8 @@ void initialize_memory()
 void initialize_system()
 {
   initialize_memory();
-  interno = malloc(256);
-  interno[0] = 0;
+  fname_int = malloc(256);
+  fname_int[0] = 0;
   register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 }
 
@@ -4058,13 +4058,13 @@ void write_cas()
 
     {
       size_t t;
-      if (strlen(interno) < 6)
-        for (t = strlen(interno); t < 6; t++)
-          interno[t] = 32;	/* pad with space */
+      if (strlen(fname_int) < 6)
+        for (t = strlen(fname_int); t < 6; t++)
+          fname_int[t] = 32;	/* pad with space */
     }
 
     for (i = 0; i < 6; i++)
-      fputc(interno[i], salida);
+      fputc(fname_int[i], salida);
 
     for (i = 0; i < 8; i++)
       fputc(cas[i], salida);
@@ -4198,15 +4198,15 @@ void write_wav()	/* This function is broken since public GPLv3 release */
       wav_write_byte(0xd0);
 
     /* Write MSX name */
-    if (strlen(interno) < 6)
+    if (strlen(fname_int) < 6)
     {
       size_t t;
-      for (t = strlen(interno); t < 6; t++)
-        interno[t] = 32; /* 32 is space character */
+      for (t = strlen(fname_int); t < 6; t++)
+        fname_int[t] = 32; /* 32 is space character */
     }
 
     for (i = 0; i < 6; i++)
-      wav_write_byte(interno[i]);
+      wav_write_byte(fname_int[i]);
 
     /* Write blank */
     for (i = 0; i < 1500; i++)
