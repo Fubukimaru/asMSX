@@ -4018,7 +4018,7 @@ void select_page_register(int r, int address)
 
   if (r != 7)
   {
-    write_byte(0xf5);			/* PUSH AF */
+    write_byte(0xf5);					/* PUSH AF */
     write_byte(0x40 | (7 << 3) | r);	/* LD A,r */
   }
 
@@ -4026,7 +4026,7 @@ void select_page_register(int r, int address)
   write_word(sel);
 
   if (r != 7)
-    write_byte(0xf1);			/* POP AF */
+    write_byte(0xf1);					/* POP AF */
 }
 
 void write_cas()
