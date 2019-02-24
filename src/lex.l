@@ -21,9 +21,9 @@ extern char *fname_p2;
 
 "=="            return OP_EQUAL;
 "<="            return OP_LESS_OR_EQUAL;
-"<"             return OP_MINOR;
+"<"             return OP_LESS;
 ">="            return OP_MAJOR_EQUAL;
-">"             return OP_MAJOR;
+">"             return OP_MORE;
 "!="            return OP_NON_EQUAL;
 "||"            return OP_OR_LOG;
 "&&"            return OP_AND_LOG;
