@@ -4346,8 +4346,6 @@ int main(int argc, char *argv[])
   preprocessor1(fname_asm);
   preprocessor3(zilog);
   sprintf(fname_p2, "~tmppre.%i", preprocessor2());
-  printf("fname_p2 = %s\n", fname_p2);	// debug junk
- 
   printf("Assembling source file %s\n", fname_asm);
 
   conditional[0] = 1;
