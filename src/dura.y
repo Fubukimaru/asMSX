@@ -159,7 +159,7 @@ int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
-int run_address = 0, advertencias = 0, lineas, parity;
+int run_address = 0, warnings = 0, lineas, parity;
 int zilog = 0, pass = 1, bios = 0, type = 0;
 int conditional[16];
 int conditional_level = 0, maxima = 0, ultima_global = 0;
@@ -3237,7 +3237,7 @@ void warning_message(int codigo)
     default:
       fprintf(stderr, "unexpected warning %d\n", codigo);
   }
-  advertencias++;
+  warnings++;
 }
 
 /* Generate byte */
@@ -3799,9 +3799,9 @@ void finalize()
 
   printf("Completed in %.2f seconds", (float)clock() / (float)CLOCKS_PER_SEC);
 
-  if (advertencias > 1)
-    fprintf(stderr, ", %i warnings\n", advertencias);
-  else if (advertencias == 1)
+  if (warnings > 1)
+    fprintf(stderr, ", %i warnings\n", warnings);
+  else if (warnings == 1)
     fprintf(stderr, ", 1 warning\n");
   else
     printf("\n");
