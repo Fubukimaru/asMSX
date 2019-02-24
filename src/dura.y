@@ -153,7 +153,7 @@ void write_wav();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *memory, *fname_src, *fname_int, *fname_bin, *fname;
+char *memory, *fname_src, *fname_int, *fname_bin, *fname_no_ext;
 char *fname_txt, *fname_sym, *fname_asm, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -758,7 +758,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             zilog = 1;
           }
         | PSEUDO_FILENAME TEXTO {
-            strcpy(fname, $2);
+            strcpy(fname_no_ext, $2);
           }
 ;
 
@@ -3445,7 +3445,7 @@ int read_local(char *nombre)
 void create_txt()
 {
   /* Generate the name of output text file */
-  strcpy(fname_txt, fname);
+  strcpy(fname_txt, fname_no_ext);
   fname_txt = strcat(fname_txt, ".txt");
   fmsg = fopen(fname_txt, "wt");
   if (fmsg == NULL)
@@ -3688,8 +3688,8 @@ void write_bin()
       {
         size_t t;
         for (t = 0; t < 10; t++) 
-          if (t < strlen(fname))
-            write_zx_byte(fname[t]);
+          if (t < strlen(fname_no_ext))
+            write_zx_byte(fname_no_ext[t]);
           else
             write_zx_byte(0x20);
       }
@@ -3739,8 +3739,8 @@ void write_bin()
     {
       size_t t;
       for (t = 0; t < 10; t++) 
-        if (t < strlen(fname))
-          write_zx_byte(fname[t]);
+        if (t < strlen(fname_no_ext))
+          write_zx_byte(fname_no_ext[t]);
         else
           write_zx_byte(0x20);
     }
@@ -3783,7 +3783,7 @@ void write_bin()
 void finalize()
 {
   /* Generate the name of file with symbolic information */
-  strcpy(fname_sym, fname);
+  strcpy(fname_sym, fname_no_ext);
   fname_sym = strcat(fname_sym, ".sym");
  
   write_bin();
@@ -4325,25 +4325,25 @@ int main(int argc, char *argv[])
   fname_bin = malloc(256);
   fname_sym = malloc(256);
   fname_txt = malloc(256);
-  fname = malloc(256);
-  if (!fname)
+  fname_no_ext = malloc(256);
+  if (!fname_no_ext)
   {
-    fprintf(stderr, "Error: can't open file %s\n", fname);
+    fprintf(stderr, "Error: can't open file %s\n", fname_no_ext);
     exit(1);
   }
 
-  strcpy(fname, argv[fileArg]);
-  strcpy(fname_asm, fname);
+  strcpy(fname_no_ext, argv[fileArg]);
+  strcpy(fname_asm, fname_no_ext);
 
-  for (i = strlen(fname) - 1; (fname[i] != '.') && i; i--);
+  for (i = strlen(fname_no_ext) - 1; (fname_no_ext[i] != '.') && i; i--);
 
   if (i)
-    fname[i] = 0;
+    fname_no_ext[i] = 0;
   else
     strcat(fname_asm, ".asm");
 
   /* Generate the name of binary file */
-  strcpy(fname_bin, fname);
+  strcpy(fname_bin, fname_no_ext);
 
   preprocessor1(fname_asm);
   preprocessor3(zilog);
