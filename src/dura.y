@@ -159,7 +159,7 @@ int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
-int inicio = 0, advertencias = 0, lineas, parity;
+int run_address = 0, advertencias = 0, lineas, parity;
 int zilog = 0, pass = 1, bios = 0, type = 0;
 int conditional[16];
 int conditional_level = 0, maxima = 0, ultima_global = 0;
@@ -494,7 +494,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
           }
         | PSEUDO_START valor {
             if (conditional[conditional_level])
-              inicio=$2;
+              run_address = $2;
           }
         | PSEUDO_CALLBIOS valor {
             if (conditional[conditional_level])
@@ -3633,7 +3633,7 @@ void write_bin()
   {
     fname_bin = strcat(fname_bin, ".rom");
     PC = start_address + 2;
-    write_word(inicio);
+    write_word(run_address);
     if (!size)
       size = 8 * ((end_address - start_address + 8191) / 8192);
   }
@@ -3647,7 +3647,7 @@ void write_bin()
     PC = 0x4002;
     subpage = 0x00;
     pageinit = 0x4000;
-    write_word(inicio);
+    write_word(run_address);
   }
   else if (type == SINCLAIR)
     fname_bin = strcat(fname_bin, ".tap");
@@ -3670,14 +3670,14 @@ void write_bin()
     putc((start_address >> 8) & 0xff, fbin);
     putc(end_address & 0xff, fbin);
     putc((end_address >> 8) & 0xff, fbin);
-    if (!inicio)
-      inicio = start_address;
-    putc(inicio & 0xff, fbin);
-    putc((inicio >> 8) & 0xff, fbin);
+    if (!run_address)
+      run_address = start_address;
+    putc(run_address & 0xff, fbin);
+    putc((run_address >> 8) & 0xff, fbin);
   }
   else if (type == SINCLAIR)
   {
-    if (inicio)
+    if (run_address)
     {
       putc(0x13, fbin);
       putc(0, fbin);
@@ -3723,7 +3723,7 @@ void write_bin()
       write_zx_byte(0xc0);      /* USR */
       write_zx_byte(0xb0);      /* VAL */
       write_zx_byte('\"');
-      write_zx_number(inicio);
+      write_zx_number(run_address);
       write_zx_byte('\"');
       write_zx_byte(0x0d);
       write_zx_byte(parity);
@@ -3857,8 +3857,8 @@ void type_rom()
   write_byte(66);
   PC += 14;
   ePC += 14;
-  if (!inicio)
-    inicio = ePC;
+  if (!run_address)
+    run_address = ePC;
 }
 
 void type_megarom(int n)
@@ -3900,8 +3900,8 @@ void type_megarom(int n)
   write_byte(66);
   PC += 14;
   ePC += 14;
-  if (!inicio)
-    inicio = ePC;
+  if (!run_address)
+    run_address = ePC;
 }
 
 
@@ -4073,8 +4073,8 @@ void write_cas()
     putc((start_address >> 8) & 0xff, f);
     putc(end_address & 0xff, f);
     putc((end_address >> 8) & 0xff, f);
-    putc(inicio & 0xff, f);
-    putc((inicio >> 8) & 0xff, f);
+    putc(run_address & 0xff, f);
+    putc((run_address >> 8) & 0xff, f);
   }
 
   for (i = start_address; i <= end_address; i++)
@@ -4221,8 +4221,8 @@ void write_wav()	/* This function is broken since public GPLv3 release */
     wav_write_byte((start_address >> 8) & 0xff);
     wav_write_byte(end_address & 0xff);
     wav_write_byte((end_address >> 8) & 0xff);
-    wav_write_byte(inicio & 0xff);
-    wav_write_byte((inicio >> 8) & 0xff);
+    wav_write_byte(run_address & 0xff);
+    wav_write_byte((run_address >> 8) & 0xff);
 
     /* Write data */
     for (i = start_address; i <= end_address; i++)
