@@ -375,8 +375,8 @@ line:    pseudo_instruction EOL
         | mnemo_load8bit EOL
         | mnemo_load16bit EOL
         | mnemo_exchange EOL
-        | mnemo_arit16bit EOL
-        | mnemo_arit8bit EOL
+        | mnemo_math16bit EOL
+        | mnemo_math8bit EOL
         | mnemo_general EOL
         | mnemo_rotate EOL
         | mnemo_bits EOL
@@ -1103,7 +1103,7 @@ mnemo_exchange: MNEMO_EX REGISTER_PAIR ',' REGISTER_PAIR {
           }
 ;
 
-mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
+mnemo_math8bit: MNEMO_ADD REGISTER ',' REGISTER {
             if ($2 != 7)
               error_message(4);
             write_byte(0x80|$4);
@@ -1825,7 +1825,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
           }
 ;
 
-mnemo_arit16bit: MNEMO_ADD REGISTER_PAIR ',' REGISTER_PAIR {
+mnemo_math16bit: MNEMO_ADD REGISTER_PAIR ',' REGISTER_PAIR {
             if ($2 != 2)
               error_message(2);
             write_byte(0x09 | ($4 << 4));
