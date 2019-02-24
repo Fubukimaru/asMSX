@@ -285,7 +285,7 @@ m               {
                   return CONDICION;
                 }
                       
-0"/"1           return MODO_MULTIPLE;
+0"/"1           return MULTI_MODE;
 
 "."?db/[ \t]+     return PSEUDO_DB;
 "."?defb/[ \t]+   return PSEUDO_DB;

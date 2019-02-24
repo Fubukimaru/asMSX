@@ -347,7 +347,7 @@ struct
 %token <val> REGISTER_16_IX
 %token <val> REGISTER_16_IY
 %token <val> REGISTER_PAIR
-%token <val> MODO_MULTIPLE       
+%token <val> MULTI_MODE
 %token <val> CONDICION
 
 %token <val> NUMERO
