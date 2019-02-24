@@ -4303,11 +4303,11 @@ int main(int argc, char *argv[])
   printf("-------------------------------------------------------------------------------\n");
   printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
   printf("-------------------------------------------------------------------------------\n");  
-  if (argc > 3 || argc < 2 )
+  if (argc > 3 || argc < 2)
   {
     printf("Syntax: asMSX [-z] [file.asm]\n");
     exit(0);
-  } else if (argc == 3){
+  } else if (argc == 3) {
    if (strcmp(argv[1], "-z") == 0) {
 	 zilog = 1;
 	 fileArg = 2;
@@ -4328,7 +4328,7 @@ int main(int argc, char *argv[])
   fname_no_ext = malloc(256);
   if (!fname_no_ext)
   {
-    fprintf(stderr, "Error: can't open file %s\n", fname_no_ext);
+    fprintf(stderr, "Error: can't allocate memory for fname_no_ext\n");
     exit(1);
   }
 
