@@ -368,10 +368,10 @@ struct
 /* Grammar rules */
 
 entrada: /* empty */
-        | entrada linea
+        | entrada line
 ;
 
-linea:    pseudo_instruccion EOL
+line:    pseudo_instruccion EOL
         | mnemo_load8bit EOL
         | mnemo_load16bit EOL
         | mnemo_exchange EOL
@@ -389,7 +389,7 @@ linea:    pseudo_instruccion EOL
         | PREPRO_LINE value EOL {
             lines = $2;
           }
-        | label linea
+        | label line
         | label EOL
 ;
 
