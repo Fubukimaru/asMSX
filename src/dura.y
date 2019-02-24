@@ -414,7 +414,7 @@ pseudo_instruction: PSEUDO_ORG value {
           }
         | PSEUDO_DEPHASE {
             if (conditional[conditional_level])
-              ePC=PC;
+              ePC = PC;
           }
         | PSEUDO_ROM {
             if (conditional[conditional_level])
