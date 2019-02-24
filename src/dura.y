@@ -171,7 +171,7 @@ struct
   int valor;
   int type;
   int pagina;
-} lista_identificadores[MAX_ID];
+} id_list[MAX_ID];
 %}
 
 %union
@@ -3315,24 +3315,24 @@ void register_label(char *nombre)
 
   if (pass == 2)
     for (i = 0; i < total_global; i++)
-      if (!strcmp(nombre, lista_identificadores[i].nombre))
+      if (!strcmp(nombre, id_list[i].nombre))
       {
         last_global = i;
         return;
       }
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, lista_identificadores[i].nombre))
+    if (!strcmp(nombre, id_list[i].nombre))
       error_message(14);
 
   if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 4);
-  strcpy(lista_identificadores[total_global - 1].nombre, nombre);
-  lista_identificadores[total_global - 1].valor = ePC;
-  lista_identificadores[total_global-1].type = 1;
-  lista_identificadores[total_global-1].pagina = subpage;
+  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 4);
+  strcpy(id_list[total_global - 1].nombre, nombre);
+  id_list[total_global - 1].valor = ePC;
+  id_list[total_global-1].type = 1;
+  id_list[total_global-1].pagina = subpage;
   last_global = total_global - 1;
 }
 
@@ -3344,17 +3344,17 @@ void register_local(char *nombre)
     return;
 
   for (i = last_global; i < total_global; i++)
-    if (!strcmp(nombre, lista_identificadores[i].nombre))
+    if (!strcmp(nombre, id_list[i].nombre))
       error_message(14);
 
   if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 4);
-  strcpy(lista_identificadores[total_global - 1].nombre, nombre);
-  lista_identificadores[total_global - 1].valor = ePC;
-  lista_identificadores[total_global - 1].type = 1;
-  lista_identificadores[total_global - 1].pagina = subpage;
+  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 4);
+  strcpy(id_list[total_global - 1].nombre, nombre);
+  id_list[total_global - 1].valor = ePC;
+  id_list[total_global - 1].type = 1;
+  id_list[total_global - 1].pagina = subpage;
 }
 
 void register_symbol(char *nombre, int numero, int type)
@@ -3366,7 +3366,7 @@ void register_symbol(char *nombre, int numero, int type)
     return;
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, lista_identificadores[i].nombre))
+    if (!strcmp(nombre, id_list[i].nombre))
     {
       error_message(14);
       return;
@@ -3375,7 +3375,7 @@ void register_symbol(char *nombre, int numero, int type)
   if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 1);
+  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 1);
 
   /* guarantees we won't pass string literal to strtok(), which causes SEGFAULT on GCC 6.2.0 */
   _nombre = strdup(nombre);
@@ -3385,11 +3385,11 @@ void register_symbol(char *nombre, int numero, int type)
     exit(1);
   }
 
-  strcpy(lista_identificadores[total_global - 1].nombre, strtok(_nombre, " "));
+  strcpy(id_list[total_global - 1].nombre, strtok(_nombre, " "));
   free(_nombre);
 
-  lista_identificadores[total_global - 1].valor = numero;
-  lista_identificadores[total_global - 1].type = type;
+  id_list[total_global - 1].valor = numero;
+  id_list[total_global - 1].type = type;
 }
 
 void register_variable(char *nombre, int numero)
@@ -3397,19 +3397,19 @@ void register_variable(char *nombre, int numero)
   int i;
 
   for (i = 0; i < total_global; i++)
-    if ((!strcmp(nombre, lista_identificadores[i].nombre)) && (lista_identificadores[i].type == 3))
+    if ((!strcmp(nombre, id_list[i].nombre)) && (id_list[i].type == 3))
     {
-      lista_identificadores[i].valor = numero;
+      id_list[i].valor = numero;
       return;
     }
 
   if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 1);
-  strcpy(lista_identificadores[total_global - 1].nombre, strtok(nombre, " "));
-  lista_identificadores[total_global - 1].valor = numero;
-  lista_identificadores[total_global - 1].type = 3;
+  id_list[total_global - 1].nombre = malloc(strlen(nombre) + 1);
+  strcpy(id_list[total_global - 1].nombre, strtok(nombre, " "));
+  id_list[total_global - 1].valor = numero;
+  id_list[total_global - 1].type = 3;
 }
 
 int read_label(char *nombre)
@@ -3417,8 +3417,8 @@ int read_label(char *nombre)
   int i;
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, lista_identificadores[i].nombre))
-      return lista_identificadores[i].valor;
+    if (!strcmp(nombre, id_list[i].nombre))
+      return id_list[i].valor;
 
   if ((pass == 1) && (i == total_global))
     return ePC;
@@ -3435,8 +3435,8 @@ int read_local(char *nombre)
     return ePC;
 
   for (i = last_global; i < total_global; i++)
-    if (!strcmp(nombre, lista_identificadores[i].nombre))
-      return lista_identificadores[i].valor;
+    if (!strcmp(nombre, id_list[i].nombre))
+      return id_list[i].valor;
 
   error_message(13);
   exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
@@ -3463,7 +3463,7 @@ void salvar_simbolos()
 
   j = 0;
   for (i = 0; i < total_global; i++)
-    j += lista_identificadores[i].type;
+    j += id_list[i].type;
 
   if (j > 0)
   {
@@ -3478,43 +3478,43 @@ void salvar_simbolos()
 
     j = 0;
     for (i = 0; i < total_global; i++)
-      if (lista_identificadores[i].type == 1)
+      if (id_list[i].type == 1)
         j++;
     if (j > 0)
     {
       fprintf(fichero, "; global and local labels\n");
       for (i = 0; i < total_global; i++)
-        if (lista_identificadores[i].type == 1)
+        if (id_list[i].type == 1)
         {
           if (type != MEGAROM)
-            fprintf(fichero, "%4.4Xh %s\n", lista_identificadores[i].valor, lista_identificadores[i].nombre);
+            fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].nombre);
           else
-            fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", lista_identificadores[i].pagina & 0xff, lista_identificadores[i].valor, lista_identificadores[i].nombre);
+            fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", id_list[i].pagina & 0xff, id_list[i].valor, id_list[i].nombre);
         }
     }
 
     j = 0;
     for (i = 0; i < total_global; i++)
-      if (lista_identificadores[i].type == 2)
+      if (id_list[i].type == 2)
         j++;
     if (j > 0)
     {
       fprintf(fichero, "; other identifiers\n");
       for (i = 0; i < total_global; i++)
-        if (lista_identificadores[i].type == 2)
-          fprintf(fichero, "%4.4Xh %s\n", lista_identificadores[i].valor, lista_identificadores[i].nombre);
+        if (id_list[i].type == 2)
+          fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].nombre);
     }
 
     j = 0;
     for (i=0; i < total_global; i++)
-      if (lista_identificadores[i].type == 3)
+      if (id_list[i].type == 3)
         j++;
     if (j > 0)
     {
       fprintf(fichero, "; variables - value on exit\n");
       for (i = 0; i < total_global; i++)
-        if (lista_identificadores[i].type == 3)
-          fprintf(fichero, "%4.4Xh %s\n", lista_identificadores[i].valor, lista_identificadores[i].nombre);
+        if (id_list[i].type == 3)
+          fprintf(fichero, "%4.4Xh %s\n", id_list[i].valor, id_list[i].nombre);
     }
 
     fclose(fichero);
@@ -4273,7 +4273,7 @@ int is_defined_symbol(char *nombre)
   int i;
 
   for (i = 0; i < total_global; i++)
-    if (!strcmp(nombre, lista_identificadores[i].nombre))
+    if (!strcmp(nombre, id_list[i].nombre))
       return 1;
 
   return 0;
