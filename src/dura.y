@@ -371,7 +371,7 @@ start: /* empty */
         | start line
 ;
 
-line:    pseudo_instruccion EOL
+line:    pseudo_instruction EOL
         | mnemo_load8bit EOL
         | mnemo_load16bit EOL
         | mnemo_exchange EOL
@@ -401,7 +401,7 @@ label: IDENTIFICADOR ':' {
           }
 ;
 
-pseudo_instruccion: PSEUDO_ORG value {
+pseudo_instruction: PSEUDO_ORG value {
             if (conditional[conditional_level])
             {
               PC = $2;
