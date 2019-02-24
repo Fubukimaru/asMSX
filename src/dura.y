@@ -191,7 +191,7 @@ struct
 %left NEGATION OP_NEG_LOG
 %left OP_EQUAL OP_LESS_OR_EQUAL OP_LESS OP_MORE OP_MORE_OR_EQUAL OP_NOT_EQUAL
 
-%token <tex> COMILLA
+%token <tex> APOSTROPHE
 %token <tex> TEXTO
 %token <tex> IDENTIFICADOR
 %token <tex> LOCAL_IDENTIFICADOR
@@ -1050,7 +1050,7 @@ mnemo_exchange: MNEMO_EX REGISTRO_PAR ',' REGISTRO_PAR {
               warning_message(5);
             write_byte(0xeb);
           }
-        | MNEMO_EX REGISTRO_AF ',' REGISTRO_AF COMILLA {
+        | MNEMO_EX REGISTRO_AF ',' REGISTRO_AF APOSTROPHE {
             write_byte(0x08);
           }
         | MNEMO_EXX {

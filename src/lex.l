@@ -14,7 +14,7 @@ extern char *fname_p2;
 
 [ ]*
 
-'               return COMILLA;
+'               return APOSTROPHE;
 
 "^"             return OP_XOR;
 "|"             return OP_OR;
