@@ -162,7 +162,7 @@ int start_address = 0xffff, end_address = 0x0000;
 int run_address = 0, warnings = 0, lines, parity;
 int zilog = 0, pass = 1, bios = 0, type = 0;
 int conditional[16];
-int conditional_level = 0, maxima = 0, last_global = 0;
+int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
 
 struct
@@ -3314,26 +3314,26 @@ void register_label(char *nombre)
   int i;
 
   if (pass == 2)
-    for (i = 0; i < maxima; i++)
+    for (i = 0; i < total_global; i++)
       if (!strcmp(nombre, lista_identificadores[i].nombre))
       {
         last_global = i;
         return;
       }
 
-  for (i = 0; i < maxima; i++)
+  for (i = 0; i < total_global; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       error_message(14);
 
-  if (++maxima == MAX_ID)
+  if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
-  strcpy(lista_identificadores[maxima - 1].nombre, nombre);
-  lista_identificadores[maxima - 1].valor = ePC;
-  lista_identificadores[maxima-1].type = 1;
-  lista_identificadores[maxima-1].pagina = subpage;
-  last_global = maxima - 1;
+  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 4);
+  strcpy(lista_identificadores[total_global - 1].nombre, nombre);
+  lista_identificadores[total_global - 1].valor = ePC;
+  lista_identificadores[total_global-1].type = 1;
+  lista_identificadores[total_global-1].pagina = subpage;
+  last_global = total_global - 1;
 }
 
 void register_local(char *nombre)
@@ -3343,18 +3343,18 @@ void register_local(char *nombre)
   if (pass == 2)
     return;
 
-  for (i = last_global; i < maxima; i++)
+  for (i = last_global; i < total_global; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       error_message(14);
 
-  if (++maxima == MAX_ID)
+  if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 4);
-  strcpy(lista_identificadores[maxima - 1].nombre, nombre);
-  lista_identificadores[maxima - 1].valor = ePC;
-  lista_identificadores[maxima - 1].type = 1;
-  lista_identificadores[maxima - 1].pagina = subpage;
+  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 4);
+  strcpy(lista_identificadores[total_global - 1].nombre, nombre);
+  lista_identificadores[total_global - 1].valor = ePC;
+  lista_identificadores[total_global - 1].type = 1;
+  lista_identificadores[total_global - 1].pagina = subpage;
 }
 
 void register_symbol(char *nombre, int numero, int type)
@@ -3365,17 +3365,17 @@ void register_symbol(char *nombre, int numero, int type)
   if (pass == 2)
     return;
 
-  for (i = 0; i < maxima; i++)
+  for (i = 0; i < total_global; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
     {
       error_message(14);
       return;
     }
 
-  if (++maxima == MAX_ID)
+  if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
+  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 1);
 
   /* guarantees we won't pass string literal to strtok(), which causes SEGFAULT on GCC 6.2.0 */
   _nombre = strdup(nombre);
@@ -3385,42 +3385,42 @@ void register_symbol(char *nombre, int numero, int type)
     exit(1);
   }
 
-  strcpy(lista_identificadores[maxima - 1].nombre, strtok(_nombre, " "));
+  strcpy(lista_identificadores[total_global - 1].nombre, strtok(_nombre, " "));
   free(_nombre);
 
-  lista_identificadores[maxima - 1].valor = numero;
-  lista_identificadores[maxima - 1].type = type;
+  lista_identificadores[total_global - 1].valor = numero;
+  lista_identificadores[total_global - 1].type = type;
 }
 
 void register_variable(char *nombre, int numero)
 {
   int i;
 
-  for (i = 0; i < maxima; i++)
+  for (i = 0; i < total_global; i++)
     if ((!strcmp(nombre, lista_identificadores[i].nombre)) && (lista_identificadores[i].type == 3))
     {
       lista_identificadores[i].valor = numero;
       return;
     }
 
-  if (++maxima == MAX_ID)
+  if (++total_global == MAX_ID)
     error_message(11);
 
-  lista_identificadores[maxima - 1].nombre = malloc(strlen(nombre) + 1);
-  strcpy(lista_identificadores[maxima - 1].nombre, strtok(nombre, " "));
-  lista_identificadores[maxima - 1].valor = numero;
-  lista_identificadores[maxima - 1].type = 3;
+  lista_identificadores[total_global - 1].nombre = malloc(strlen(nombre) + 1);
+  strcpy(lista_identificadores[total_global - 1].nombre, strtok(nombre, " "));
+  lista_identificadores[total_global - 1].valor = numero;
+  lista_identificadores[total_global - 1].type = 3;
 }
 
 int read_label(char *nombre)
 {
   int i;
 
-  for (i = 0; i < maxima; i++)
+  for (i = 0; i < total_global; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return lista_identificadores[i].valor;
 
-  if ((pass == 1) && (i == maxima))
+  if ((pass == 1) && (i == total_global))
     return ePC;
 
   error_message(12);
@@ -3434,7 +3434,7 @@ int read_local(char *nombre)
   if (pass == 1)
     return ePC;
 
-  for (i = last_global; i < maxima; i++)
+  for (i = last_global; i < total_global; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return lista_identificadores[i].valor;
 
@@ -3462,7 +3462,7 @@ void salvar_simbolos()
   FILE *fichero;
 
   j = 0;
-  for (i = 0; i < maxima; i++)
+  for (i = 0; i < total_global; i++)
     j += lista_identificadores[i].type;
 
   if (j > 0)
@@ -3477,13 +3477,13 @@ void salvar_simbolos()
     fprintf(fichero, "; generated by asMSX v.%s\n\n", VERSION);
 
     j = 0;
-    for (i = 0; i < maxima; i++)
+    for (i = 0; i < total_global; i++)
       if (lista_identificadores[i].type == 1)
         j++;
     if (j > 0)
     {
       fprintf(fichero, "; global and local labels\n");
-      for (i = 0; i < maxima; i++)
+      for (i = 0; i < total_global; i++)
         if (lista_identificadores[i].type == 1)
         {
           if (type != MEGAROM)
@@ -3494,25 +3494,25 @@ void salvar_simbolos()
     }
 
     j = 0;
-    for (i = 0; i < maxima; i++)
+    for (i = 0; i < total_global; i++)
       if (lista_identificadores[i].type == 2)
         j++;
     if (j > 0)
     {
       fprintf(fichero, "; other identifiers\n");
-      for (i = 0; i < maxima; i++)
+      for (i = 0; i < total_global; i++)
         if (lista_identificadores[i].type == 2)
           fprintf(fichero, "%4.4Xh %s\n", lista_identificadores[i].valor, lista_identificadores[i].nombre);
     }
 
     j = 0;
-    for (i=0; i < maxima; i++)
+    for (i=0; i < total_global; i++)
       if (lista_identificadores[i].type == 3)
         j++;
     if (j > 0)
     {
       fprintf(fichero, "; variables - value on exit\n");
-      for (i = 0; i < maxima; i++)
+      for (i = 0; i < total_global; i++)
         if (lista_identificadores[i].type == 3)
           fprintf(fichero, "%4.4Xh %s\n", lista_identificadores[i].valor, lista_identificadores[i].nombre);
     }
@@ -3794,7 +3794,7 @@ void finalize()
   if (cassette & 2)
     write_wav();
 
-  if (maxima > 0)
+  if (total_global > 0)
     salvar_simbolos();
 
   printf("Completed in %.2f seconds", (float)clock() / (float)CLOCKS_PER_SEC);
@@ -4272,7 +4272,7 @@ int is_defined_symbol(char *nombre)
 {
   int i;
 
-  for (i = 0; i < maxima; i++)
+  for (i = 0; i < total_global; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return 1;
 
