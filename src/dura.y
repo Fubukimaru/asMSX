@@ -350,7 +350,7 @@ struct
 %token <val> MULTI_MODE
 %token <val> CONDITION
 
-%token <val> NUMERO
+%token <val> NUMBER
 %token <val> EOL
 
 %token <real> REAL
@@ -2675,7 +2675,7 @@ mnemo_call: MNEMO_CALL value_16bits {
             write_byte(0xc7 | (($2 / 8) << 3));
           }
 
-value: NUMERO {
+value: NUMBER {
             $$ = $1;
           }
         | IDENTIFICATOR {
@@ -3357,10 +3357,10 @@ void register_local(char *name)
   id_list[total_global - 1].page = subpage;
 }
 
-void register_symbol(char *name, int numero, int type)
+void register_symbol(char *name, int n, int type)
 {
   int i;
-  char *_nombre;
+  char *_name;
 
   if (pass == 2)
     return;
@@ -3378,28 +3378,28 @@ void register_symbol(char *name, int numero, int type)
   id_list[total_global - 1].name = malloc(strlen(name) + 1);
 
   /* guarantees we won't pass string literal to strtok(), which causes SEGFAULT on GCC 6.2.0 */
-  _nombre = strdup(name);
-  if (!_nombre)
+  _name = strdup(name);
+  if (!_name)
   {
-    printf("Error: can't allocate memory with strdup() in %s\n", __func__);
+    fprintf(stderr, "Error: can't allocate memory with strdup() in %s\n", __func__);
     exit(1);
   }
 
-  strcpy(id_list[total_global - 1].name, strtok(_nombre, " "));
-  free(_nombre);
+  strcpy(id_list[total_global - 1].name, strtok(_name, " "));
+  free(_name);
 
-  id_list[total_global - 1].value = numero;
+  id_list[total_global - 1].value = n;
   id_list[total_global - 1].type = type;
 }
 
-void register_variable(char *name, int numero)
+void register_variable(char *name, int n)
 {
   int i;
 
   for (i = 0; i < total_global; i++)
     if ((!strcmp(name, id_list[i].name)) && (id_list[i].type == 3))
     {
-      id_list[i].value = numero;
+      id_list[i].value = n;
       return;
     }
 
@@ -3408,7 +3408,7 @@ void register_variable(char *name, int numero)
 
   id_list[total_global - 1].name = malloc(strlen(name) + 1);
   strcpy(id_list[total_global - 1].name, strtok(name, " "));
-  id_list[total_global - 1].value = numero;
+  id_list[total_global - 1].value = n;
   id_list[total_global - 1].type = 3;
 }
 

@@ -31,7 +31,7 @@ extern char *fname_p2;
 
 '.'             {
                   yylval.val = yytext[1];
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 [0-9]*"."[0-9]+ {
@@ -41,49 +41,49 @@ extern char *fname_p2;
 
 [1-9][0-9]*     {
                   yylval.val = atoi(yytext);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 #[0-9a-f]+      {
                   yytext[0] = '0';
                   yylval.val = strtol(yytext, NULL, 16);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 $[0-9a-f]+      {
                   yytext[0] = '0';
                   yylval.val = strtol(yytext, NULL, 16);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 0x[0-9a-f]+     {
                   yylval.val = strtol(yytext, NULL, 16);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 [0-9][0-9a-f]*h {
                   yylval.val = strtol(yytext, NULL, 16);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 0[0-7]*         {
                   yylval.val = strtol(yytext, NULL, 0);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 [0-7]+o         {
                   yylval.val = strtol(yytext, NULL, 8);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 [0-1]+b         {
                   yylval.val = strtol(yytext, NULL, 2);
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 "$"             {
                   yylval.val = ePC;
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 ld[ ]+sp        return MNEMO_LD_SP;
@@ -352,22 +352,22 @@ m               {
 
 konami          {
                   yylval.val = 0;
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 konamiscc       {
                   yylval.val = 1;
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 ascii8          {
                   yylval.val = 2;
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 ascii16         {
                   yylval.val = 3;
-                  return NUMERO;
+                  return NUMBER;
                 }
 
 at/[ \t\n]+     return PSEUDO_AT;
