@@ -3928,7 +3928,7 @@ void type_msxdos()
   ePC = 0x0100;
 }
 
-void create_subpage(int n, int dir)
+void create_subpage(int n, int address)
 {
   if (n > lastpage)
     lastpage = n;
@@ -3941,14 +3941,14 @@ void create_subpage(int n, int dir)
   else
     usedpage[n] = pass;
 
-  if ((dir < 0x4000) || (dir > 0xbfff))
+  if ((address < 0x4000) || (address > 0xbfff))
     error_message(35);
 
   if (n > maxpage[mapper])
     error_message(36);
 
   subpage = n;
-  pageinit = (dir / pagesize) * pagesize;
+  pageinit = (address / pagesize) * pagesize;
   PC = pageinit;
   ePC = PC;
 }
@@ -3970,34 +3970,34 @@ void locate_32k()
     write_byte(locate32[i]);
 }
 
-int selector(int dir)
+int selector(int address)
 {
-  dir = (dir / pagesize) * pagesize;
+  address = (address / pagesize) * pagesize;
 
-  if ((mapper == KONAMI) && (dir == 0x4000))
+  if ((mapper == KONAMI) && (address == 0x4000))
     error_message(38);
 
   if (mapper == KONAMISCC)
-    dir += 0x1000;
+    address += 0x1000;
   else if (mapper == ASCII8)
-    dir = 0x6000 + (dir - 0x4000) / 4;
+    address = 0x6000 + (address - 0x4000) / 4;
   else if (mapper == ASCII16)
   {
-    if (dir == 0x4000)
-      dir = 0x6000;
+    if (address == 0x4000)
+      address = 0x6000;
     else
-      dir = 0x7000;
+      address = 0x7000;
   }
 
-  return dir;
+  return address;
 }
 
 
-void select_page_direct(int n, int dir)
+void select_page_direct(int n, int address)
 {
   int sel;
  
-  sel = selector(dir);
+  sel = selector(address);
  
   if ((pass == 2) && (!usedpage[n]))
     error_message(39);
@@ -4010,11 +4010,11 @@ void select_page_direct(int n, int dir)
   write_byte(0xf1);
 }
 
-void select_page_register(int r, int dir)
+void select_page_register(int r, int address)
 {
   int sel;
 
-  sel = selector(dir);
+  sel = selector(address);
 
   if (r != 7)
   {
