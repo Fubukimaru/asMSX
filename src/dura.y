@@ -4252,7 +4252,7 @@ void write_wav()	/* This function is broken since public GPLv3 release */
 
     /* Write data */
     for (i = start_address; i <= end_address; i++)
-    wav_write_byte(memory[i]);
+      wav_write_byte(memory[i]);
   }
   else
     wav_size = 0;
