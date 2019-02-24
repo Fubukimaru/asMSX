@@ -4281,17 +4281,15 @@ int is_defined_symbol(char *nombre)
 
 
 /*
- Deterministic versions rand() and srand() to keep generated binary files
- consistent across platforms and compilers. Code snippet is from here:
+ Deterministic version of rand() to keep generated binary files
+ consistent across platforms and compilers. Code snippet is from
  http://stackoverflow.com/questions/4768180/rand-implementation
 */
-
-#define D_RAND_MAX 32767
 static unsigned long int rand_seed = 1;
 int d_rand()
 {
   rand_seed = (rand_seed * 1103515245 + 12345);
-  return (unsigned int)(rand_seed/65536) % (D_RAND_MAX + 1);
+  return (unsigned int)(rand_seed / 65536) % (32767 + 1);
 }
 
 
