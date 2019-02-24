@@ -170,7 +170,7 @@ struct
   char *name;
   int value;
   int type;
-  int pagina;
+  int page;
 } id_list[MAX_ID];
 %}
 
@@ -3332,7 +3332,7 @@ void register_label(char *name)
   strcpy(id_list[total_global - 1].name, name);
   id_list[total_global - 1].value = ePC;
   id_list[total_global-1].type = 1;
-  id_list[total_global-1].pagina = subpage;
+  id_list[total_global-1].page = subpage;
   last_global = total_global - 1;
 }
 
@@ -3354,7 +3354,7 @@ void register_local(char *name)
   strcpy(id_list[total_global - 1].name, name);
   id_list[total_global - 1].value = ePC;
   id_list[total_global - 1].type = 1;
-  id_list[total_global - 1].pagina = subpage;
+  id_list[total_global - 1].page = subpage;
 }
 
 void register_symbol(char *name, int numero, int type)
@@ -3489,7 +3489,7 @@ void salvar_simbolos()
           if (type != MEGAROM)
             fprintf(fichero, "%4.4Xh %s\n", id_list[i].value, id_list[i].name);
           else
-            fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", id_list[i].pagina & 0xff, id_list[i].value, id_list[i].name);
+            fprintf(fichero, "%2.2Xh:%4.4Xh %s\n", id_list[i].page & 0xff, id_list[i].value, id_list[i].name);
         }
     }
 
