@@ -159,7 +159,7 @@ int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
-int run_address = 0, warnings = 0, lineas, parity;
+int run_address = 0, warnings = 0, lines, parity;
 int zilog = 0, pass = 1, bios = 0, type = 0;
 int conditional[16];
 int conditional_level = 0, maxima = 0, ultima_global = 0;
@@ -387,7 +387,7 @@ linea:    pseudo_instruccion EOL
             strcpy(fname_src, $2);
           }
         | PREPRO_LINE valor EOL {
-            lineas = $2;
+            lines = $2;
           }
         | etiqueta linea
         | etiqueta EOL
@@ -3055,7 +3055,7 @@ void msx_bios()
 
 void error_message(int codigo)
 {
-  printf("%s, line %d: ", strtok(fname_src, "\042"), lineas);
+  printf("%s, line %d: ", strtok(fname_src, "\042"), lines);
   switch (codigo)
   {
     case 0:
@@ -3210,7 +3210,7 @@ void warning_message(int codigo)
   if (pass != 2)
     return;
 
-  printf("%s, line %d: Warning: ", strtok(fname_src, "\042"), lineas);
+  printf("%s, line %d: Warning: ", strtok(fname_src, "\042"), lines);
   switch (codigo)
   {
     case 0:
