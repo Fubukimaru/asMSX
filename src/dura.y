@@ -360,8 +360,8 @@ struct
 %type <val> value_3bits
 %type <val> value_8bits
 %type <val> value_16bits
-%type <val> indireccion_IX
-%type <val> indireccion_IY
+%type <val> indirect_IX
+%type <val> indirect_IY
 
 %%
 
@@ -762,7 +762,7 @@ pseudo_instruction: PSEUDO_ORG value {
           }
 ;
 
-indireccion_IX: '[' REGISTER_16_IX ']' {
+indirect_IX: '[' REGISTER_16_IX ']' {
             $$ = 0;
           }
 	| '[' REGISTER_16_IX '+' value_8bits ']' {
@@ -773,7 +773,7 @@ indireccion_IX: '[' REGISTER_16_IX ']' {
           }
 ;
 	
-indireccion_IY: '[' REGISTER_16_IY ']' {
+indirect_IY: '[' REGISTER_16_IY ']' {
             $$ = 0;
           }
 	| '[' REGISTER_16_IY '+' value_8bits ']' {
@@ -836,12 +836,12 @@ mnemo_load8bit: MNEMO_LD REGISTER ',' REGISTER {
         | MNEMO_LD REGISTER ',' REGISTER_IND_HL {
             write_byte(0x46 | ($2 << 3));
           }
-        | MNEMO_LD REGISTER ',' indireccion_IX {
+        | MNEMO_LD REGISTER ',' indirect_IX {
             write_byte(0xdd);
             write_byte(0x46 | ($2 << 3));
             write_byte($4);
           }
-        | MNEMO_LD REGISTER ',' indireccion_IY {
+        | MNEMO_LD REGISTER ',' indirect_IY {
             write_byte(0xfd);
             write_byte(0x46 | ($2 << 3));
             write_byte($4);
@@ -849,12 +849,12 @@ mnemo_load8bit: MNEMO_LD REGISTER ',' REGISTER {
         | MNEMO_LD REGISTER_IND_HL ',' REGISTER {
             write_byte(0x70 | $4);
           }
-        | MNEMO_LD indireccion_IX ',' REGISTER {
+        | MNEMO_LD indirect_IX ',' REGISTER {
             write_byte(0xdd);
             write_byte(0x70 | $4);
             write_byte($2);
           }
-        | MNEMO_LD indireccion_IY ',' REGISTER {
+        | MNEMO_LD indirect_IY ',' REGISTER {
             write_byte(0xfd);
             write_byte(0x70 | $4);
             write_byte($2);
@@ -863,13 +863,13 @@ mnemo_load8bit: MNEMO_LD REGISTER ',' REGISTER {
             write_byte(0x36);
             write_byte($4);
           }
-        | MNEMO_LD indireccion_IX ',' value_8bits {
+        | MNEMO_LD indirect_IX ',' value_8bits {
             write_byte(0xdd);
             write_byte(0x36);
             write_byte($2);
             write_byte($4);
           }
-        | MNEMO_LD indireccion_IY ',' value_8bits {
+        | MNEMO_LD indirect_IY ',' value_8bits {
             write_byte(0xfd);
             write_byte(0x36);
             write_byte($2);
@@ -1131,14 +1131,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               error_message(4);
             write_byte(0x86);
           }
-        | MNEMO_ADD REGISTER ',' indireccion_IX {
+        | MNEMO_ADD REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             write_byte(0xdd);
             write_byte(0x86);
             write_byte($4);
           }
-        | MNEMO_ADD REGISTER ',' indireccion_IY {
+        | MNEMO_ADD REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             write_byte(0xfd);
@@ -1173,14 +1173,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               error_message(4);
             write_byte(0x8e);
           }
-        | MNEMO_ADC REGISTER ',' indireccion_IX {
+        | MNEMO_ADC REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             write_byte(0xdd);
             write_byte(0x8e);
             write_byte($4);
           }
-        | MNEMO_ADC REGISTER ',' indireccion_IY {
+        | MNEMO_ADC REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             write_byte(0xfd);
@@ -1225,7 +1225,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0x96);
           }
-        | MNEMO_SUB REGISTER ',' indireccion_IX {
+        | MNEMO_SUB REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1234,7 +1234,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
             write_byte(0x96);
             write_byte($4);
           }
-        | MNEMO_SUB REGISTER ',' indireccion_IY {
+        | MNEMO_SUB REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1271,14 +1271,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               error_message(4);
             write_byte(0x9e);
           }
-        | MNEMO_SBC REGISTER ',' indireccion_IX {
+        | MNEMO_SBC REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             write_byte(0xdd);
             write_byte(0x9e);
             write_byte($4);
           }
-        | MNEMO_SBC REGISTER ',' indireccion_IY {
+        | MNEMO_SBC REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             write_byte(0xfd);
@@ -1323,7 +1323,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0xa6);
           }
-        | MNEMO_AND REGISTER ',' indireccion_IX {
+        | MNEMO_AND REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1332,7 +1332,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
             write_byte(0xa6);
             write_byte($4);
           }
-        | MNEMO_AND REGISTER ',' indireccion_IY {
+        | MNEMO_AND REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1379,7 +1379,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0xb6);
           }
-        | MNEMO_OR REGISTER ',' indireccion_IX {
+        | MNEMO_OR REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1388,7 +1388,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
             write_byte(0xb6);
             write_byte($4);
           }
-        | MNEMO_OR REGISTER ',' indireccion_IY {
+        | MNEMO_OR REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1435,7 +1435,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0xae);
           }
-        | MNEMO_XOR REGISTER ',' indireccion_IX {
+        | MNEMO_XOR REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1444,7 +1444,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
             write_byte(0xae);
             write_byte($4);
           }
-        | MNEMO_XOR REGISTER ',' indireccion_IY {
+        | MNEMO_XOR REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1491,7 +1491,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0xbe);
           }
-        | MNEMO_CP REGISTER ',' indireccion_IX {
+        | MNEMO_CP REGISTER ',' indirect_IX {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1500,7 +1500,7 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
             write_byte(0xbe);
             write_byte($4);
           }
-        | MNEMO_CP REGISTER ',' indireccion_IY {
+        | MNEMO_CP REGISTER ',' indirect_IY {
             if ($2 != 7)
               error_message(4);
             if (zilog)
@@ -1537,14 +1537,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0x86);
           }
-        | MNEMO_ADD indireccion_IX {
+        | MNEMO_ADD indirect_IX {
             if (zilog)
               warning_message(5);
             write_byte(0xdd);
             write_byte(0x86);
             write_byte($2);
           }
-        | MNEMO_ADD indireccion_IY {
+        | MNEMO_ADD indirect_IY {
             if (zilog)
               warning_message(5);
             write_byte(0xfd);
@@ -1579,14 +1579,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0x8e);
           }
-        | MNEMO_ADC indireccion_IX {
+        | MNEMO_ADC indirect_IX {
             if (zilog)
               warning_message(5);
             write_byte(0xdd);
             write_byte(0x8e);
             write_byte($2);
           }
-        | MNEMO_ADC indireccion_IY {
+        | MNEMO_ADC indirect_IY {
             if (zilog)
               warning_message(5);
             write_byte(0xfd);
@@ -1611,12 +1611,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_SUB REGISTER_IND_HL {
             write_byte(0x96);
           }
-        | MNEMO_SUB indireccion_IX {
+        | MNEMO_SUB indirect_IX {
             write_byte(0xdd);
             write_byte(0x96);
             write_byte($2);
           }
-        | MNEMO_SUB indireccion_IY {
+        | MNEMO_SUB indirect_IY {
             write_byte(0xfd);
             write_byte(0x96);
             write_byte($2);
@@ -1649,14 +1649,14 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
               warning_message(5);
             write_byte(0x9e);
           }
-        | MNEMO_SBC indireccion_IX {
+        | MNEMO_SBC indirect_IX {
             if (zilog)
               warning_message(5);
             write_byte(0xdd);
             write_byte(0x9e);
             write_byte($2);
           }
-        | MNEMO_SBC indireccion_IY {
+        | MNEMO_SBC indirect_IY {
             if (zilog)
               warning_message(5);
               write_byte(0xfd);
@@ -1681,12 +1681,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_AND REGISTER_IND_HL {
             write_byte(0xa6);
           }
-        | MNEMO_AND indireccion_IX {
+        | MNEMO_AND indirect_IX {
             write_byte(0xdd);
             write_byte(0xa6);
             write_byte($2);
           }
-        | MNEMO_AND indireccion_IY {
+        | MNEMO_AND indirect_IY {
             write_byte(0xfd);
             write_byte(0xa6);
             write_byte($2);
@@ -1709,12 +1709,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_OR REGISTER_IND_HL {
             write_byte(0xb6);
           }
-        | MNEMO_OR indireccion_IX {
+        | MNEMO_OR indirect_IX {
             write_byte(0xdd);
             write_byte(0xb6);
             write_byte($2);
           }
-        | MNEMO_OR indireccion_IY {
+        | MNEMO_OR indirect_IY {
             write_byte(0xfd);
             write_byte(0xb6);
             write_byte($2);
@@ -1737,12 +1737,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_XOR REGISTER_IND_HL {
             write_byte(0xae);
           }
-        | MNEMO_XOR indireccion_IX {
+        | MNEMO_XOR indirect_IX {
             write_byte(0xdd);
             write_byte(0xae);
             write_byte($2);
           }
-        | MNEMO_XOR indireccion_IY {
+        | MNEMO_XOR indirect_IY {
             write_byte(0xfd);
             write_byte(0xae);
             write_byte($2);
@@ -1765,12 +1765,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_CP REGISTER_IND_HL {
             write_byte(0xbe);
           }
-        | MNEMO_CP indireccion_IX {
+        | MNEMO_CP indirect_IX {
             write_byte(0xdd);
             write_byte(0xbe);
             write_byte($2);
           }
-        | MNEMO_CP indireccion_IY {
+        | MNEMO_CP indirect_IY {
             write_byte(0xfd);
             write_byte(0xbe);
             write_byte($2);
@@ -1789,12 +1789,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_INC REGISTER_IND_HL {
             write_byte(0x34);
           }
-        | MNEMO_INC indireccion_IX {
+        | MNEMO_INC indirect_IX {
             write_byte(0xdd);
             write_byte(0x34);
             write_byte($2);
           }
-        | MNEMO_INC indireccion_IY {
+        | MNEMO_INC indirect_IY {
             write_byte(0xfd);
             write_byte(0x34);
             write_byte($2);
@@ -1813,12 +1813,12 @@ mnemo_arit8bit: MNEMO_ADD REGISTER ',' REGISTER {
         | MNEMO_DEC REGISTER_IND_HL {
             write_byte(0x35);
           }
-        | MNEMO_DEC indireccion_IX {
+        | MNEMO_DEC indirect_IX {
             write_byte(0xdd);
             write_byte(0x35);
             write_byte($2);
           }
-        | MNEMO_DEC indireccion_IY {
+        | MNEMO_DEC indirect_IY {
             write_byte(0xfd);
             write_byte(0x35);
             write_byte($2);
@@ -1947,7 +1947,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x06);
           }
-        | MNEMO_RLC indireccion_IX ',' REGISTER {
+        | MNEMO_RLC indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -1955,7 +1955,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4);
           }
-        | MNEMO_RLC indireccion_IY ',' REGISTER {
+        | MNEMO_RLC indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -1963,25 +1963,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4);
           }
-        | MNEMO_RLC indireccion_IX {
+        | MNEMO_RLC indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x06);
           }
-        | MNEMO_RLC indireccion_IY {
+        | MNEMO_RLC indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x06);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RLC indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_RLC indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte($2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RLC indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_RLC indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -1995,7 +1995,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x16);
           }
-        | MNEMO_RL indireccion_IX ',' REGISTER {
+        | MNEMO_RL indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2003,7 +2003,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x10);
           }
-        | MNEMO_RL indireccion_IY ',' REGISTER {
+        | MNEMO_RL indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2011,25 +2011,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x10);
           }
-        | MNEMO_RL indireccion_IX {
+        | MNEMO_RL indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x16);
           }
-        | MNEMO_RL indireccion_IY {
+        | MNEMO_RL indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x16);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RL indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_RL indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x10 | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RL indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_RL indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2043,7 +2043,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x0e);
           }
-        | MNEMO_RRC indireccion_IX ',' REGISTER {
+        | MNEMO_RRC indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2051,7 +2051,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x08);
           }
-        | MNEMO_RRC indireccion_IY ',' REGISTER {
+        | MNEMO_RRC indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2059,25 +2059,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x08);
           }
-        | MNEMO_RRC indireccion_IX {
+        | MNEMO_RRC indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x0e);
           }
-        | MNEMO_RRC indireccion_IY {
+        | MNEMO_RRC indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x0e);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RRC indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_RRC indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x08 | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RRC indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_RRC indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2091,7 +2091,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x1e);
           }
-        | MNEMO_RR indireccion_IX ',' REGISTER {
+        | MNEMO_RR indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2099,7 +2099,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x18);
           }
-        | MNEMO_RR indireccion_IY ',' REGISTER {
+        | MNEMO_RR indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2107,25 +2107,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x18);
           }
-        | MNEMO_RR indireccion_IX {
+        | MNEMO_RR indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x1e);
           }
-        | MNEMO_RR indireccion_IY {
+        | MNEMO_RR indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x1e);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RR indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_RR indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x18 | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RR indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_RR indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2139,7 +2139,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x26);
           } 
-        | MNEMO_SLA indireccion_IX ',' REGISTER {
+        | MNEMO_SLA indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2147,7 +2147,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x20);
           }
-        | MNEMO_SLA indireccion_IY ',' REGISTER {
+        | MNEMO_SLA indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2155,25 +2155,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x20);
           }
-        | MNEMO_SLA indireccion_IX {
+        | MNEMO_SLA indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x26);
           }
-        | MNEMO_SLA indireccion_IY {
+        | MNEMO_SLA indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x26);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SLA indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_SLA indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x20 | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SLA indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_SLA indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2187,7 +2187,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x36);
           }
-        | MNEMO_SLL indireccion_IX ',' REGISTER {
+        | MNEMO_SLL indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2195,7 +2195,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x30);
           }
-        | MNEMO_SLL indireccion_IY ',' REGISTER {
+        | MNEMO_SLL indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2203,25 +2203,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x30);
           }
-        | MNEMO_SLL indireccion_IX {
+        | MNEMO_SLL indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x36);
           }
-        | MNEMO_SLL indireccion_IY {
+        | MNEMO_SLL indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x36);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SLL indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_SLL indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x30|$2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SLL indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_SLL indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2235,7 +2235,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x2e);
           }
-        | MNEMO_SRA indireccion_IX ',' REGISTER {
+        | MNEMO_SRA indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2243,7 +2243,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x28);
           }
-        | MNEMO_SRA indireccion_IY ',' REGISTER {
+        | MNEMO_SRA indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2251,25 +2251,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x28);
           }
-        | MNEMO_SRA indireccion_IX {
+        | MNEMO_SRA indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x2e);
           }
-        | MNEMO_SRA indireccion_IY {
+        | MNEMO_SRA indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x2e);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SRA indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_SRA indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x28 | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SRA indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_SRA indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2283,7 +2283,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte(0xcb);
             write_byte(0x3e);
           }
-        | MNEMO_SRL indireccion_IX ',' REGISTER {
+        | MNEMO_SRL indirect_IX ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2291,7 +2291,7 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x38);
           }
-        | MNEMO_SRL indireccion_IY ',' REGISTER {
+        | MNEMO_SRL indirect_IY ',' REGISTER {
             if ($4 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2299,25 +2299,25 @@ mnemo_rotate: MNEMO_RLCA {
             write_byte($2);
             write_byte($4 | 0x38);
           }
-        | MNEMO_SRL indireccion_IX {
+        | MNEMO_SRL indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x3e);
           }
-        | MNEMO_SRL indireccion_IY {
+        | MNEMO_SRL indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($2);
             write_byte(0x3e);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SRL indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_SRL indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($5);
             write_byte(0x38 | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SRL indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_SRL indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($5);
@@ -2341,13 +2341,13 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte(0xcb);
             write_byte(0x46 | ($2 << 3));
           }
-        | MNEMO_BIT value_3bits ',' indireccion_IX {
+        | MNEMO_BIT value_3bits ',' indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($4);
             write_byte(0x46 | ($2 << 3));
           }
-        | MNEMO_BIT value_3bits ',' indireccion_IY {
+        | MNEMO_BIT value_3bits ',' indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($4);
@@ -2361,19 +2361,19 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte(0xcb);
             write_byte(0xc6 | ($2 << 3));
           }
-        | MNEMO_SET value_3bits ',' indireccion_IX {
+        | MNEMO_SET value_3bits ',' indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($4);
             write_byte(0xc6 | ($2 << 3));
           }
-        | MNEMO_SET value_3bits ',' indireccion_IY {
+        | MNEMO_SET value_3bits ',' indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($4);
             write_byte(0xc6 | ($2 << 3));
           }
-        | MNEMO_SET value_3bits ',' indireccion_IX ',' REGISTER {
+        | MNEMO_SET value_3bits ',' indirect_IX ',' REGISTER {
             if ($6 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2381,7 +2381,7 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte($4);
             write_byte(0xc0 | ($2 << 3) | $6);
           }
-        | MNEMO_SET value_3bits ',' indireccion_IY ',' REGISTER {
+        | MNEMO_SET value_3bits ',' indirect_IY ',' REGISTER {
             if ($6 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2389,13 +2389,13 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte($4);
             write_byte(0xc0 | ($2 << 3) | $6);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SET value_3bits ',' indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_SET value_3bits ',' indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($7);
             write_byte(0xc0 | ($5 << 3) | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_SET value_3bits ',' indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_SET value_3bits ',' indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($7);
@@ -2409,19 +2409,19 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte(0xcb);
             write_byte(0x86 | ($2 << 3));
           }
-        | MNEMO_RES value_3bits ',' indireccion_IX {
+        | MNEMO_RES value_3bits ',' indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($4);
             write_byte(0x86 | ($2 << 3));
           }
-        | MNEMO_RES value_3bits ',' indireccion_IY {
+        | MNEMO_RES value_3bits ',' indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($4);
             write_byte(0x86 | ($2 << 3));
           }
-        | MNEMO_RES value_3bits ',' indireccion_IX ',' REGISTER {
+        | MNEMO_RES value_3bits ',' indirect_IX ',' REGISTER {
             if ($6 == 6)
               error_message(2);
             write_byte(0xdd);
@@ -2429,7 +2429,7 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte($4);
             write_byte(0x80 | ($2 << 3) | $6);
           }
-        | MNEMO_RES value_3bits ',' indireccion_IY ',' REGISTER {
+        | MNEMO_RES value_3bits ',' indirect_IY ',' REGISTER {
             if ($6 == 6)
               error_message(2);
             write_byte(0xfd);
@@ -2437,13 +2437,13 @@ mnemo_bits: MNEMO_BIT value_3bits ',' REGISTER {
             write_byte($4);
             write_byte(0x80 | ($2 << 3) | $6);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RES value_3bits ',' indireccion_IX {
+        | MNEMO_LD REGISTER ',' MNEMO_RES value_3bits ',' indirect_IX {
             write_byte(0xdd);
             write_byte(0xcb);
             write_byte($7);
             write_byte(0x80 | ($5 << 3) | $2);
           }
-        | MNEMO_LD REGISTER ',' MNEMO_RES value_3bits ',' indireccion_IY {
+        | MNEMO_LD REGISTER ',' MNEMO_RES value_3bits ',' indirect_IY {
             write_byte(0xfd);
             write_byte(0xcb);
             write_byte($7);
