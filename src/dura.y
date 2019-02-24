@@ -4296,7 +4296,7 @@ int d_rand()
 int main(int argc, char *argv[])
 {
   FILE *f;
-  size_t i;
+  size_t t;
   int fileArg = 1;
   printf("-------------------------------------------------------------------------------\n");
   printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
@@ -4333,10 +4333,10 @@ int main(int argc, char *argv[])
   strcpy(fname_no_ext, argv[fileArg]);
   strcpy(fname_asm, fname_no_ext);
 
-  for (i = strlen(fname_no_ext) - 1; (fname_no_ext[i] != '.') && i; i--);
+  for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
 
-  if (i)
-    fname_no_ext[i] = 0;
+  if (t)
+    fname_no_ext[t] = 0;
   else
     strcat(fname_asm, ".asm");
 
