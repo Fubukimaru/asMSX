@@ -389,11 +389,11 @@ linea:    pseudo_instruccion EOL
         | PREPRO_LINE value EOL {
             lines = $2;
           }
-        | etiqueta linea
-        | etiqueta EOL
+        | label linea
+        | label EOL
 ;
 
-etiqueta: IDENTIFICADOR ':' {
+label: IDENTIFICADOR ':' {
             register_label(strtok($1, ":"));
           }
         | LOCAL_IDENTIFICADOR ':' {
