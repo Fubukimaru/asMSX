@@ -162,7 +162,7 @@ int start_address = 0xffff, end_address = 0x0000;
 int run_address = 0, warnings = 0, lines, parity;
 int zilog = 0, pass = 1, bios = 0, type = 0;
 int conditional[16];
-int conditional_level = 0, maxima = 0, ultima_global = 0;
+int conditional_level = 0, maxima = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
 
 struct
@@ -600,7 +600,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
               finalize();
             PC = 0;
             ePC = 0;
-            ultima_global = 0;
+            last_global = 0;
             type = 0;
             zilog = 0;
             if (conditional_level)
@@ -3317,7 +3317,7 @@ void register_label(char *nombre)
     for (i = 0; i < maxima; i++)
       if (!strcmp(nombre, lista_identificadores[i].nombre))
       {
-        ultima_global = i;
+        last_global = i;
         return;
       }
 
@@ -3333,7 +3333,7 @@ void register_label(char *nombre)
   lista_identificadores[maxima - 1].valor = ePC;
   lista_identificadores[maxima-1].type = 1;
   lista_identificadores[maxima-1].pagina = subpage;
-  ultima_global = maxima - 1;
+  last_global = maxima - 1;
 }
 
 void register_local(char *nombre)
@@ -3343,7 +3343,7 @@ void register_local(char *nombre)
   if (pass == 2)
     return;
 
-  for (i = ultima_global; i < maxima; i++)
+  for (i = last_global; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       error_message(14);
 
@@ -3434,7 +3434,7 @@ int read_local(char *nombre)
   if (pass == 1)
     return ePC;
 
-  for (i = ultima_global; i < maxima; i++)
+  for (i = last_global; i < maxima; i++)
     if (!strcmp(nombre, lista_identificadores[i].nombre))
       return lista_identificadores[i].valor;
 
