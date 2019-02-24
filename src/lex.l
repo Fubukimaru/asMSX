@@ -158,92 +158,92 @@ rst             return MNEMO_RST;
 
 a               {
                   yylval.val = 7;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
 b               {
                   yylval.val = 0;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
 c               {
                   yylval.val = 1;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
 d               {
                   yylval.val = 2;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
 e               {
                   yylval.val = 3;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
 h               {
                   yylval.val = 4;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
 l               {
                   yylval.val = 5;
-                  return REGISTRO;
+                  return REGISTER;
                 }
 
-"["bc"]"        return REGISTRO_IND_BC;
-"["de"]"        return REGISTRO_IND_DE;
-"["hl"]"        return REGISTRO_IND_HL;
-"["sp"]"        return REGISTRO_IND_SP;
+"["bc"]"        return REGISTER_IND_BC;
+"["de"]"        return REGISTER_IND_DE;
+"["hl"]"        return REGISTER_IND_HL;
+"["sp"]"        return REGISTER_IND_SP;
 
 ixh             {
                   yylval.val = 4;
-                  return REGISTRO_IX;
+                  return REGISTER_IX;
                 }
 
 ixl             {
                   yylval.val = 5;
-                  return REGISTRO_IX;
+                  return REGISTER_IX;
                 }
 
-ix              return REGISTRO_16_IX;
+ix              return REGISTER_16_IX;
 
 iyh             {
                   yylval.val = 4;
-                  return REGISTRO_IY;
+                  return REGISTER_IY;
                 }
 
 iyl             {
                   yylval.val = 5;
-                  return REGISTRO_IY;
+                  return REGISTER_IY;
                 }
 
-iy              return REGISTRO_16_IY;
+iy              return REGISTER_16_IY;
 
 bc              {
                   yylval.val = 0;
-                  return REGISTRO_PAR;
+                  return REGISTER_PAR;
                 }
 
 de              {
                   yylval.val = 1;
-                  return REGISTRO_PAR;
+                  return REGISTER_PAR;
                 }
 
 hl              {
                   yylval.val = 2;
-                  return REGISTRO_PAR;
+                  return REGISTER_PAR;
                 }
 
 sp              {
                   yylval.val = 3;
-                  return REGISTRO_PAR;
+                  return REGISTER_PAR;
                 }
 
-i               return REGISTRO_I;
-r               return REGISTRO_R;
-f               return REGISTRO_F;
-af              return REGISTRO_AF;
+i               return REGISTER_I;
+r               return REGISTER_R;
+f               return REGISTER_F;
+af              return REGISTER_AF;
 
 nz              {
                   yylval.val=0;
