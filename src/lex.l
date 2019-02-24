@@ -222,22 +222,22 @@ iy              return REGISTER_16_IY;
 
 bc              {
                   yylval.val = 0;
-                  return REGISTER_PAR;
+                  return REGISTER_PAIR;
                 }
 
 de              {
                   yylval.val = 1;
-                  return REGISTER_PAR;
+                  return REGISTER_PAIR;
                 }
 
 hl              {
                   yylval.val = 2;
-                  return REGISTER_PAR;
+                  return REGISTER_PAIR;
                 }
 
 sp              {
                   yylval.val = 3;
-                  return REGISTER_PAR;
+                  return REGISTER_PAIR;
                 }
 
 i               return REGISTER_I;
