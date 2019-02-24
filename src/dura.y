@@ -153,7 +153,7 @@ void write_wav();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *memory, *fname_src, *fname_int, *fname_bin, *filename;
+char *memory, *fname_src, *fname_int, *fname_bin, *fname_txt;
 char *salida, *simbolos, *ensamblador, *original;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -758,7 +758,7 @@ pseudo_instruccion: PSEUDO_ORG valor {
             zilog = 1;
           }
         | PSEUDO_FILENAME TEXTO {
-            strcpy(filename, $2);
+            strcpy(fname_txt, $2);
           }
 ;
 
@@ -3445,7 +3445,7 @@ int read_local(char *nombre)
 void create_txt()
 {
   /* Generate the name of output text file */
-  strcpy(salida, filename);
+  strcpy(salida, fname_txt);
   salida = strcat(salida, ".txt");
   fmsg = fopen(salida, "wt");
   if (fmsg == NULL)
@@ -3688,8 +3688,8 @@ void write_bin()
       {
         size_t t;
         for (t = 0; t < 10; t++) 
-          if (t < strlen(filename))
-            write_zx_byte(filename[t]);
+          if (t < strlen(fname_txt))
+            write_zx_byte(fname_txt[t]);
           else
             write_zx_byte(0x20);
       }
@@ -3739,8 +3739,8 @@ void write_bin()
     {
       size_t t;
       for (t = 0; t < 10; t++) 
-        if (t < strlen(filename))
-          write_zx_byte(filename[t]);
+        if (t < strlen(fname_txt))
+          write_zx_byte(fname_txt[t]);
         else
           write_zx_byte(0x20);
     }
@@ -3783,7 +3783,7 @@ void write_bin()
 void finalize()
 {
   /* Generate the name of file with symbolic information */
-  strcpy(simbolos, filename);
+  strcpy(simbolos, fname_txt);
   simbolos = strcat(simbolos, ".sym");
  
   write_bin();
@@ -4325,25 +4325,25 @@ int main(int argc, char *argv[])
   fname_bin = malloc(256);
   simbolos = malloc(256);
   salida = malloc(256);
-  filename = malloc(256);
-  if (!filename)
+  fname_txt = malloc(256);
+  if (!fname_txt)
   {
-    fprintf(stderr, "Error: can't open file %s\n", filename);
+    fprintf(stderr, "Error: can't open file %s\n", fname_txt);
     exit(1);
   }
 
-  strcpy(filename, argv[fileArg]);
-  strcpy(ensamblador, filename);
+  strcpy(fname_txt, argv[fileArg]);
+  strcpy(ensamblador, fname_txt);
 
-  for (i = strlen(filename) - 1; (filename[i] != '.') && i; i--);
+  for (i = strlen(fname_txt) - 1; (fname_txt[i] != '.') && i; i--);
 
   if (i)
-    filename[i] = 0;
+    fname_txt[i] = 0;
   else
     strcat(ensamblador, ".asm");
 
   /* Generate the name of binary file */
-  strcpy(fname_bin, filename);
+  strcpy(fname_bin, fname_txt);
 
   preprocessor1(ensamblador);
   preprocessor3(zilog);
