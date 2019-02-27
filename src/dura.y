@@ -4306,13 +4306,13 @@ int main(int argc, char *argv[])
     printf("Syntax: asMSX [-z] [file.asm]\n");
     exit(0);
   } else if (argc == 3) {
-   if (strcmp(argv[1], "-z") == 0) {
-	 zilog = 1;
-	 fileArg = 2;
-   } else {
-	 printf("Syntax: asMSX [-z] [file.asm]\n");
-	 exit(0);
-   }
+    if (strcmp(argv[1], "-z") == 0) {
+	  zilog = 1;
+	  fileArg = 2;
+    } else {
+	  printf("Syntax: asMSX [-z] [file.asm]\n");
+	  exit(0);
+    }
   }   
   
   clock();
