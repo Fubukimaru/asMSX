@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\tape.c" />
     <ClCompile Include="lex.parser1.c" />
     <ClCompile Include="lex.parser2.c" />
     <ClCompile Include="lex.parser3.c" />
