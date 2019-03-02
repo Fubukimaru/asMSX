@@ -3,18 +3,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-void write_tape(const int flags, const char *fname_no_ext, const char *fname_int, int type,
+void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname_int, int type,
 	int start_address, int end_address, int run_address, const char *memory)
 {
 	char fname[_MAX_PATH + 1];
 
-	strcpy(fname, fname_no_ext);
-	strcat(fname, ".cas");
-	printf("cas file %s\n", fname);
+	if (cas_flags & 1)		/* check if either bit 0 or 1 is set, i.e. need to generate cas or wav */
+	{
+		strcpy(fname, fname_no_ext);
+		strcat(fname, ".cas");
+		printf("cas file %s\n", fname);
+	}
 
-	strcpy(fname, fname_no_ext);
-	strcat(fname, ".wav");
-	printf("wav file %s\n", fname);
+	if (cas_flags & 2)
+	{
+		strcpy(fname, fname_no_ext);
+		strcat(fname, ".wav");
+		printf("wav file %s\n", fname);
+	}
 }
 
 

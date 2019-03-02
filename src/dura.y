@@ -3787,8 +3787,7 @@ void finalize()
  
   write_bin();
 
-  if (cassette & 3)		/* check if either bit 0 or 1 is set, i.e. need to generate cas or wav */
-    write_tape(cassette, fname_no_ext, fname_int, type, start_address, end_address, run_address, memory);
+  write_tape(cassette, fname_no_ext, fname_int, type, start_address, end_address, run_address, memory);
 
   if (total_global > 0)
     write_sym();
