@@ -92,20 +92,22 @@
 #include <time.h>
 #include <math.h>
 
+#include "asmsx.h"
+
 #define VERSION "0.18.4"
 #define DATE "18/06/2017"
 
-#define Z80 0
-#define ROM 1
-#define BASIC 2
-#define MSXDOS 3
-#define MEGAROM 4
-#define SINCLAIR 5
+//#define Z80 0
+//#define ROM 1
+//#define BASIC 2
+//#define MSXDOS 3
+//#define MEGAROM 4
+//#define SINCLAIR 5
 
-#define KONAMI 0
-#define KONAMISCC 1
-#define ASCII8 2
-#define ASCII16 3
+//#define KONAMI 0
+//#define KONAMISCC 1
+//#define ASCII8 2
+//#define ASCII16 3
 
 #define MAX_ID 32000
 

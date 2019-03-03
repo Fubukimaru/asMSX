@@ -3,24 +3,56 @@
 #include <stdlib.h>
 #include <string.h>
 
-void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname_int, int type,
+#include "asmsx.h"
+
+void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname_int, int rom_type,
 	int start_address, int end_address, int run_address, const char *memory)
 {
-	char fname[_MAX_PATH + 1];
+	const int CAS_HEADER[8] = {0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74};
+
+	char fname_cas[_MAX_PATH + 1];
+	char fname_wav[_MAX_PATH + 1];
+	FILE *wavf, *casf;
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
 	{
-		strcpy(fname, fname_no_ext);
-		strcat(fname, ".cas");
-		printf("cas file %s\n", fname);
+		strcpy(fname_cas, fname_no_ext);
+		strcat(fname_cas, ".cas");
+		printf("cas file %s\n", fname_cas);
+		casf = fopen(fname_cas, "wb");
+		if (!casf)
+		{
+			fprintf(stderr, "ERROR: can't create file %s in %s\n", fname_cas, __func__);
+			exit(1);
+		}
 	}
 
 	if (cas_flags & 2)		/* check if bit 1 is set, i.e. need to generate wav */
 	{
-		strcpy(fname, fname_no_ext);
-		strcat(fname, ".wav");
-		printf("wav file %s\n", fname);
+		strcpy(fname_wav, fname_no_ext);
+		strcat(fname_wav, ".wav");
+		printf("wav file %s\n", fname_wav);
+		wavf = fopen(fname_wav, "wb");
+		if (!wavf)
+		{
+			fprintf(stderr, "ERROR: can't create file %s in %s\n", fname_wav, __func__);
+			exit(1);
+		}
 	}
+
+	if (rom_type == MEGAROM)
+	{
+		fprintf(stderr, "WARNING: cas file generation is not supported for MEGAROM\n");
+		return;
+	}
+
+	if ((rom_type == ROM) && (start_address < 0x8000))
+	{
+		fprintf(stderr, "WARNING: cas file generation is not supported for ROM that start below address 0x8000. Current start address is %#06x\n", start_address);
+		return;
+	}
+
+
 }
 
 
