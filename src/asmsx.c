@@ -34,7 +34,7 @@ int tape_write_byte(
 void write_tape(
 	const int cas_flags,
 	const char *fname_no_ext,
-	const char *fname_int,
+	const char *fname_msx,
 	const int rom_type,
 	const int start_address,
 	const int end_address,
@@ -53,7 +53,7 @@ void write_tape(
 
 #if _DEBUG
 	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n", __func__, cas_flags, fname_no_ext,
-		fname_int, rom_type, start_address, end_address, run_address, (void *)rom_buf);
+		fname_msx, rom_type, start_address, end_address, run_address, (void *)rom_buf);
 #endif
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
@@ -135,13 +135,13 @@ void write_tape(
 //			fputc(0xd0, f);
 //		{
 //			size_t t;
-//			if (strlen(fname_int) < 6)
-//				for (t = strlen(fname_int); t < 6; t++)
-//					fname_int[t] = 32;	/* pad with space */
+//			if (strlen(fname_msx) < 6)
+//				for (t = strlen(fname_msx); t < 6; t++)
+//					fname_msx[t] = 32;	/* pad with space */
 //		}
 //
 //		for (i = 0; i < 6; i++)
-//			fputc(fname_int[i], f);
+//			fputc(fname_msx[i], f);
 //
 //		for (i = 0; i < 8; i++)
 //			fputc(cas[i], f);
@@ -275,15 +275,15 @@ void write_tape(
 //			wav_write_byte(0xd0);
 //
 //		/* Write MSX name */
-//		if (strlen(fname_int) < 6)
+//		if (strlen(fname_msx) < 6)
 //		{
 //			size_t t;
-//			for (t = strlen(fname_int); t < 6; t++)
-//				fname_int[t] = 32; /* 32 is space character */
+//			for (t = strlen(fname_msx); t < 6; t++)
+//				fname_msx[t] = 32; /* 32 is space character */
 //		}
 //
 //		for (i = 0; i < 6; i++)
-//			wav_write_byte(fname_int[i]);
+//			wav_write_byte(fname_msx[i]);
 //
 //		/* Write blank */
 //		for (i = 0; i < 1500; i++)

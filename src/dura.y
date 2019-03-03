@@ -153,7 +153,7 @@ void write_bin();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *rom_buf, *fname_src, *fname_int, *fname_bin, *fname_no_ext;
+char *rom_buf, *fname_src, *fname_msx, *fname_bin, *fname_no_ext;
 char *fname_txt, *fname_sym, *fname_asm, *fname_p2;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -738,18 +738,18 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_CASSETTE TEXT {
             if (conditional[conditional_level])
             {
-              if (!fname_int[0])
-                strcpy(fname_int, $2);
+              if (!fname_msx[0])
+                strcpy(fname_msx, $2);
               cassette |= $1;
             }
           }
         | PSEUDO_CASSETTE {
             if (conditional[conditional_level])
             {
-              if (!fname_int[0])
+              if (!fname_msx[0])
               {
-                strcpy(fname_int, fname_bin);
-                fname_int[strlen(fname_int) - 1] = 0;
+                strcpy(fname_msx, fname_bin);
+                fname_msx[strlen(fname_msx) - 1] = 0;
               }
               cassette |= $1;
             }
@@ -3788,7 +3788,7 @@ void finalize()
  
   write_bin();
 
-  write_tape(cassette, fname_no_ext, fname_int, rom_type, start_address, end_address, run_address, rom_buf);
+  write_tape(cassette, fname_no_ext, fname_msx, rom_type, start_address, end_address, run_address, rom_buf);
 
   if (total_global > 0)
     write_sym();
@@ -3823,8 +3823,8 @@ void initialize_memory()
 void initialize_system()
 {
   initialize_memory();
-  fname_int = malloc(256);
-  fname_int[0] = 0;
+  fname_msx = malloc(256);
+  fname_msx[0] = 0;
   register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 }
 
