@@ -7,7 +7,7 @@
 #include "asmsx.h"
 
 void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname_int, int rom_type,
-	int start_address, int end_address, int run_address, const char *memory)
+	int start_address, int end_address, int run_address, const char *rom_buf)
 {
 	const int cas_header[8] = {0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74};
 	const int cas_header_len = (int)(sizeof(cas_header) / sizeof(cas_header[0]));
@@ -19,7 +19,7 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 
 #if _DEBUG
 	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n", __func__, cas_flags, fname_no_ext,
-		fname_int, rom_type, start_address, end_address, run_address, (void *)memory);
+		fname_int, rom_type, start_address, end_address, run_address, (void *)rom_buf);
 #endif
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
@@ -121,7 +121,7 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 //	}
 //
 //	for (i = start_address; i <= end_address; i++)
-//		putc(memory[i], f);
+//		putc(rom_buf[i], f);
 //
 //	fclose(f);
 //	printf("Cassette file %s saved\n", fname_bin);
@@ -269,7 +269,7 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 //
 //		/* Write data */
 //		for (i = start_address; i <= end_address; i++)
-//			wav_write_byte(memory[i]);
+//			wav_write_byte(rom_buf[i]);
 //	}
 //	else if (type == Z80)
 //	{
@@ -295,7 +295,7 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 //
 //		/* Write data */
 //		for (i = start_address; i <= end_address; i++)
-//			wav_write_byte(memory[i]);
+//			wav_write_byte(rom_buf[i]);
 //	}
 //	else
 //		wav_size = 0;

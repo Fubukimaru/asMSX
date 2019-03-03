@@ -154,7 +154,7 @@ int d_rand();
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
 
 FILE *fmsg, *fbin, *fwav;
-char *memory, *fname_src, *fname_int, *fname_bin, *fname_no_ext;
+char *rom_buf, *fname_src, *fname_int, *fname_bin, *fname_no_ext;
 char *fname_txt, *fname_sym, *fname_asm, *fname_p2;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -3267,7 +3267,7 @@ void write_byte(int b)
       if (size && (start_address + size * 1024 > 65536) && (pass == 2))
         error_message(1);
 
-      memory[PC++] = (char)b;
+      rom_buf[PC++] = (char)b;
       ePC++;
     }
     else
@@ -3278,7 +3278,7 @@ void write_byte(int b)
       if (PC >= pageinit + 1024 * pagesize)
         error_message(31);
 
-      memory[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
+      rom_buf[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
       PC++;
       ePC++;
     }
@@ -3756,7 +3756,7 @@ void write_bin()
     write_zx_byte(255);		/* Data... */
 
     for (i = start_address; i <= end_address; i++)
-      write_zx_byte(memory[i]);
+      write_zx_byte(rom_buf[i]);
     write_zx_byte(parity);
   }
 
@@ -3766,16 +3766,16 @@ void write_bin()
     {
       if (rom_type != MEGAROM)
         for (i = start_address; i <= end_address; i++)
-          putc(memory[i], fbin);
+          putc(rom_buf[i], fbin);
       else
         for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
-          putc(memory[i], fbin);
+          putc(rom_buf[i], fbin);
     } else if (rom_type != MEGAROM)
       for (i = start_address; i < start_address + size * 1024; i++)
-        putc(memory[i], fbin);
+        putc(rom_buf[i], fbin);
     else
       for (i = 0; i < size * 1024; i++)
-        putc(memory[i], fbin);
+        putc(rom_buf[i], fbin);
   }
 
   fclose(fbin);
@@ -3789,7 +3789,7 @@ void finalize()
  
   write_bin();
 
-  write_tape(cassette, fname_no_ext, fname_int, rom_type, start_address, end_address, run_address, memory);
+  write_tape(cassette, fname_no_ext, fname_int, rom_type, start_address, end_address, run_address, rom_buf);
 
   if (total_global > 0)
     write_sym();
@@ -3811,14 +3811,14 @@ void initialize_memory()
 {
   const size_t memory_size = 0x1000000;	/* 16 megabytes */
 
-  memory = malloc(memory_size);
-  if (!memory)
+  rom_buf = malloc(memory_size);
+  if (!rom_buf)
   {
-    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'memory' in function '%s'\n", (unsigned long)memory_size, __func__);
+    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'rom_buf' in function '%s'\n", (unsigned long)memory_size, __func__);
     exit(1);
   }
 
-  memset(memory, 0, memory_size);
+  memset(rom_buf, 0, memory_size);
 }
 
 void initialize_system()
