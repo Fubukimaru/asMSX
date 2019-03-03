@@ -6,16 +6,16 @@
 
 #include "asmsx.h"
 
-int tape_write_byte(
+void tape_write_byte(
 	const int b,
 	FILE *casf,
 	FILE *wavf
 )
 {
-	int rc;
 
 	if (casf)
 	{
+		int rc;
 		rc = fputc(b, casf);
 		if (rc == EOF)
 		{
@@ -55,6 +55,13 @@ void write_tape(
 	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n", __func__, cas_flags, fname_no_ext,
 		fname_msx, rom_type, start_address, end_address, run_address, (void *)rom_buf);
 #endif
+
+	if (strlen(fname_msx) != 6)
+	{
+		fprintf(stderr, "ERROR: fname_msx supplied to %s should always be 6 character long, current value \"%s\" is %d character long\n",
+			__func__, fname_msx, strlen(fname_msx));
+		exit(1);
+	}
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
 	{
@@ -96,6 +103,28 @@ void write_tape(
 
 	for (i = 0; i < cas_header_len; i++)
 		tape_write_byte(cas_header[i], casf, wavf);
+
+	if ((rom_type == BASIC) || (rom_type == ROM))
+	{
+		for (i = 0; i < 10; i++)
+			tape_write_byte(0xd0, casf, wavf);
+
+		for (i = 0; i < strlen(fname_msx); i++)
+			tape_write_byte(fname_msx[i], casf, wavf);
+
+		for (i = 0; i < cas_header_len; i++)
+			tape_write_byte(cas_header[i], casf, wavf);
+
+		tape_write_byte(start_address & 0xff, casf, wavf);
+		tape_write_byte((start_address >> 8) & 0xff, casf, wavf);
+		tape_write_byte(end_address & 0xff, casf, wavf);
+		tape_write_byte((end_address >> 8) & 0xff, casf, wavf);
+		tape_write_byte(run_address & 0xff, casf, wavf);
+		tape_write_byte((run_address >> 8) & 0xff, casf, wavf);
+	}
+
+	for (i = start_address; i <= end_address; i++)
+		tape_write_byte(rom_buf[i], casf, wavf);
 
 	if (casf)
 		fclose(casf);
