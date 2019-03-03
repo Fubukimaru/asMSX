@@ -151,7 +151,6 @@ int read_label(char *);
 int read_local(char *);
 void write_bin();
 int d_rand();
-extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
 
 FILE *fmsg, *fbin, *fwav;
 char *rom_buf, *fname_src, *fname_int, *fname_bin, *fname_no_ext;

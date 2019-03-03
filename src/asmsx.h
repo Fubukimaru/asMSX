@@ -13,3 +13,6 @@
 #define KONAMISCC 1
 #define ASCII8 2
 #define ASCII16 3
+
+/* function declarations */
+extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
