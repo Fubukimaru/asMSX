@@ -3,7 +3,7 @@
    Bison grammar file
          v.0.01a: [10/09/2000] First public version
 
-         v.0.01b: [03/05/2001] Bugfixes. Added PRINTFIX,FIXMUL, FIXDIV
+         v.0.01b: [03/05/2001] Bugfixes. Added PRINTFIX, FIXMUL, FIXDIV
 
          v.0.10 : [19/08/2004] Overall enhance. Opcodes 100% checked
 
@@ -161,7 +161,7 @@ int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
 int run_address = 0, warnings = 0, lines, parity;
-int zilog = 0, pass = 1, bios = 0, type = 0;
+int zilog = 0, pass = 1, bios = 0, rom_type = 0;
 int conditional[16];
 int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
@@ -464,7 +464,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SEARCH {
             if (conditional[conditional_level])
             {
-              if ((type != MEGAROM) && (type != ROM))
+              if ((rom_type != MEGAROM) && (rom_type != ROM))
                 error_message(41);
               locate_32k();
             }
@@ -472,7 +472,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SUBPAGE value PSEUDO_AT value {
             if (conditional[conditional_level])
             {
-              if (type != MEGAROM)
+              if (rom_type != MEGAROM)
                 error_message(40);
               create_subpage($2, $4);
             }
@@ -480,7 +480,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SELECT value PSEUDO_AT value {
             if (conditional[conditional_level])
             {
-              if (type != MEGAROM)
+              if (rom_type != MEGAROM)
                 error_message(40);
               select_page_direct($2, $4);
             }
@@ -488,7 +488,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SELECT REGISTER PSEUDO_AT value {
             if (conditional[conditional_level])
             {
-              if (type != MEGAROM)
+              if (rom_type != MEGAROM)
                 error_message(40);
               select_page_register($2, $4);
             }
@@ -513,7 +513,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_CALLDOS value {
             if (conditional[conditional_level])
             {
-              if (type != MSXDOS)
+              if (rom_type != MSXDOS)
                 error_message(25);
               write_byte(0x0e);
               write_byte($2);
@@ -602,7 +602,7 @@ pseudo_instruction: PSEUDO_ORG value {
             PC = 0;
             ePC = 0;
             last_global = 0;
-            type = 0;
+            rom_type = 0;
             zilog = 0;
             if (conditional_level)
               error_message(45);
@@ -3247,12 +3247,12 @@ void write_byte(int b)
   /* If the condition of this block is fulfilled, create the code */
   if ((!conditional_level) || (conditional[conditional_level]))
   {
-    if (type != MEGAROM)
+    if (rom_type != MEGAROM)
     {
       if (PC >= 0x10000)
         error_message(1);
 
-      if ((type == ROM) && (PC >= 0xC000))
+      if ((rom_type == ROM) && (PC >= 0xC000))
         error_message(28);
 
       if (start_address > PC)
@@ -3271,7 +3271,7 @@ void write_byte(int b)
       ePC++;
     }
     else
-    {	/* if (type==MEGAROM) */
+    {	/* if (type == MEGAROM) */
       if (subpage == 0x100)
         error_message(35);
 
@@ -3358,7 +3358,7 @@ void register_local(char *name)
   id_list[total_global - 1].page = subpage;
 }
 
-void register_symbol(char *name, int n, int type)
+void register_symbol(char *name, int n, int rom_type)
 {
   int i;
   char *_name;
@@ -3390,7 +3390,7 @@ void register_symbol(char *name, int n, int type)
   free(_name);
 
   id_list[total_global - 1].value = n;
-  id_list[total_global - 1].type = type;
+  id_list[total_global - 1].type = rom_type;
 }
 
 void register_variable(char *name, int n)
@@ -3487,7 +3487,7 @@ void write_sym()
       for (i = 0; i < total_global; i++)
         if (id_list[i].type == 1)
         {
-          if (type != MEGAROM)
+          if (rom_type != MEGAROM)
             fprintf(f, "%4.4Xh %s\n", id_list[i].value, id_list[i].name);
           else
             fprintf(f, "%2.2Xh:%4.4Xh %s\n", id_list[i].page & 0xff, id_list[i].value, id_list[i].name);
@@ -3625,12 +3625,12 @@ void write_bin()
 {
   int i, j;
 
-  if ((start_address > end_address) && (type != MEGAROM))
+  if ((start_address > end_address) && (rom_type != MEGAROM))
     error_message(24);
 
-  if (type == Z80)
+  if (rom_type == Z80)
     fname_bin = strcat(fname_bin, ".z80");
-  else if (type == ROM)
+  else if (rom_type == ROM)
   {
     fname_bin = strcat(fname_bin, ".rom");
     PC = start_address + 2;
@@ -3638,11 +3638,11 @@ void write_bin()
     if (!size)
       size = 8 * ((end_address - start_address + 8191) / 8192);
   }
-  else if (type == BASIC)
+  else if (rom_type == BASIC)
     fname_bin = strcat(fname_bin, ".bin");
-  else if (type == MSXDOS)
+  else if (rom_type == MSXDOS)
     fname_bin = strcat(fname_bin, ".com");
-  else if (type == MEGAROM)
+  else if (rom_type == MEGAROM)
   {
     fname_bin = strcat(fname_bin, ".rom");
     PC = 0x4002;
@@ -3650,10 +3650,10 @@ void write_bin()
     pageinit = 0x4000;
     write_word(run_address);
   }
-  else if (type == SINCLAIR)
+  else if (rom_type == SINCLAIR)
     fname_bin = strcat(fname_bin, ".tap");
 
-  if (type == MEGAROM)
+  if (rom_type == MEGAROM)
   {
     for (i = 1, j = 0; i <= lastpage; i++)
       j += usedpage[i];
@@ -3664,7 +3664,7 @@ void write_bin()
 
   printf("Binary file %s saved\n", fname_bin);
   fbin = fopen(fname_bin, "wb");
-  if (type == BASIC)
+  if (rom_type == BASIC)
   {
     putc(0xfe, fbin);
     putc(start_address & 0xff, fbin);
@@ -3676,7 +3676,7 @@ void write_bin()
     putc(run_address & 0xff, fbin);
     putc((run_address >> 8) & 0xff, fbin);
   }
-  else if (type == SINCLAIR)
+  else if (rom_type == SINCLAIR)
   {
     if (run_address)
     {
@@ -3760,17 +3760,17 @@ void write_bin()
     write_zx_byte(parity);
   }
 
-  if (type != SINCLAIR)
+  if (rom_type != SINCLAIR)
   {
     if (!size)
     {
-      if (type != MEGAROM)
+      if (rom_type != MEGAROM)
         for (i = start_address; i <= end_address; i++)
           putc(memory[i], fbin);
       else
         for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
           putc(memory[i], fbin);
-    } else if (type != MEGAROM)
+    } else if (rom_type != MEGAROM)
       for (i = start_address; i < start_address + size * 1024; i++)
         putc(memory[i], fbin);
     else
@@ -3789,7 +3789,7 @@ void finalize()
  
   write_bin();
 
-  write_tape(cassette, fname_no_ext, fname_int, type, start_address, end_address, run_address, memory);
+  write_tape(cassette, fname_no_ext, fname_int, rom_type, start_address, end_address, run_address, memory);
 
   if (total_global > 0)
     write_sym();
@@ -3831,9 +3831,9 @@ void initialize_system()
 
 void type_sinclair()
 {
-  if ((type) && (type != SINCLAIR))
+  if ((rom_type) && (rom_type != SINCLAIR))
     error_message(46);
-  type = SINCLAIR;
+  rom_type = SINCLAIR;
   if (!start_address)
   {
     PC = 0x8000;
@@ -3846,10 +3846,10 @@ void type_rom()
   if ((pass == 1) && (!start_address))
     error_message(19);
 
-  if ((type) && (type != ROM))
+  if ((rom_type) && (rom_type != ROM))
     error_message(20);
 
-  type = ROM;
+  rom_type = ROM;
   write_byte(65);
   write_byte(66);
   PC += 14;
@@ -3872,13 +3872,13 @@ void type_megarom(int n)
   if ((pass == 1) && ((!PC) || (!ePC)))
     error_message(19); 
 */
-  if ((type) && (type != MEGAROM))
+  if ((rom_type) && (rom_type != MEGAROM))
     error_message(20);
 
   if ((n < 0) || (n > 3))
     error_message(33);
 
-  type = MEGAROM;
+  rom_type = MEGAROM;
 
   usedpage[0] = 1;
   subpage = 0;
@@ -3907,10 +3907,10 @@ void type_basic()
   if ((pass == 1) && (!start_address))
     error_message(21);
 
-  if ((type) && (type != BASIC))
+  if ((rom_type) && (rom_type != BASIC))
     error_message(20);
 
-  type = BASIC;
+  rom_type = BASIC;
 }
 
 void type_msxdos()
@@ -3918,9 +3918,9 @@ void type_msxdos()
   if ((pass == 1) && (!start_address))
     error_message(23);
 
-  if ((type) && (type != MSXDOS))
+  if ((rom_type) && (rom_type != MSXDOS))
     error_message(20);
-  type = MSXDOS;
+  rom_type = MSXDOS;
   PC = 0x0100;
   ePC = 0x0100;
 }
