@@ -3808,16 +3808,16 @@ void finalize()
 
 void initialize_memory()
 {
-  const size_t memory_size = 0x1000000;	/* 16 megabytes */
+  const size_t rom_buf_size = 0x1000000;	/* 16 megabytes */
 
-  rom_buf = malloc(memory_size);
+  rom_buf = malloc(rom_buf_size);
   if (!rom_buf)
   {
-    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'rom_buf' in function '%s'\n", (unsigned long)memory_size, __func__);
+    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'rom_buf' in function '%s'\n", (unsigned long)rom_buf_size, __func__);
     exit(1);
   }
 
-  memset(rom_buf, 0, memory_size);
+  memset(rom_buf, 0, rom_buf_size);
 }
 
 void initialize_system()
