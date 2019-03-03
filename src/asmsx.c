@@ -6,13 +6,14 @@
 
 #include "asmsx.h"
 
+#define FNAME_MSX_LEN 6
+
 void tape_write_byte(
 	const int b,
 	FILE *casf,
 	FILE *wavf
 )
 {
-
 	if (casf)
 	{
 		int rc;
@@ -30,6 +31,36 @@ void tape_write_byte(
 	}
 }
 
+/* Build a valid MSX tape file name from any input string:
+     - remove path from file name, if any;
+	 - if file name is empty, raise an error, since something is wrong with asMSX itself;
+	 - if file name is longer then 6 characters, trim it as 6;
+	 - if file name is shorter then 6 characters, pad it with spaces, until it's 6 characters long.
+*/
+void build_tape_file_name(const char *instr, char *outstr)
+{
+	char *tmp;
+	int i;
+
+	/* get tmp to point to the beginning of file name itself, skipping the path to it */
+	tmp = (char *)instr;
+	for (i = 0; i < (int)strlen(instr); i++)
+		if ((instr[i] == '/') || (instr[i] == '\\') || (instr[i] == ':'))
+			tmp = (char *)instr + i + 1;
+
+	if (strlen(tmp) == 0)
+	{
+		fprintf(stderr, "ERROR: file name not found in string \"%s\" passed to %s\n", instr, __func__);
+		exit(1);
+	}
+
+	for (i = 0; i < FNAME_MSX_LEN; i++)
+		if (i < (int)strlen(tmp))
+			outstr[i] = tmp[i];
+		else
+			outstr[i] = ' ';
+	outstr[FNAME_MSX_LEN] = 0;
+}
 
 void write_tape(
 	const int cas_flags,
@@ -47,21 +78,18 @@ void write_tape(
 
 	char fname_cas[_MAX_PATH + 1];
 	char fname_wav[_MAX_PATH + 1];
+	char _fname_msx[FNAME_MSX_LEN + 1];
 	FILE *wavf = NULL;
 	FILE *casf = NULL;
 	int i;
 
+	build_tape_file_name(fname_msx, _fname_msx);
+
 #if _DEBUG
 	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n", __func__, cas_flags, fname_no_ext,
 		fname_msx, rom_type, start_address, end_address, run_address, (void *)rom_buf);
+	printf("sanitized tape file name is \"%s\"\n", _fname_msx);
 #endif
-
-	if (strlen(fname_msx) != 6)
-	{
-		fprintf(stderr, "ERROR: fname_msx supplied to %s should always be 6 character long, current value \"%s\" is %d character long\n",
-			__func__, fname_msx, strlen(fname_msx));
-		exit(1);
-	}
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
 	{
@@ -109,8 +137,8 @@ void write_tape(
 		for (i = 0; i < 10; i++)
 			tape_write_byte(0xd0, casf, wavf);
 
-		for (i = 0; i < strlen(fname_msx); i++)
-			tape_write_byte(fname_msx[i], casf, wavf);
+		for (i = 0; i < (int)strlen(_fname_msx); i++)
+			tape_write_byte(_fname_msx[i], casf, wavf);
 
 		for (i = 0; i < cas_header_len; i++)
 			tape_write_byte(cas_header[i], casf, wavf);
