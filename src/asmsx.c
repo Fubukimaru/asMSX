@@ -1,4 +1,5 @@
 /* Tape routines for asMSX */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,11 +9,18 @@
 void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname_int, int rom_type,
 	int start_address, int end_address, int run_address, const char *memory)
 {
-	const int CAS_HEADER[8] = {0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74};
+	const int cas_header[8] = {0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74};
+	const int cas_header_len = (int)(sizeof(cas_header) / sizeof(cas_header[0]));
 
 	char fname_cas[_MAX_PATH + 1];
 	char fname_wav[_MAX_PATH + 1];
 	FILE *wavf, *casf;
+	int i;
+
+#if _DEBUG
+	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n", __func__, cas_flags, fname_no_ext,
+		fname_int, rom_type, start_address, end_address, run_address, (void *)memory);
+#endif
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
 	{
@@ -52,7 +60,14 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 		return;
 	}
 
+//	for (i = 0; i < cas_header_len; i++)
+//		tape_write_byte(cas_header[i], casf, wavf);
 
+	if (casf)
+		fclose(casf);
+
+	if (wavf)
+		fclose(wavf);
 }
 
 
