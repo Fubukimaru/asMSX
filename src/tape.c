@@ -8,14 +8,14 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 {
 	char fname[_MAX_PATH + 1];
 
-	if (cas_flags & 1)		/* check if either bit 0 or 1 is set, i.e. need to generate cas or wav */
+	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
 	{
 		strcpy(fname, fname_no_ext);
 		strcat(fname, ".cas");
 		printf("cas file %s\n", fname);
 	}
 
-	if (cas_flags & 2)
+	if (cas_flags & 2)		/* check if bit 1 is set, i.e. need to generate wav */
 	{
 		strcpy(fname, fname_no_ext);
 		strcat(fname, ".wav");
