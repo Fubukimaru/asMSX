@@ -6,15 +6,49 @@
 
 #include "asmsx.h"
 
-void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname_int, int rom_type,
-	int start_address, int end_address, int run_address, const char *rom_buf)
+int tape_write_byte(
+	const int b,
+	FILE *casf,
+	FILE *wavf
+)
+{
+	int rc;
+
+	if (casf)
+	{
+		rc = fputc(b, casf);
+		if (rc == EOF)
+		{
+			fprintf(stderr, "ERROR: can't write a byte to cas file in %s\n", __func__);
+			exit(1);
+		}
+	}
+
+	if (wavf)
+	{
+		// TODO: write implementation
+	}
+}
+
+
+void write_tape(
+	const int cas_flags,
+	const char *fname_no_ext,
+	const char *fname_int,
+	const int rom_type,
+	const int start_address,
+	const int end_address,
+	const int run_address,
+	const char *rom_buf
+)
 {
 	const int cas_header[8] = {0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74};
 	const int cas_header_len = (int)(sizeof(cas_header) / sizeof(cas_header[0]));
 
 	char fname_cas[_MAX_PATH + 1];
 	char fname_wav[_MAX_PATH + 1];
-	FILE *wavf, *casf;
+	FILE *wavf = NULL;
+	FILE *casf = NULL;
 	int i;
 
 #if _DEBUG
@@ -60,8 +94,8 @@ void write_tape(const int cas_flags, const char *fname_no_ext, const char *fname
 		return;
 	}
 
-//	for (i = 0; i < cas_header_len; i++)
-//		tape_write_byte(cas_header[i], casf, wavf);
+	for (i = 0; i < cas_header_len; i++)
+		tape_write_byte(cas_header[i], casf, wavf);
 
 	if (casf)
 		fclose(casf);
