@@ -34,15 +34,15 @@ void tape_write_byte(
 /* Build a valid MSX tape file name from any input string:
      - remove path from file name, if any;
 	 - if file name is empty, raise an error, since something is wrong with asMSX itself;
-	 - if file name is longer then 6 characters, trim it as 6;
-	 - if file name is shorter then 6 characters, pad it with spaces, until it's 6 characters long.
+	 - if file name is longer then 6 characters, trim it to first 6;
+	 - if file name is shorter then 6 characters, pad it with spaces to 6.
 */
 void build_tape_file_name(const char *instr, char *outstr)
 {
 	char *tmp;
 	int i;
 
-	/* get tmp to point to the beginning of file name itself, skipping the path to it */
+	/* point tmp to the beginning of file name itself, skipping the path to it */
 	tmp = (char *)instr;
 	for (i = 0; i < (int)strlen(instr); i++)
 		if ((instr[i] == '/') || (instr[i] == '\\') || (instr[i] == ':'))
