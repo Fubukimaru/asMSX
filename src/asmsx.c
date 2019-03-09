@@ -111,6 +111,7 @@ void write_tape(
 			fprintf(stderr, "ERROR: can't create file %s in %s\n", fname_wav, __func__);
 			exit(1);
 		}
+		/* write WAV header here */
 	}
 
 	if (rom_type == MEGAROM)
@@ -159,61 +160,6 @@ void write_tape(
 
 
 // code moved from dura.y
-
-//void write_cas()
-//{
-//	FILE *f;
-//	int i;
-//	int cas[8] = {
-//	  0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74
-//	};
-//
-//	if ((type == MEGAROM) || ((type == ROM) && (start_address < 0x8000)))
-//	{
-//		warning_message(0);
-//		return;
-//	}
-//
-//	fname_bin[strlen(fname_bin) - 3] = 0;
-//	fname_bin = strcat(fname_bin, "cas");
-//
-//	f = fopen(fname_bin, "wb");
-//
-//	for (i = 0; i < 8; i++)
-//		fputc(cas[i], f);
-//
-//	if ((type == BASIC) || (type == ROM))
-//	{
-//		for (i = 0; i < 10; i++)
-//			fputc(0xd0, f);
-//		{
-//			size_t t;
-//			if (strlen(fname_msx) < 6)
-//				for (t = strlen(fname_msx); t < 6; t++)
-//					fname_msx[t] = 32;	/* pad with space */
-//		}
-//
-//		for (i = 0; i < 6; i++)
-//			fputc(fname_msx[i], f);
-//
-//		for (i = 0; i < 8; i++)
-//			fputc(cas[i], f);
-//
-//		putc(start_address & 0xff, f);
-//		putc((start_address >> 8) & 0xff, f);
-//		putc(end_address & 0xff, f);
-//		putc((end_address >> 8) & 0xff, f);
-//		putc(run_address & 0xff, f);
-//		putc((run_address >> 8) & 0xff, f);
-//	}
-//
-//	for (i = start_address; i <= end_address; i++)
-//		putc(rom_buf[i], f);
-//
-//	fclose(f);
-//	printf("Cassette file %s saved\n", fname_bin);
-//}
-//
 //void wav_store(int value)
 //{
 //	fputc(value & 0xff, fwav);
