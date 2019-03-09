@@ -8,11 +8,7 @@
 
 #define FNAME_MSX_LEN 6
 
-void tape_write_byte(
-	const int b,
-	FILE *casf,
-	FILE *wavf
-)
+void tape_write_byte(const int b, const FILE *casf, const FILE *wavf)
 {
 	if (casf)
 	{
