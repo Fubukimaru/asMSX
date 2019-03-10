@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "asmsx.h"
 
@@ -13,7 +14,7 @@ void tape_write_byte(const int b, const FILE *casf, const FILE *wavf)
 	if (casf)
 	{
 		int rc;
-		rc = fputc(b, casf);
+		rc = fputc((int)b, (FILE *)casf);
 		if (rc == EOF)
 		{
 			fprintf(stderr, "ERROR: can't write a byte to cas file in %s\n", __func__);
@@ -59,13 +60,8 @@ void build_tape_file_name(const char *instr, char *outstr)
 }
 
 void write_tape(
-	const int cas_flags,
-	const char *fname_no_ext,
-	const char *fname_msx,
-	const int rom_type,
-	const int start_address,
-	const int end_address,
-	const int run_address,
+	const int cas_flags, const char *fname_no_ext, const char *fname_msx,
+	const int rom_type, const int start_address, const int end_address, const int run_address,
 	const char *rom_buf
 )
 {
@@ -82,8 +78,9 @@ void write_tape(
 	build_tape_file_name(fname_msx, _fname_msx);
 
 #if _DEBUG
-	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n", __func__, cas_flags, fname_no_ext,
-		fname_msx, rom_type, start_address, end_address, run_address, (void *)rom_buf);
+	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n",
+		__func__, cas_flags, fname_no_ext, fname_msx,
+		rom_type, start_address, end_address, run_address, (void *)rom_buf);
 	printf("sanitized tape file name is \"%s\"\n", _fname_msx);
 #endif
 
@@ -102,6 +99,8 @@ void write_tape(
 
 	if (cas_flags & 2)		/* check if bit 1 is set, i.e. need to generate wav */
 	{
+		int rc;
+
 		strcpy(fname_wav, fname_no_ext);
 		strcat(fname_wav, ".wav");
 		printf("wav file %s\n", fname_wav);
@@ -111,7 +110,14 @@ void write_tape(
 			fprintf(stderr, "ERROR: can't create file %s in %s\n", fname_wav, __func__);
 			exit(1);
 		}
-		/* write WAV header here */
+
+		/* Write WAV header, don't use struct, so we won't have to mess with different compiler structure packing */
+		rc = fputc('R', wavf); assert(rc != EOF);
+		rc = fputc('I', wavf); assert(rc != EOF);
+		rc = fputc('F', wavf); assert(rc != EOF);
+		rc = fputc('F', wavf); assert(rc != EOF);
+
+
 	}
 
 	if (rom_type == MEGAROM)
