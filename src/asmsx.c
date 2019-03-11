@@ -4,10 +4,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
 
 #include "asmsx.h"
 
 #define FNAME_MSX_LEN 6
+
+#pragma pack(push, 1)
+struct WavHeader
+{
+	uint8_t	chunk_id[4];		/* "RIFF" */
+	int32_t	chunk_size;			/* file size - 8: size of riff and riff_chunk_size */
+	uint8_t	format[4];			/* "WAVE" */
+
+	uint8_t	subchunk1_id[4];	/* "fmt " */
+	int32_t	subchunk1_size;		/* 16: size of audio_format, num_channels, sample_rate, byte_rate, block_align and bits_per_sample */
+	int16_t audio_format;		/* 1: PCM */
+	int16_t	num_channels;		/* 1: we don't need more */
+	int32_t	sample_rate;		/* 22050, 44100 or 48000 */
+	int32_t	byte_rate;			/* should be num_channels * sample_rate * (bits_per_sample / 8) */
+	int16_t	block_align;		/* should be num_channels * (bits_per_sample / 8) */
+	int16_t	bits_per_sample;	/* 8 or 16 */
+
+	uint8_t	subchunk2_id[4];	/* "data" */
+	int32_t	subchunk2_size;		/* samples_count * num_channels * (bits_per_sample / 8) */
+};
+#pragma pack(pop)
 
 void tape_write_byte(const int b, const FILE *casf, const FILE *wavf)
 {
