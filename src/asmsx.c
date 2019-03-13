@@ -8,40 +8,49 @@
 
 #include "asmsx.h"
 
-#define FNAME_MSX_LEN 6
+#ifndef MKFOURCC
+#define MKFOURCC(a, b, c, d) ((uint32_t)(a) | (b) << 8 | (c) << 16 | (d) << 24)
+#endif
 
 #pragma pack(push, 1)
 struct WavHeader
 {
-	uint8_t	chunk_id[4];		/* "RIFF" */
-	int32_t	chunk_size;			/* file size - 8: size of riff and riff_chunk_size */
-	uint8_t	format[4];			/* "WAVE" */
+	uint32_t	chunk_id;		/* "RIFF" */
+	int32_t		chunk_size;		/* file size - 8: size of riff and riff_chunk_size */
+	uint32_t	format;			/* "WAVE" */
 
-	uint8_t	subchunk1_id[4];	/* "fmt " */
-	int32_t	subchunk1_size;		/* 16: size of audio_format, num_channels, sample_rate, byte_rate, block_align and bits_per_sample */
-	int16_t audio_format;		/* 1: PCM */
-	int16_t	num_channels;		/* 1: we don't need more */
-	int32_t	sample_rate;		/* 22050, 44100 or 48000 */
-	int32_t	byte_rate;			/* should be num_channels * sample_rate * (bits_per_sample / 8) */
-	int16_t	block_align;		/* should be num_channels * (bits_per_sample / 8) */
-	int16_t	bits_per_sample;	/* 8 or 16 */
+	uint32_t	subchunk1_id;	/* "fmt " */
+	int32_t		subchunk1_size;	/* 16: size of audio_format, num_channels, sample_rate, byte_rate, block_align and bits_per_sample */
+	int16_t		audio_format;	/* 1: PCM */
+	int16_t		num_channels;	/* 1 or 2 */
+	int32_t		sample_rate;	/* 22050, 44100 or 48000 */
+	int32_t		byte_rate;		/* should be num_channels * sample_rate * (bits_per_sample / 8) */
+	int16_t		block_align;	/* should be num_channels * (bits_per_sample / 8) */
+	int16_t		bits_per_sample;	/* 8 or 16 */
 
-	uint8_t	subchunk2_id[4];	/* "data" */
-	int32_t	subchunk2_size;		/* samples_count * num_channels * (bits_per_sample / 8) */
+	uint32_t	subchunk2_id;	/* "data" */
+	int32_t		subchunk2_size;	/* samples_count * num_channels * (bits_per_sample / 8) */
 };
 #pragma pack(pop)
 
-void tape_write_byte(const int b, const FILE *casf, const FILE *wavf)
+struct WavState
+{
+	int16_t		msx_frequence;
+	int32_t		sample_rate;
+	uint16_t	num_channels;
+	uint16_t	bytes_per_sample;
+	uint32_t	samples_count;
+};
+
+#define FNAME_MSX_LEN 6
+
+void tape_write_byte(const int b, const FILE *casf, const FILE *wavf, struct WavState *wsp)
 {
 	if (casf)
 	{
 		int rc;
 		rc = fputc((int)b, (FILE *)casf);
-		if (rc == EOF)
-		{
-			fprintf(stderr, "ERROR: can't write a byte to cas file in %s\n", __func__);
-			exit(1);
-		}
+		assert(rc != EOF);
 	}
 
 	if (wavf)
@@ -97,6 +106,27 @@ void write_tape(
 	FILE *casf = NULL;
 	int i;
 
+	struct WavState ws =
+	{
+		1200,	/* msx_frequence	*/
+		44100,	/* sample_rate		*/
+		1,		/* num_channels		*/
+		1,		/* bytes_per_sample	*/
+		0		/* samples_count	*/
+	};
+	
+	if (rom_type == MEGAROM)
+	{
+		fprintf(stderr, "WARNING: cas file generation is not supported for MEGAROM\n");
+		return;
+	}
+
+	if ((rom_type == ROM) && (start_address < 0x8000))
+	{
+		fprintf(stderr, "WARNING: cas file generation is not supported for ROM that start below address 0x8000. Current start address is %#06x\n", start_address);
+		return;
+	}
+
 	build_tape_file_name(fname_msx, _fname_msx);
 
 #if _DEBUG
@@ -122,6 +152,7 @@ void write_tape(
 	if (cas_flags & 2)		/* check if bit 1 is set, i.e. need to generate wav */
 	{
 		int rc;
+		struct WavHeader wh;
 
 		strcpy(fname_wav, fname_no_ext);
 		strcat(fname_wav, ".wav");
@@ -133,57 +164,62 @@ void write_tape(
 			exit(1);
 		}
 
-		/* Write WAV header, don't use struct, so we won't have to mess with different compiler structure packing */
-		rc = fputc('R', wavf); assert(rc != EOF);
-		rc = fputc('I', wavf); assert(rc != EOF);
-		rc = fputc('F', wavf); assert(rc != EOF);
-		rc = fputc('F', wavf); assert(rc != EOF);
+		/* build the wav file header */
+		assert(sizeof(wh) == 44);
+		wh.chunk_id = MKFOURCC('R', 'I', 'F', 'F');		/* "RIFF" */
+		wh.chunk_size = -1;								/* file size - 8 (8 == sizeof(chunk_id) + sizeof(chunk_size)) */
+		wh.format = MKFOURCC('W', 'A', 'V', 'E');		/* "WAVE" */
+		wh.subchunk1_id = MKFOURCC('f', 'm', 't', ' ');	/* "fmt " */
+		wh.subchunk1_size = sizeof(wh.audio_format) + sizeof(wh.num_channels) + sizeof(wh.sample_rate) +
+			sizeof(wh.byte_rate) + sizeof(wh.block_align) + sizeof(wh.bits_per_sample);
+		assert(wh.subchunk1_size == 16);				/* this should always be 16 */
+		wh.audio_format = 1;							/* 1: PCM */
+		wh.num_channels = ws.num_channels;				/* 1 or 2 */
+		wh.sample_rate = ws.sample_rate;				/* 22050, 44100 or 48000 */
+		wh.bits_per_sample = 8 * ws.bytes_per_sample;	/* 8 or 16 */
+		wh.byte_rate = wh.num_channels * wh.sample_rate * (wh.bits_per_sample / 8);
+		wh.block_align = wh.num_channels * (wh.bits_per_sample / 8);
+		wh.subchunk2_id = MKFOURCC('d', 'a', 't', 'a');	/* "data" */
+		wh.subchunk2_size = -1;	/* samples_count * num_channels * (bits_per_sample / 8) */
 
-
-	}
-
-	if (rom_type == MEGAROM)
-	{
-		fprintf(stderr, "WARNING: cas file generation is not supported for MEGAROM\n");
-		return;
-	}
-
-	if ((rom_type == ROM) && (start_address < 0x8000))
-	{
-		fprintf(stderr, "WARNING: cas file generation is not supported for ROM that start below address 0x8000. Current start address is %#06x\n", start_address);
-		return;
+		/* write WAV header  */
+		rc = fwrite(&wh, sizeof(struct WavHeader), 1, wavf);
+		assert(rc == 1);
 	}
 
 	for (i = 0; i < cas_header_len; i++)
-		tape_write_byte(cas_header[i], casf, wavf);
+		tape_write_byte(cas_header[i], casf, wavf, &ws);
 
 	if ((rom_type == BASIC) || (rom_type == ROM))
 	{
 		for (i = 0; i < 10; i++)
-			tape_write_byte(0xd0, casf, wavf);
+			tape_write_byte(0xd0, casf, wavf, &ws);
 
 		for (i = 0; i < (int)strlen(_fname_msx); i++)
-			tape_write_byte(_fname_msx[i], casf, wavf);
+			tape_write_byte(_fname_msx[i], casf, wavf, &ws);
 
 		for (i = 0; i < cas_header_len; i++)
-			tape_write_byte(cas_header[i], casf, wavf);
+			tape_write_byte(cas_header[i], casf, wavf, &ws);
 
-		tape_write_byte(start_address & 0xff, casf, wavf);
-		tape_write_byte((start_address >> 8) & 0xff, casf, wavf);
-		tape_write_byte(end_address & 0xff, casf, wavf);
-		tape_write_byte((end_address >> 8) & 0xff, casf, wavf);
-		tape_write_byte(run_address & 0xff, casf, wavf);
-		tape_write_byte((run_address >> 8) & 0xff, casf, wavf);
+		tape_write_byte(start_address & 0xff, casf, wavf, &ws);
+		tape_write_byte((start_address >> 8) & 0xff, casf, wavf, &ws);
+		tape_write_byte(end_address & 0xff, casf, wavf, &ws);
+		tape_write_byte((end_address >> 8) & 0xff, casf, wavf, &ws);
+		tape_write_byte(run_address & 0xff, casf, wavf, &ws);
+		tape_write_byte((run_address >> 8) & 0xff, casf, wavf, &ws);
 	}
 
 	for (i = start_address; i <= end_address; i++)
-		tape_write_byte(rom_buf[i], casf, wavf);
+		tape_write_byte(rom_buf[i], casf, wavf, &ws);
 
 	if (casf)
 		fclose(casf);
 
 	if (wavf)
+	{
+		// TODO: add seek() to start and overwrite header with known values for chunk_size and subchunk2_size
 		fclose(wavf);
+	}
 }
 
 
