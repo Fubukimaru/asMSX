@@ -99,6 +99,10 @@ void wav_sample(const int b, const FILE *wavf, struct WavState *wsp)
 	wsp->samples_count += wsp->bytes_per_sample;
 }
 
+/*  __
+   |  |   
+|__| 
+ */
 void wav_bit_0(const FILE *wavf, struct WavState *wsp)
 {
 	double samples_per_pulse;
@@ -116,9 +120,71 @@ void wav_bit_0(const FILE *wavf, struct WavState *wsp)
 		wav_sample(wsp->max_vol, wavf, wsp);
 }
 
+/*  _   _
+   | | | |
+ |_| |_|
+ */
 void wav_bit_1(const FILE *wavf, struct WavState *wsp)
 {
-	// TODO: write implementation
+	double samples_per_pulse;
+	uint32_t last_pulse, start_sample, quarter_sample, half_sample, three_quarters_sample, end_sample, i;
+
+	samples_per_pulse = (double)wsp->sample_rate / (double)wsp->msx_frequence;
+	last_pulse = (uint32_t)round((double)wsp->samples_count / samples_per_pulse);
+	start_sample = (uint32_t)round(last_pulse * samples_per_pulse);
+	quarter_sample = (uint32_t)round((last_pulse + 0.25) * samples_per_pulse);
+	half_sample = (uint32_t)round((last_pulse + 0.5) * samples_per_pulse);
+	three_quarters_sample = (uint32_t)round((last_pulse + 0.75) * samples_per_pulse);
+	end_sample = (uint32_t)round((last_pulse + 1) * samples_per_pulse);
+
+	for (i = 0; i < quarter_sample - start_sample; i++)
+		wav_sample(wsp->min_vol, wavf, wsp);
+	for (i = 0; i < half_sample - quarter_sample; i++)
+		wav_sample(wsp->max_vol, wavf, wsp);
+	for (i = 0; i < three_quarters_sample - half_sample; i++)
+		wav_sample(wsp->min_vol, wavf, wsp);
+	for (i = 0; i < end_sample - three_quarters_sample; i++)
+		wav_sample(wsp->max_vol, wavf, wsp);
+}
+
+/* A byte on MSX tape is encoded with a start bit 0, 8 bits of the byte and 2 stop bits 1 */
+void wav_byte(const int b, const FILE *wavf, struct WavState *wsp)
+{
+	int i, a_bit;
+
+	wav_bit_0(wavf, wsp);
+	for (i = 0; i < 8; i++)
+	{
+		a_bit = (b >> i) & 1;
+		if (a_bit == 0)
+			wav_bit_0(wavf, wsp);
+		else
+			wav_bit_1(wavf, wsp);
+	}
+	wav_bit_1(wavf, wsp);
+	wav_bit_1(wavf, wsp);
+}
+
+/*
+Encode ~1.7 seconds of wsp->msx_frequence * 2 tone.
+For tape speed of 1200 bod, we need 4000 pulses.
+For tape speed of 2400 bod, we need 8000 pulses.
+Conveniently, wav_bit_1() produces a pair of wsp->msx_frequence * 2 tone pulses.
+ */
+void wav_short_header(const FILE *wavf, struct WavState *wsp)
+{
+	uint32_t i, total_pulse_pairs;
+	total_pulse_pairs = (uint32_t)round(wsp->msx_frequence * 4000 / (1200.0 * 2));
+	for (i = 0; i < (total_pulse_pairs); i++)
+		wav_bit_1(wavf, wsp);
+}
+
+/* One long header is equivalent to 4 short headers */
+void wav_long_header(const FILE *wavf, struct WavState *wsp)
+{
+	uint32_t i;
+	for (i = 0; i < 4; i++)
+		wav_short_header(wavf, wsp);
 }
 
 void tape_write_byte(const int b, const FILE *casf, const FILE *wavf, struct WavState *wsp)
@@ -131,9 +197,7 @@ void tape_write_byte(const int b, const FILE *casf, const FILE *wavf, struct Wav
 	}
 
 	if (wavf)
-	{
-		// TODO: write implementation
-	}
+		wav_byte(b, wavf, wsp);
 }
 
 void write_tape(
@@ -151,6 +215,7 @@ void write_tape(
 	FILE *wavf = NULL;
 	FILE *casf = NULL;
 	int i;
+	struct WavHeader wh;
 
 	/*
 	If you want to change:
@@ -204,6 +269,7 @@ void write_tape(
 	}
 
 	build_tape_file_name(fname_msx, _fname_msx);
+	assert(strlen(_fname_msx) == 6);
 
 #if _DEBUG
 	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n",
@@ -229,7 +295,6 @@ void write_tape(
 	if (cas_flags & 2)		/* check if bit 1 is set, i.e. need to generate wav */
 	{
 		size_t rc;
-		struct WavHeader wh;
 
 		strcpy(fname_wav, fname_no_ext);
 		strcat(fname_wav, ".wav");
@@ -264,8 +329,12 @@ void write_tape(
 		assert(rc == 1);
 	}
 
-	for (i = 0; i < cas_header_len; i++)
-		tape_write_byte(cas_header[i], casf, wavf, &ws);
+	/* write a long header at the start of the program on tape */
+	if (casf)
+		for (i = 0; i < cas_header_len; i++)
+			tape_write_byte(cas_header[i], casf, NULL, &ws);
+	if (wavf)
+		wav_long_header(wavf, &ws);
 
 	if ((rom_type == BASIC) || (rom_type == ROM))
 	{
@@ -275,8 +344,12 @@ void write_tape(
 		for (i = 0; i < (int)strlen(_fname_msx); i++)
 			tape_write_byte(_fname_msx[i], casf, wavf, &ws);
 
-		for (i = 0; i < cas_header_len; i++)
-			tape_write_byte(cas_header[i], casf, wavf, &ws);
+		if (casf)
+			for (i = 0; i < cas_header_len; i++)
+				tape_write_byte(cas_header[i], casf, NULL, &ws);
+
+		if (wavf)
+			wav_short_header(wavf, &ws);
 
 		tape_write_byte(start_address & 0xff, casf, wavf, &ws);
 		tape_write_byte((start_address >> 8) & 0xff, casf, wavf, &ws);
@@ -294,10 +367,28 @@ void write_tape(
 
 	if (wavf)
 	{
-		/*
-		TODO: add seek() to start and overwrite header with known values for
-		chunk_size and subchunk2_size based on ws.samples_count
-		*/
+		size_t rc;
+
+		/* check if samples are 8-bit and total number of samples is odd */
+		if ((ws.bytes_per_sample == 1) && (ws.samples_count & 1))
+		{
+			fputc(0, wavf);		/* pad wav file with a 0 byte */
+			ws.samples_count++;
+		}
+
+		wh.subchunk2_size = ws.samples_count * ws.num_channels * ws.bytes_per_sample;
+
+		/* wav header size (44) - size of first two fields (8) + subchunk2_size */
+		wh.chunk_size = sizeof(struct WavHeader) -
+			(sizeof(wh.chunk_id) + sizeof(wh.chunk_size)) +	
+			wh.subchunk2_size;
+
+		/* overwrite header with proper values for chunk_size and subchunk2_size based on ws.samples_count */
+		fseek(wavf, 0, SEEK_SET);
+
+		rc = fwrite(&wh, sizeof(struct WavHeader), 1, wavf);
+		assert(rc == 1);
+
 		fclose(wavf);
 	}
 }
