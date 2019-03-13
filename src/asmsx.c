@@ -1,12 +1,49 @@
-/* Tape routines for asMSX */
+/*
+ Routines for asMSX
+ Wav writting code is based on previous research at https://github.com/oboroc/msxtape-py
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <math.h>
 
 #include "asmsx.h"
+
+#define FNAME_MSX_LEN 6
+
+/* Build a valid MSX tape file name from any input string:
+	 - remove path from file name, if any;
+	 - if file name is empty, raise an error, since something is wrong with asMSX itself;
+	 - if file name is longer then 6 characters, trim it to first 6;
+	 - if file name is shorter then 6 characters, pad it with spaces to 6.
+*/
+void build_tape_file_name(const char *instr, char *outstr)
+{
+	char *tmp;
+	int i;
+
+	/* point tmp to the beginning of file name itself, skipping the path to it */
+	tmp = (char *)instr;
+	for (i = 0; i < (int)strlen(instr); i++)
+		if ((instr[i] == '/') || (instr[i] == '\\') || (instr[i] == ':'))
+			tmp = (char *)instr + i + 1;
+
+	if (strlen(tmp) == 0)
+	{
+		fprintf(stderr, "ERROR: file name not found in string \"%s\" passed to %s\n", instr, __func__);
+		exit(1);
+	}
+
+	for (i = 0; i < FNAME_MSX_LEN; i++)
+		if (i < (int)strlen(tmp))
+			outstr[i] = tmp[i];
+		else
+			outstr[i] = ' ';
+	outstr[FNAME_MSX_LEN] = 0;
+}
 
 #ifndef MKFOURCC
 #define MKFOURCC(a, b, c, d) ((uint32_t)(a) | (b) << 8 | (c) << 16 | (d) << 24)
@@ -40,9 +77,49 @@ struct WavState
 	uint16_t	num_channels;
 	uint16_t	bytes_per_sample;
 	uint32_t	samples_count;
+	int32_t		min_vol;
+	int32_t		max_vol;
 };
 
-#define FNAME_MSX_LEN 6
+void wav_sample(const int b, const FILE *wavf, struct WavState *wsp)
+{
+	int rc;
+	if (wsp->bytes_per_sample == 1)
+	{
+		rc = fputc((int)b, (FILE *)wavf);
+		assert(rc != EOF);
+	}
+	else
+	{
+		rc = fputc((int)b & 0xff, (FILE *)wavf);
+		assert(rc != EOF);
+		rc = fputc(((int)b >> 8) & 0xff, (FILE *)wavf);
+		assert(rc != EOF);
+	}
+	wsp->samples_count += wsp->bytes_per_sample;
+}
+
+void wav_bit_0(const FILE *wavf, struct WavState *wsp)
+{
+	double samples_per_pulse;
+	uint32_t last_pulse, start_sample, half_sample, end_sample, i;
+
+	samples_per_pulse = (double)wsp->sample_rate / (double)wsp->msx_frequence;
+	last_pulse = (uint32_t)round((double)wsp->samples_count / samples_per_pulse);
+	start_sample = (uint32_t)round(last_pulse * samples_per_pulse);
+	half_sample = (uint32_t)round((last_pulse + 0.5) * samples_per_pulse);
+	end_sample = (uint32_t)round((last_pulse + 1) * samples_per_pulse);
+
+	for (i = 0; i < half_sample - start_sample; i++)
+		wav_sample(wsp->min_vol, wavf, wsp);
+	for (i = 0; i < end_sample - half_sample; i++)
+		wav_sample(wsp->max_vol, wavf, wsp);
+}
+
+void wav_bit_1(const FILE *wavf, struct WavState *wsp)
+{
+	// TODO: write implementation
+}
 
 void tape_write_byte(const int b, const FILE *casf, const FILE *wavf, struct WavState *wsp)
 {
@@ -57,37 +134,6 @@ void tape_write_byte(const int b, const FILE *casf, const FILE *wavf, struct Wav
 	{
 		// TODO: write implementation
 	}
-}
-
-/* Build a valid MSX tape file name from any input string:
-     - remove path from file name, if any;
-	 - if file name is empty, raise an error, since something is wrong with asMSX itself;
-	 - if file name is longer then 6 characters, trim it to first 6;
-	 - if file name is shorter then 6 characters, pad it with spaces to 6.
-*/
-void build_tape_file_name(const char *instr, char *outstr)
-{
-	char *tmp;
-	int i;
-
-	/* point tmp to the beginning of file name itself, skipping the path to it */
-	tmp = (char *)instr;
-	for (i = 0; i < (int)strlen(instr); i++)
-		if ((instr[i] == '/') || (instr[i] == '\\') || (instr[i] == ':'))
-			tmp = (char *)instr + i + 1;
-
-	if (strlen(tmp) == 0)
-	{
-		fprintf(stderr, "ERROR: file name not found in string \"%s\" passed to %s\n", instr, __func__);
-		exit(1);
-	}
-
-	for (i = 0; i < FNAME_MSX_LEN; i++)
-		if (i < (int)strlen(tmp))
-			outstr[i] = tmp[i];
-		else
-			outstr[i] = ' ';
-	outstr[FNAME_MSX_LEN] = 0;
 }
 
 void write_tape(
@@ -106,14 +152,44 @@ void write_tape(
 	FILE *casf = NULL;
 	int i;
 
+	/*
+	If you want to change:
+	- msx tape frequency (1200/2400/3600),
+	- sample rate (22050/44100/48000),
+	- num_channels (1/2 for mono/stereo) or
+	- bytes per sample (1 or 2 bytes for 8 or 16 bit samples),
+	do it here.
+	Later, we may export definition for this struct and have it supplied to write_type()
+	from main program. This would allow to specify wav specs in asm code WAV directive.
+	*/
 	struct WavState ws =
 	{
 		1200,	/* msx_frequence	*/
 		44100,	/* sample_rate		*/
 		1,		/* num_channels		*/
 		1,		/* bytes_per_sample	*/
-		0		/* samples_count	*/
+		0,		/* samples_count	*/
+		0,		/* min_vol			*/
+		0		/* max_vol			*/
 	};
+
+	assert(ws.num_channels == 1);		/* remove this when we support multi-channel */
+	assert(ws.bytes_per_sample == 1);	/* remove this when we support 16-bit or higher samples */
+
+	/* calculate minimum and maximum volume for sample */
+	assert(ws.bytes_per_sample != 0);
+	if (ws.bytes_per_sample == 1)
+	{	/* 8 bit samples */
+		ws.min_vol = 0;
+		ws.max_vol = 255;
+	}
+	else
+	{	/* 16 bit or higher samples */
+		ws.min_vol = -(int32_t)pow(2, ws.bytes_per_sample * 8 - 1);
+		ws.max_vol = -ws.min_vol - 1;
+		/* expand or remove assert if need to support samples 24-bit or higher samples */
+		assert((ws.bytes_per_sample == 2) && (ws.min_vol == -32768) && (ws.max_vol == 32767));
+	}
 	
 	if (rom_type == MEGAROM)
 	{
@@ -133,6 +209,7 @@ void write_tape(
 	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n",
 		__func__, cas_flags, fname_no_ext, fname_msx,
 		rom_type, start_address, end_address, run_address, (void *)rom_buf);
+	printf("raw tape file name is \"%s\"\n", fname_msx);
 	printf("sanitized tape file name is \"%s\"\n", _fname_msx);
 #endif
 
@@ -151,7 +228,7 @@ void write_tape(
 
 	if (cas_flags & 2)		/* check if bit 1 is set, i.e. need to generate wav */
 	{
-		int rc;
+		size_t rc;
 		struct WavHeader wh;
 
 		strcpy(fname_wav, fname_no_ext);
@@ -217,7 +294,10 @@ void write_tape(
 
 	if (wavf)
 	{
-		// TODO: add seek() to start and overwrite header with known values for chunk_size and subchunk2_size
+		/*
+		TODO: add seek() to start and overwrite header with known values for
+		chunk_size and subchunk2_size based on ws.samples_count
+		*/
 		fclose(wavf);
 	}
 }
