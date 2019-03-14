@@ -1,5 +1,12 @@
 #pragma once
 
+#ifdef WIN32
+#define PATH_MAX 4096
+#include <Windows.h>
+#else
+#include <limits.h>
+#endif
+
 /* rom type */
 #define Z80 0
 #define ROM 1
