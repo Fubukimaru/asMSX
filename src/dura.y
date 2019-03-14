@@ -3788,7 +3788,9 @@ void finalize()
  
   write_bin();
 
-  write_tape(cassette, fname_no_ext, fname_msx, rom_type, start_address, end_address, run_address, rom_buf);
+  if (cassette & 3)
+	write_tape(cassette, fname_no_ext, fname_msx, rom_type,
+		start_address, end_address, run_address, rom_buf);
 
   if (total_global > 0)
     write_sym();
