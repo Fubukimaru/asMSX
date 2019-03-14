@@ -1,6 +1,7 @@
 /*
- Routines for asMSX
- Wav writting code is based on previous research at https://github.com/oboroc/msxtape-py
+ * Routines for asMSX
+ *
+ * Wav writting code is based on research in https://github.com/oboroc/msxtape-py
  */
 
 #include <stdio.h>
@@ -83,24 +84,29 @@ struct WavState
 
 void wav_sample(const int b, const FILE *wavf, struct WavState *wsp)
 {
-	int rc;
-	if (wsp->bytes_per_sample == 1)
+	int rc, i;
+
+	for (i = 0; i < wsp->num_channels; i++)
 	{
-		rc = fputc((int)b, (FILE *)wavf);
-		assert(rc != EOF);
+		if (wsp->bytes_per_sample == 1)
+		{
+			rc = fputc((int)b, (FILE *)wavf);
+			assert(rc != EOF);
+		}
+		else
+		{
+			rc = fputc((int)b & 0xff, (FILE *)wavf);
+			assert(rc != EOF);
+			rc = fputc(((int)b >> 8) & 0xff, (FILE *)wavf);
+			assert(rc != EOF);
+		}
 	}
-	else
-	{
-		rc = fputc((int)b & 0xff, (FILE *)wavf);
-		assert(rc != EOF);
-		rc = fputc(((int)b >> 8) & 0xff, (FILE *)wavf);
-		assert(rc != EOF);
-	}
-	wsp->samples_count += wsp->bytes_per_sample;
+
+	wsp->samples_count += wsp->num_channels * wsp->bytes_per_sample;
 }
 
 /*  __
-   |  |   
+   |  | one full square wave pulse at base MSX frequency
 |__| 
  */
 void wav_bit_0(const FILE *wavf, struct WavState *wsp)
@@ -121,7 +127,7 @@ void wav_bit_0(const FILE *wavf, struct WavState *wsp)
 }
 
 /*  _   _
-   | | | |
+   | | | | two full square wave pulses at two times the base MSX frequency
  |_| |_|
  */
 void wav_bit_1(const FILE *wavf, struct WavState *wsp)
@@ -200,15 +206,35 @@ void tape_write_byte(const int b, const FILE *casf, const FILE *wavf, struct Wav
 		wav_byte(b, wavf, wsp);
 }
 
+const int cas_header[8] = { 0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74 };
+const int cas_header_len = (int)(sizeof(cas_header) / sizeof(cas_header[0]));
+
+void tape_short_header(const FILE *casf, const FILE *wavf, struct WavState *wsp)
+{
+	int i;
+	if (casf)
+		for (i = 0; i < cas_header_len; i++)
+			tape_write_byte(cas_header[i], casf, NULL, wsp);
+	if (wavf)
+		wav_short_header(wavf, wsp);
+}
+
+void tape_long_header(const FILE *casf, const FILE *wavf, struct WavState *wsp)
+{
+	int i;
+	if (casf)
+		for (i = 0; i < cas_header_len; i++)
+			tape_write_byte(cas_header[i], casf, NULL, wsp);
+	if (wavf)
+		wav_long_header(wavf, wsp);
+}
+
 void write_tape(
 	const int cas_flags, const char *fname_no_ext, const char *fname_msx,
 	const int rom_type, const int start_address, const int end_address, const int run_address,
 	const char *rom_buf
 )
 {
-	const int cas_header[8] = {0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74};
-	const int cas_header_len = (int)(sizeof(cas_header) / sizeof(cas_header[0]));
-
 	char fname_cas[_MAX_PATH + 1];
 	char fname_wav[_MAX_PATH + 1];
 	char _fname_msx[FNAME_MSX_LEN + 1];
@@ -238,9 +264,6 @@ void write_tape(
 		0		/* max_vol			*/
 	};
 
-	assert(ws.num_channels == 1);		/* remove this when we support multi-channel */
-	assert(ws.bytes_per_sample == 1);	/* remove this when we support 16-bit or higher samples */
-
 	/* calculate minimum and maximum volume for sample */
 	assert(ws.bytes_per_sample != 0);
 	if (ws.bytes_per_sample == 1)
@@ -269,15 +292,7 @@ void write_tape(
 	}
 
 	build_tape_file_name(fname_msx, _fname_msx);
-	assert(strlen(_fname_msx) == 6);
-
-#if _DEBUG
-	printf("call function %s(%d, \"%s\", \"%s\", %d, %#06x, %#06x, %#06x, %p)\n",
-		__func__, cas_flags, fname_no_ext, fname_msx,
-		rom_type, start_address, end_address, run_address, (void *)rom_buf);
-	printf("raw tape file name is \"%s\"\n", fname_msx);
-	printf("sanitized tape file name is \"%s\"\n", _fname_msx);
-#endif
+	assert(strlen(_fname_msx) == FNAME_MSX_LEN);
 
 	if (cas_flags & 1)		/* check if bit 0 is set, i.e. need to generate cas */
 	{
@@ -319,8 +334,8 @@ void write_tape(
 		wh.num_channels = ws.num_channels;				/* 1 or 2 */
 		wh.sample_rate = ws.sample_rate;				/* 22050, 44100 or 48000 */
 		wh.bits_per_sample = 8 * ws.bytes_per_sample;	/* 8 or 16 */
-		wh.byte_rate = wh.num_channels * wh.sample_rate * (wh.bits_per_sample / 8);
 		wh.block_align = wh.num_channels * (wh.bits_per_sample / 8);
+		wh.byte_rate = wh.sample_rate * wh.block_align;
 		wh.subchunk2_id = MKFOURCC('d', 'a', 't', 'a');	/* "data" */
 		wh.subchunk2_size = -1;	/* samples_count * num_channels * (bits_per_sample / 8) */
 
@@ -330,13 +345,9 @@ void write_tape(
 	}
 
 	/* write a long header at the start of the program on tape */
-	if (casf)
-		for (i = 0; i < cas_header_len; i++)
-			tape_write_byte(cas_header[i], casf, NULL, &ws);
-	if (wavf)
-		wav_long_header(wavf, &ws);
+	tape_long_header(casf, wavf, &ws);
 
-	if ((rom_type == BASIC) || (rom_type == ROM))
+	if ((rom_type == BASIC) || (rom_type == ROM))	/* BASIC block is not implemented in asMSX */
 	{
 		for (i = 0; i < 10; i++)
 			tape_write_byte(0xd0, casf, wavf, &ws);
@@ -344,12 +355,8 @@ void write_tape(
 		for (i = 0; i < (int)strlen(_fname_msx); i++)
 			tape_write_byte(_fname_msx[i], casf, wavf, &ws);
 
-		if (casf)
-			for (i = 0; i < cas_header_len; i++)
-				tape_write_byte(cas_header[i], casf, NULL, &ws);
-
-		if (wavf)
-			wav_short_header(wavf, &ws);
+		/* write a short header at the start of the binary block */
+		tape_short_header(casf, wavf, &ws);
 
 		tape_write_byte(start_address & 0xff, casf, wavf, &ws);
 		tape_write_byte((start_address >> 8) & 0xff, casf, wavf, &ws);
@@ -392,188 +399,3 @@ void write_tape(
 		fclose(wavf);
 	}
 }
-
-
-// code moved from dura.y
-//void wav_store(int value)
-//{
-//	fputc(value & 0xff, fwav);
-//	fputc((value >> 8) & 0xff, fwav);
-//}
-//
-//void wav_write_one()
-//{
-//	int l;
-//
-//	for (l = 0; l < 5 * 2; l++)
-//		wav_store(FREQ_LO);
-//
-//	for (l = 0; l < 5 * 2; l++)
-//		wav_store(FREQ_HI);
-//
-//	for (l = 0; l < 5 * 2; l++)
-//		wav_store(FREQ_LO);
-//
-//	for (l = 0; l < 5 * 2; l++)
-//		wav_store(FREQ_HI);
-//}
-//
-//void wav_write_zero()
-//{
-//	int l;
-//
-//	for (l = 0; l < 10 * 2; l++)
-//		wav_store(FREQ_LO);
-//
-//	for (l = 0; l < 10 * 2; l++)
-//		wav_store(FREQ_HI);
-//}
-//
-//void wav_write_nothing()
-//{
-//	int l;
-//
-//	for (l = 0; l < 18 * 2; l++)
-//		wav_store(SILENCE);
-//}
-//
-//void wav_write_byte(int m)	/* only used in write_wav() */
-//{
-//	int l;
-//
-//	wav_write_zero();
-//	for (l = 0; l < 8; l++)
-//	{
-//		if (m & 1)
-//			wav_write_one();
-//		else
-//			wav_write_zero();
-//		m = m >> 1;
-//	}
-//	wav_write_one();
-//	wav_write_one();
-//}
-//
-//void write_wav()	/* This function is broken since public GPLv3 release */
-//{
-//	int wav_header[44] = {
-//	  0x52, 0x49, 0x46, 0x46,
-//	  0x44, 0x00, 0x00, 0x00,
-//	  0x57, 0x41, 0x56, 0x45,
-//	  0x66, 0x6D, 0x74, 0x20,
-//	  0x10, 0x00, 0x00, 0x00,
-//	  0x01, 0x00, 0x02, 0x00,
-//	  0x44, 0xAC, 0x00, 0x00,
-//	  0x10, 0xB1, 0x02, 0x00,
-//	  0x04, 0x00, 0x10, 0x00,
-//	  0x64, 0x61, 0x74, 0x61,
-//	  0x20, 0x00, 0x00, 0x00
-//	};
-//	int wav_size, i;
-//
-//	if ((type == MEGAROM) || ((type == ROM) && (start_address < 0x8000)))
-//	{
-//		warning_message(0);
-//		return;
-//	}
-//
-//	fname_bin[strlen(fname_bin) - 3] = 0;
-//	fname_bin = strcat(fname_bin, "wav");
-//
-//	fwav = fopen(fname_bin, "wb");
-//
-//	if ((type == BASIC) || (type == ROM))
-//	{
-//		wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + end_address - start_address + 1)) * 40;
-//		wav_size = wav_size << 1;
-//
-//		wav_header[4] = (wav_size + 36) & 0xff;
-//		wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
-//		wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
-//		wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
-//		wav_header[40] = wav_size & 0xff;
-//		wav_header[41] = (wav_size >> 8) & 0xff;
-//		wav_header[42] = (wav_size >> 16) & 0xff;
-//		wav_header[43] = (wav_size >> 24) & 0xff;
-//
-//		/* Write WAV header */
-//		for (i = 0; i < 44; i++)
-//			fputc(wav_header[i], fwav);
-//
-//		/* Write long header */
-//		for (i = 0; i < 3968; i++)
-//			wav_write_one();
-//
-//		/* Write file identifier */
-//		for (i = 0; i < 10; i++)
-//			wav_write_byte(0xd0);
-//
-//		/* Write MSX name */
-//		if (strlen(fname_msx) < 6)
-//		{
-//			size_t t;
-//			for (t = strlen(fname_msx); t < 6; t++)
-//				fname_msx[t] = 32; /* 32 is space character */
-//		}
-//
-//		for (i = 0; i < 6; i++)
-//			wav_write_byte(fname_msx[i]);
-//
-//		/* Write blank */
-//		for (i = 0; i < 1500; i++)
-//			wav_write_nothing();
-//
-//		/* Write short header */
-//		for (i = 0; i < 3968; i++)
-//			wav_write_one();
-//
-//		/* Write start, end and run addresses */
-//		wav_write_byte(start_address & 0xff);
-//		wav_write_byte((start_address >> 8) & 0xff);
-//		wav_write_byte(end_address & 0xff);
-//		wav_write_byte((end_address >> 8) & 0xff);
-//		wav_write_byte(run_address & 0xff);
-//		wav_write_byte((run_address >> 8) & 0xff);
-//
-//		/* Write data */
-//		for (i = start_address; i <= end_address; i++)
-//			wav_write_byte(rom_buf[i]);
-//	}
-//	else if (type == Z80)
-//	{
-//		wav_size = (3968 * 1 + 1500 * 1 + 11 * (end_address - start_address + 1)) * 36;
-//		wav_size = wav_size << 1;
-//
-//		wav_header[4] = (wav_size + 36) & 0xff;
-//		wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
-//		wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
-//		wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
-//		wav_header[40] = wav_size & 0xff;
-//		wav_header[41] = (wav_size >> 8) & 0xff;
-//		wav_header[42] = (wav_size >> 16) & 0xff;
-//		wav_header[43] = (wav_size >> 24) & 0xff;
-//
-//		/* Write WAV header */
-//		for (i = 0; i < 44; i++)
-//			fputc(wav_header[i], fwav);
-//
-//		/* Write long header */
-//		for (i = 0; i < 3968; i++)
-//			wav_write_one();
-//
-//		/* Write data */
-//		for (i = start_address; i <= end_address; i++)
-//			wav_write_byte(rom_buf[i]);
-//	}
-//	else
-//		wav_size = 0;
-//
-//	/* Write blank */
-//	for (i = 0; i < 1500; i++)
-//		wav_write_nothing();
-//
-//	/* Close file */
-//	fclose(fwav);
-//
-//	printf("Audio file %s saved [%2.2f sec]\n", fname_bin, (float)wav_size / 176400);
-//}
