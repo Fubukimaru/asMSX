@@ -21,6 +21,6 @@ lex.parser3.c:	parser3.l
 clean:
 	rm -f *.o *.tab.* lex.*.c asmsx asmsx-debug asmsx.exe ~*
 test:	clean asmsx
-	bash ../code/test.sh
+	sh ../code/test.sh
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
