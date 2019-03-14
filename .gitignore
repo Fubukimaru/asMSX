@@ -30,3 +30,4 @@ Release/
 *.VC.db
 *.VC.opendb
 *.vcxproj.user
+build/vs2017/*.txt
