@@ -1,11 +1,13 @@
 all:	asmsx
 
-asmsx:  dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c
-	gcc $^ -o$@ -lm -Os -s -Wall -Wextra > warn.txt
-asmsx-debug: dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c
-	gcc -ggdb $^ -o$@ -lm -Os -Wall -Wextra > warn.txti
-asmsx.exe: dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c
-	i686-w64-mingw32-gcc $^ -o$@ -lm -Os -s -Wall -Wextra > warn.txt
+c_files = dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c asmsx.c
+
+asmsx:  $(c_files) asmsx.h
+	gcc $(c_files) -o$@ -lm -Os -s -Wall -Wextra
+asmsx-debug:	$(c_files) asmsx.h
+	gcc -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra
+asmsx.exe: $(c_files) asmsx.h
+	i686-w64-mingw32-gcc $(c_files) -o$@ -lm -Os -s -Wall -Wextra
 dura.tab.c dura.tab.h:	dura.y
 	bison -d $<
 lex.yy.c:	lex.l
@@ -17,8 +19,8 @@ lex.parser2.c:	parser2.l
 lex.parser3.c:	parser3.l
 	flex -i -Pparser3 $<
 clean:
-	rm -f *.o *.tab.* lex.*.c asmsx asmsx-debug asmsx.exe ~* warn*.txt
+	rm -f *.o *.tab.* lex.*.c asmsx asmsx-debug asmsx.exe ~*
 test:	clean asmsx
-	bash ../code/test.sh
+	sh ../code/test.sh
 install:	asmsx
 	sudo cp asmsx /usr/local/bin

@@ -3,7 +3,7 @@
    Bison grammar file
          v.0.01a: [10/09/2000] First public version
 
-         v.0.01b: [03/05/2001] Bugfixes. Added PRINTFIX,FIXMUL, FIXDIV
+         v.0.01b: [03/05/2001] Bugfixes. Added PRINTFIX, FIXMUL, FIXDIV
 
          v.0.10 : [19/08/2004] Overall enhance. Opcodes 100% checked
 
@@ -92,20 +92,22 @@
 #include <time.h>
 #include <math.h>
 
+#include "asmsx.h"
+
 #define VERSION "0.18.4"
 #define DATE "18/06/2017"
 
-#define Z80 0
-#define ROM 1
-#define BASIC 2
-#define MSXDOS 3
-#define MEGAROM 4
-#define SINCLAIR 5
+//#define Z80 0
+//#define ROM 1
+//#define BASIC 2
+//#define MSXDOS 3
+//#define MEGAROM 4
+//#define SINCLAIR 5
 
-#define KONAMI 0
-#define KONAMISCC 1
-#define ASCII8 2
-#define ASCII16 3
+//#define KONAMI 0
+//#define KONAMISCC 1
+//#define ASCII8 2
+//#define ASCII16 3
 
 #define MAX_ID 32000
 
@@ -148,19 +150,17 @@ void relative_jump(int);
 int read_label(char *);
 int read_local(char *);
 void write_bin();
-void write_cas();
-void write_wav();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *memory, *fname_src, *fname_int, *fname_bin, *fname_no_ext;
+char *rom_buf, *fname_src, *fname_msx, *fname_bin, *fname_no_ext;
 char *fname_txt, *fname_sym, *fname_asm, *fname_p2;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
 int run_address = 0, warnings = 0, lines, parity;
-int zilog = 0, pass = 1, bios = 0, type = 0;
+int zilog = 0, pass = 1, bios = 0, rom_type = 0;
 int conditional[16];
 int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
@@ -463,7 +463,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SEARCH {
             if (conditional[conditional_level])
             {
-              if ((type != MEGAROM) && (type != ROM))
+              if ((rom_type != MEGAROM) && (rom_type != ROM))
                 error_message(41);
               locate_32k();
             }
@@ -471,7 +471,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SUBPAGE value PSEUDO_AT value {
             if (conditional[conditional_level])
             {
-              if (type != MEGAROM)
+              if (rom_type != MEGAROM)
                 error_message(40);
               create_subpage($2, $4);
             }
@@ -479,7 +479,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SELECT value PSEUDO_AT value {
             if (conditional[conditional_level])
             {
-              if (type != MEGAROM)
+              if (rom_type != MEGAROM)
                 error_message(40);
               select_page_direct($2, $4);
             }
@@ -487,7 +487,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_SELECT REGISTER PSEUDO_AT value {
             if (conditional[conditional_level])
             {
-              if (type != MEGAROM)
+              if (rom_type != MEGAROM)
                 error_message(40);
               select_page_register($2, $4);
             }
@@ -512,7 +512,7 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_CALLDOS value {
             if (conditional[conditional_level])
             {
-              if (type != MSXDOS)
+              if (rom_type != MSXDOS)
                 error_message(25);
               write_byte(0x0e);
               write_byte($2);
@@ -601,7 +601,7 @@ pseudo_instruction: PSEUDO_ORG value {
             PC = 0;
             ePC = 0;
             last_global = 0;
-            type = 0;
+            rom_type = 0;
             zilog = 0;
             if (conditional_level)
               error_message(45);
@@ -738,18 +738,18 @@ pseudo_instruction: PSEUDO_ORG value {
         | PSEUDO_CASSETTE TEXT {
             if (conditional[conditional_level])
             {
-              if (!fname_int[0])
-                strcpy(fname_int, $2);
+              if (!fname_msx[0])
+                strcpy(fname_msx, $2);
               cassette |= $1;
             }
           }
         | PSEUDO_CASSETTE {
             if (conditional[conditional_level])
             {
-              if (!fname_int[0])
+              if (!fname_msx[0])
               {
-                strcpy(fname_int, fname_bin);
-                fname_int[strlen(fname_int) - 1] = 0;
+                strcpy(fname_msx, fname_bin);
+                fname_msx[strlen(fname_msx) - 1] = 0;
               }
               cassette |= $1;
             }
@@ -3246,12 +3246,12 @@ void write_byte(int b)
   /* If the condition of this block is fulfilled, create the code */
   if ((!conditional_level) || (conditional[conditional_level]))
   {
-    if (type != MEGAROM)
+    if (rom_type != MEGAROM)
     {
       if (PC >= 0x10000)
         error_message(1);
 
-      if ((type == ROM) && (PC >= 0xC000))
+      if ((rom_type == ROM) && (PC >= 0xC000))
         error_message(28);
 
       if (start_address > PC)
@@ -3266,18 +3266,18 @@ void write_byte(int b)
       if (size && (start_address + size * 1024 > 65536) && (pass == 2))
         error_message(1);
 
-      memory[PC++] = (char)b;
+      rom_buf[PC++] = (char)b;
       ePC++;
     }
     else
-    {	/* if (type==MEGAROM) */
+    {	/* if (type == MEGAROM) */
       if (subpage == 0x100)
         error_message(35);
 
       if (PC >= pageinit + 1024 * pagesize)
         error_message(31);
 
-      memory[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
+      rom_buf[subpage * pagesize * 1024 + PC - pageinit] = (char)b;
       PC++;
       ePC++;
     }
@@ -3357,7 +3357,7 @@ void register_local(char *name)
   id_list[total_global - 1].page = subpage;
 }
 
-void register_symbol(char *name, int n, int type)
+void register_symbol(char *name, int n, int rom_type)
 {
   int i;
   char *_name;
@@ -3389,7 +3389,7 @@ void register_symbol(char *name, int n, int type)
   free(_name);
 
   id_list[total_global - 1].value = n;
-  id_list[total_global - 1].type = type;
+  id_list[total_global - 1].type = rom_type;
 }
 
 void register_variable(char *name, int n)
@@ -3486,7 +3486,7 @@ void write_sym()
       for (i = 0; i < total_global; i++)
         if (id_list[i].type == 1)
         {
-          if (type != MEGAROM)
+          if (rom_type != MEGAROM)
             fprintf(f, "%4.4Xh %s\n", id_list[i].value, id_list[i].name);
           else
             fprintf(f, "%2.2Xh:%4.4Xh %s\n", id_list[i].page & 0xff, id_list[i].value, id_list[i].name);
@@ -3624,12 +3624,12 @@ void write_bin()
 {
   int i, j;
 
-  if ((start_address > end_address) && (type != MEGAROM))
+  if ((start_address > end_address) && (rom_type != MEGAROM))
     error_message(24);
 
-  if (type == Z80)
+  if (rom_type == Z80)
     fname_bin = strcat(fname_bin, ".z80");
-  else if (type == ROM)
+  else if (rom_type == ROM)
   {
     fname_bin = strcat(fname_bin, ".rom");
     PC = start_address + 2;
@@ -3637,11 +3637,11 @@ void write_bin()
     if (!size)
       size = 8 * ((end_address - start_address + 8191) / 8192);
   }
-  else if (type == BASIC)
+  else if (rom_type == BASIC)
     fname_bin = strcat(fname_bin, ".bin");
-  else if (type == MSXDOS)
+  else if (rom_type == MSXDOS)
     fname_bin = strcat(fname_bin, ".com");
-  else if (type == MEGAROM)
+  else if (rom_type == MEGAROM)
   {
     fname_bin = strcat(fname_bin, ".rom");
     PC = 0x4002;
@@ -3649,10 +3649,10 @@ void write_bin()
     pageinit = 0x4000;
     write_word(run_address);
   }
-  else if (type == SINCLAIR)
+  else if (rom_type == SINCLAIR)
     fname_bin = strcat(fname_bin, ".tap");
 
-  if (type == MEGAROM)
+  if (rom_type == MEGAROM)
   {
     for (i = 1, j = 0; i <= lastpage; i++)
       j += usedpage[i];
@@ -3663,7 +3663,7 @@ void write_bin()
 
   printf("Binary file %s saved\n", fname_bin);
   fbin = fopen(fname_bin, "wb");
-  if (type == BASIC)
+  if (rom_type == BASIC)
   {
     putc(0xfe, fbin);
     putc(start_address & 0xff, fbin);
@@ -3675,7 +3675,7 @@ void write_bin()
     putc(run_address & 0xff, fbin);
     putc((run_address >> 8) & 0xff, fbin);
   }
-  else if (type == SINCLAIR)
+  else if (rom_type == SINCLAIR)
   {
     if (run_address)
     {
@@ -3755,26 +3755,26 @@ void write_bin()
     write_zx_byte(255);		/* Data... */
 
     for (i = start_address; i <= end_address; i++)
-      write_zx_byte(memory[i]);
+      write_zx_byte(rom_buf[i]);
     write_zx_byte(parity);
   }
 
-  if (type != SINCLAIR)
+  if (rom_type != SINCLAIR)
   {
     if (!size)
     {
-      if (type != MEGAROM)
+      if (rom_type != MEGAROM)
         for (i = start_address; i <= end_address; i++)
-          putc(memory[i], fbin);
+          putc(rom_buf[i], fbin);
       else
         for (i = 0; i < (lastpage + 1) * pagesize * 1024; i++)
-          putc(memory[i], fbin);
-    } else if (type != MEGAROM)
+          putc(rom_buf[i], fbin);
+    } else if (rom_type != MEGAROM)
       for (i = start_address; i < start_address + size * 1024; i++)
-        putc(memory[i], fbin);
+        putc(rom_buf[i], fbin);
     else
       for (i = 0; i < size * 1024; i++)
-        putc(memory[i], fbin);
+        putc(rom_buf[i], fbin);
   }
 
   fclose(fbin);
@@ -3788,11 +3788,9 @@ void finalize()
  
   write_bin();
 
-  if (cassette & 1)
-    write_cas();
-
-  if (cassette & 2)
-    write_wav();
+  if (cassette & 3)
+	write_tape(cassette, fname_no_ext, fname_msx, rom_type,
+		start_address, end_address, run_address, rom_buf);
 
   if (total_global > 0)
     write_sym();
@@ -3812,31 +3810,31 @@ void finalize()
 
 void initialize_memory()
 {
-  const size_t memory_size = 0x1000000;	/* 16 megabytes */
+  const size_t rom_buf_size = 0x1000000;	/* 16 megabytes */
 
-  memory = malloc(memory_size);
-  if (!memory)
+  rom_buf = malloc(rom_buf_size);
+  if (!rom_buf)
   {
-    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'memory' in function '%s'\n", (unsigned long)memory_size, __func__);
+    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'rom_buf' in function '%s'\n", (unsigned long)rom_buf_size, __func__);
     exit(1);
   }
 
-  memset(memory, 0, memory_size);
+  memset(rom_buf, 0, rom_buf_size);
 }
 
 void initialize_system()
 {
   initialize_memory();
-  fname_int = malloc(256);
-  fname_int[0] = 0;
+  fname_msx = malloc(256);
+  fname_msx[0] = 0;
   register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 }
 
 void type_sinclair()
 {
-  if ((type) && (type != SINCLAIR))
+  if ((rom_type) && (rom_type != SINCLAIR))
     error_message(46);
-  type = SINCLAIR;
+  rom_type = SINCLAIR;
   if (!start_address)
   {
     PC = 0x8000;
@@ -3849,10 +3847,10 @@ void type_rom()
   if ((pass == 1) && (!start_address))
     error_message(19);
 
-  if ((type) && (type != ROM))
+  if ((rom_type) && (rom_type != ROM))
     error_message(20);
 
-  type = ROM;
+  rom_type = ROM;
   write_byte(65);
   write_byte(66);
   PC += 14;
@@ -3875,13 +3873,13 @@ void type_megarom(int n)
   if ((pass == 1) && ((!PC) || (!ePC)))
     error_message(19); 
 */
-  if ((type) && (type != MEGAROM))
+  if ((rom_type) && (rom_type != MEGAROM))
     error_message(20);
 
   if ((n < 0) || (n > 3))
     error_message(33);
 
-  type = MEGAROM;
+  rom_type = MEGAROM;
 
   usedpage[0] = 1;
   subpage = 0;
@@ -3910,10 +3908,10 @@ void type_basic()
   if ((pass == 1) && (!start_address))
     error_message(21);
 
-  if ((type) && (type != BASIC))
+  if ((rom_type) && (rom_type != BASIC))
     error_message(20);
 
-  type = BASIC;
+  rom_type = BASIC;
 }
 
 void type_msxdos()
@@ -3921,9 +3919,9 @@ void type_msxdos()
   if ((pass == 1) && (!start_address))
     error_message(23);
 
-  if ((type) && (type != MSXDOS))
+  if ((rom_type) && (rom_type != MSXDOS))
     error_message(20);
-  type = MSXDOS;
+  rom_type = MSXDOS;
   PC = 0x0100;
   ePC = 0x0100;
 }
@@ -4029,244 +4027,6 @@ void select_page_register(int r, int address)
     write_byte(0xf1);					/* POP AF */
 }
 
-void write_cas()
-{
-  FILE *f;
-  int i;
-  int cas[8] = {
-    0x1F, 0xA6, 0xDE, 0xBA, 0xCC, 0x13, 0x7D, 0x74
-  };
-
-  if ((type == MEGAROM) || ((type == ROM) && (start_address < 0x8000)))
-  {
-    warning_message(0);
-    return;
-  }
-
-  fname_bin[strlen(fname_bin) - 3] = 0;
-  fname_bin = strcat(fname_bin, "cas");
-
-  f = fopen(fname_bin, "wb");
-
-  for (i = 0; i < 8; i++)
-    fputc(cas[i], f);
-
-  if ((type == BASIC) || (type == ROM))
-  {
-    for (i = 0; i < 10; i++)
-      fputc(0xd0, f);
-
-    {
-      size_t t;
-      if (strlen(fname_int) < 6)
-        for (t = strlen(fname_int); t < 6; t++)
-          fname_int[t] = 32;	/* pad with space */
-    }
-
-    for (i = 0; i < 6; i++)
-      fputc(fname_int[i], f);
-
-    for (i = 0; i < 8; i++)
-      fputc(cas[i], f);
-
-    putc(start_address & 0xff, f);
-    putc((start_address >> 8) & 0xff, f);
-    putc(end_address & 0xff, f);
-    putc((end_address >> 8) & 0xff, f);
-    putc(run_address & 0xff, f);
-    putc((run_address >> 8) & 0xff, f);
-  }
-
-  for (i = start_address; i <= end_address; i++)
-    putc(memory[i], f);
-
-  fclose(f);
-  printf("Cassette file %s saved\n", fname_bin);
-}
-
-void wav_store(int value)
-{
-  fputc(value & 0xff, fwav);
-  fputc((value >> 8) & 0xff, fwav);
-}
-
-void wav_write_one()
-{
-  int l;
- 
-  for (l = 0; l < 5 * 2; l++)
-    wav_store(FREQ_LO);
-
-  for (l = 0; l < 5 * 2; l++)
-    wav_store(FREQ_HI);
-
-  for (l = 0; l < 5 * 2; l++)
-    wav_store(FREQ_LO);
-
-  for (l = 0; l < 5 * 2; l++)
-    wav_store(FREQ_HI);
-}
-
-void wav_write_zero()
-{
-  int l;
-
-  for (l = 0; l < 10 * 2; l++)
-    wav_store(FREQ_LO);
-
-  for (l = 0; l < 10 * 2; l++)
-    wav_store(FREQ_HI);
-}
-
-void wav_write_nothing()
-{
-  int l;
-
-  for (l = 0; l < 18 * 2; l++)
-    wav_store(SILENCE);
-}
-
-void wav_write_byte(int m)	/* only used in write_wav() */
-{
-  int l;
-
-  wav_write_zero();
-  for (l = 0; l < 8; l++) 
-  {
-    if (m & 1)
-      wav_write_one();
-    else
-      wav_write_zero();
-    m = m >> 1;
-  }
-  wav_write_one();
-  wav_write_one();
-}
-
-void write_wav()	/* This function is broken since public GPLv3 release */
-{
-  int wav_header[44] = {
-	0x52, 0x49, 0x46, 0x46,
-	0x44, 0x00, 0x00, 0x00,
-	0x57, 0x41, 0x56, 0x45,
-	0x66, 0x6D, 0x74, 0x20,
-	0x10, 0x00, 0x00, 0x00,
-	0x01, 0x00, 0x02, 0x00,
-	0x44, 0xAC, 0x00, 0x00,
-	0x10, 0xB1, 0x02, 0x00,
-	0x04, 0x00, 0x10, 0x00,
-	0x64, 0x61, 0x74, 0x61,
-	0x20, 0x00, 0x00, 0x00
-  };
-  int wav_size, i;
-
-  if ((type == MEGAROM) || ((type == ROM) && (start_address < 0x8000)))
-  {
-    warning_message(0);
-    return;
-  }
-
-  fname_bin[strlen(fname_bin) - 3] = 0;
-  fname_bin = strcat(fname_bin, "wav");
-
-  fwav = fopen(fname_bin, "wb");
-
-  if ((type == BASIC) || (type == ROM))
-  {
-    wav_size = (3968 * 2 + 1500 * 2 + 11 * (10 + 6 + 6 + end_address - start_address + 1)) * 40;
-    wav_size = wav_size << 1;
-
-    wav_header[4] = (wav_size + 36) & 0xff;
-    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
-    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
-    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
-    wav_header[40] = wav_size & 0xff;
-    wav_header[41] = (wav_size >> 8) & 0xff;
-    wav_header[42] = (wav_size >> 16) & 0xff;
-    wav_header[43] = (wav_size >> 24) & 0xff;
-
-    /* Write WAV header */
-    for (i = 0; i < 44; i++)
-      fputc(wav_header[i], fwav);
-
-    /* Write long header */
-    for (i = 0; i < 3968; i++)
-      wav_write_one();
-
-    /* Write file identifier */
-    for (i = 0; i < 10; i++)
-      wav_write_byte(0xd0);
-
-    /* Write MSX name */
-    if (strlen(fname_int) < 6)
-    {
-      size_t t;
-      for (t = strlen(fname_int); t < 6; t++)
-        fname_int[t] = 32; /* 32 is space character */
-    }
-
-    for (i = 0; i < 6; i++)
-      wav_write_byte(fname_int[i]);
-
-    /* Write blank */
-    for (i = 0; i < 1500; i++)
-      wav_write_nothing();
-
-    /* Write short header */
-    for (i = 0; i < 3968; i++)
-      wav_write_one();
-
-    /* Write start, end and run addresses */
-    wav_write_byte(start_address & 0xff);
-    wav_write_byte((start_address >> 8) & 0xff);
-    wav_write_byte(end_address & 0xff);
-    wav_write_byte((end_address >> 8) & 0xff);
-    wav_write_byte(run_address & 0xff);
-    wav_write_byte((run_address >> 8) & 0xff);
-
-    /* Write data */
-    for (i = start_address; i <= end_address; i++)
-      wav_write_byte(memory[i]);
-  }
-  else if (type == Z80)
-  {
-    wav_size = (3968 * 1 + 1500 * 1 + 11 * (end_address - start_address + 1)) * 36;
-    wav_size = wav_size << 1;
-
-    wav_header[4] = (wav_size + 36) & 0xff;
-    wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
-    wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
-    wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
-    wav_header[40] = wav_size & 0xff;
-    wav_header[41] = (wav_size >> 8) & 0xff;
-    wav_header[42] = (wav_size >> 16) & 0xff;
-    wav_header[43] = (wav_size >> 24) & 0xff;
-
-    /* Write WAV header */
-    for (i = 0; i < 44; i++)
-      fputc(wav_header[i], fwav);
-
-    /* Write long header */
-    for (i = 0; i < 3968; i++)
-      wav_write_one();
-
-    /* Write data */
-    for (i = start_address; i <= end_address; i++)
-      wav_write_byte(memory[i]);
-  }
-  else
-    wav_size = 0;
-    
-  /* Write blank */
-  for (i = 0; i < 1500; i++)
-    wav_write_nothing();
-    
-  /* Close file */
-  fclose(fwav);
-  
-  printf("Audio file %s saved [%2.2f sec]\n", fname_bin, (float)wav_size/176400);
-}
-
 
 int is_defined_symbol(char *name)
 {
@@ -4306,13 +4066,13 @@ int main(int argc, char *argv[])
     printf("Syntax: asMSX [-z] [file.asm]\n");
     exit(0);
   } else if (argc == 3) {
-   if (strcmp(argv[1], "-z") == 0) {
-	 zilog = 1;
-	 fileArg = 2;
-   } else {
-	 printf("Syntax: asMSX [-z] [file.asm]\n");
-	 exit(0);
-   }
+    if (strcmp(argv[1], "-z") == 0) {
+	  zilog = 1;
+	  fileArg = 2;
+    } else {
+	  printf("Syntax: asMSX [-z] [file.asm]\n");
+	  exit(0);
+    }
   }   
   
   clock();
