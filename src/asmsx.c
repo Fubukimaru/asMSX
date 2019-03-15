@@ -313,7 +313,6 @@ void write_tape(
 
 		strcpy(fname_wav, fname_no_ext);
 		strcat(fname_wav, ".wav");
-		printf("wav file %s\n", fname_wav);
 		wavf = fopen(fname_wav, "wb");
 		if (!wavf)
 		{
@@ -365,6 +364,38 @@ void write_tape(
 		tape_write_byte(run_address & 0xff, casf, wavf, &ws);
 		tape_write_byte((run_address >> 8) & 0xff, casf, wavf, &ws);
 	}
+//	else if (type == Z80)
+//	{
+//		wav_size = (3968 * 1 + 1500 * 1 + 11 * (end_address - start_address + 1)) * 36;
+//		wav_size = wav_size << 1;
+//
+//		wav_header[4] = (wav_size + 36) & 0xff;
+//		wav_header[5] = ((wav_size + 36) >> 8) & 0xff;
+//		wav_header[6] = ((wav_size + 36) >> 16) & 0xff;
+//		wav_header[7] = ((wav_size + 36) >> 24) & 0xff;
+//		wav_header[40] = wav_size & 0xff;
+//		wav_header[41] = (wav_size >> 8) & 0xff;
+//		wav_header[42] = (wav_size >> 16) & 0xff;
+//		wav_header[43] = (wav_size >> 24) & 0xff;
+//
+//		/* Write WAV header */
+//		for (i = 0; i < 44; i++)
+//			fputc(wav_header[i], fwav);
+//
+//		/* Write long header */
+//		for (i = 0; i < 3968; i++)
+//			wav_write_one();
+//
+//		/* Write data */
+//		for (i = start_address; i <= end_address; i++)
+//			wav_write_byte(rom_buf[i]);
+//	}
+//	else
+//		wav_size = 0;
+//
+//	/* Write blank */
+//	for (i = 0; i < 1500; i++)
+//		wav_write_nothing();
 
 	for (i = start_address; i <= end_address; i++)
 		tape_write_byte(rom_buf[i], casf, wavf, &ws);
@@ -397,5 +428,6 @@ void write_tape(
 		assert(rc == 1);
 
 		fclose(wavf);
+		printf("Audio file %s saved [%2.2f sec]\n", fname_wav, (double)ws.samples_count / (ws.sample_rate * ws.num_channels * ws.bytes_per_sample));
 	}
 }
