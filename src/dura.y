@@ -81,6 +81,9 @@
 		strtok allocated memory. This is never deleted, we must check this in the future to prevent memory leaks.
 	 v.0.18.4: [18/06/2017]
 		Unterminated string hotfix. Find a better way to solve it. Probably a more flex-like fix.
+     v.0.19: [15/03/2019]
+        Completed source code translation to English.
+        Replaced WAV writing code with new working version.
 */
 
 /* C headers and definitions */
@@ -94,8 +97,8 @@
 
 #include "asmsx.h"
 
-#define VERSION "0.18.4"
-#define DATE "18/06/2017"
+#define VERSION "0.19"
+#define DATE "15/03/2019"
 
 //#define Z80 0
 //#define ROM 1
