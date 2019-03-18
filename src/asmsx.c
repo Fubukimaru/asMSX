@@ -238,8 +238,8 @@ void write_tape(
 	char fname_cas[PATH_MAX + 1];
 	char fname_wav[PATH_MAX + 1];
 	char _fname_msx[FNAME_MSX_LEN + 1];
-	FILE *wavf = NULL;
 	FILE *casf = NULL;
+	FILE *wavf = NULL;
 	int i;
 	struct WavHeader wh;
 
@@ -275,7 +275,7 @@ void write_tape(
 	{	/* 16 bit or higher samples */
 		ws.min_vol = -(int32_t)pow(2, ws.bytes_per_sample * 8 - 1);
 		ws.max_vol = -ws.min_vol - 1;
-		/* expand or remove assert if need to support samples 24-bit or higher samples */
+		/* expand or remove assert if need to support samples 24-bit or higher */
 		assert((ws.bytes_per_sample == 2) && (ws.min_vol == -32768) && (ws.max_vol == 32767));
 	}
 	
