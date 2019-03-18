@@ -81,9 +81,9 @@
 		strtok allocated memory. This is never deleted, we must check this in the future to prevent memory leaks.
 	 v.0.18.4: [18/06/2017]
 		Unterminated string hotfix. Find a better way to solve it. Probably a more flex-like fix.
-     v.0.19: [15/03/2019]
-        Completed source code translation to English.
-        Replaced WAV writing code with new working version.
+	 v.0.19.0: [15/03/2019]
+		Completed source code translation to English.
+		Replaced WAV writing code with new working version.
 */
 
 /* C headers and definitions */
@@ -97,20 +97,8 @@
 
 #include "asmsx.h"
 
-#define VERSION "0.19"
+#define VERSION "0.19.0"
 #define DATE "15/03/2019"
-
-//#define Z80 0
-//#define ROM 1
-//#define BASIC 2
-//#define MSXDOS 3
-//#define MEGAROM 4
-//#define SINCLAIR 5
-
-//#define KONAMI 0
-//#define KONAMISCC 1
-//#define ASCII8 2
-//#define ASCII16 3
 
 #define MAX_ID 32000
 
@@ -3448,8 +3436,8 @@ int read_local(char *name)
 void create_txt()
 {
   /* Generate the name of output text file */
-  strcpy(fname_txt, fname_no_ext);
-  fname_txt = strcat(fname_txt, ".txt");
+  strncpy(fname_txt, fname_no_ext, PATH_MAX);
+  fname_txt = strncat(fname_txt, ".txt", PATH_MAX);
   fmsg = fopen(fname_txt, "wt");
   if (fmsg == NULL)
     return;
@@ -3828,7 +3816,7 @@ void initialize_memory()
 void initialize_system()
 {
   initialize_memory();
-  fname_msx = malloc(256);
+  fname_msx = malloc(PATH_MAX + 1);
   fname_msx[0] = 0;
   register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 }
@@ -4062,7 +4050,7 @@ int main(int argc, char *argv[])
   size_t t;
   int fileArg = 1;
   printf("-------------------------------------------------------------------------------\n");
-  printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n",VERSION,DATE);
+  printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n", VERSION, DATE);
   printf("-------------------------------------------------------------------------------\n");  
   if (argc > 3 || argc < 2)
   {
@@ -4080,13 +4068,13 @@ int main(int argc, char *argv[])
   
   clock();
   initialize_system();
-  fname_asm = malloc(256);
-  fname_src = malloc(256);
-  fname_p2 = malloc(256);
-  fname_bin = malloc(256);
-  fname_sym = malloc(256);
-  fname_txt = malloc(256);
-  fname_no_ext = malloc(256);
+  fname_asm = malloc(PATH_MAX + 1);
+  fname_src = malloc(PATH_MAX + 1);
+  fname_p2 = malloc(PATH_MAX + 1);
+  fname_bin = malloc(PATH_MAX + 1);
+  fname_sym = malloc(PATH_MAX + 1);
+  fname_txt = malloc(PATH_MAX + 1);
+  fname_no_ext = malloc(PATH_MAX + 1);
   if (!fname_no_ext)
   {
     fprintf(stderr, "Error: can't allocate memory for fname_no_ext\n");
@@ -4108,7 +4096,7 @@ int main(int argc, char *argv[])
 
   preprocessor1(fname_asm);
   preprocessor3(zilog);
-  sprintf(fname_p2, "~tmppre.%i", preprocessor2());
+  snprintf(fname_p2, PATH_MAX, "~tmppre.%i", preprocessor2());
   printf("Assembling source file %s\n", fname_asm);
 
   conditional[0] = 1;
