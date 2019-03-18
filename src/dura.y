@@ -375,7 +375,7 @@ line:    pseudo_instruction EOL
         | mnemo_jump EOL
         | mnemo_call EOL
         | PREPRO_FILE TEXT EOL {
-            strcpy(fname_src, $2);
+            strncpy(fname_src, $2, PATH_MAX);
           }
         | PREPRO_LINE value EOL {
             lines = $2;
@@ -730,7 +730,7 @@ pseudo_instruction: PSEUDO_ORG value {
             if (conditional[conditional_level])
             {
               if (!fname_msx[0])
-                strcpy(fname_msx, $2);
+                strncpy(fname_msx, $2, PATH_MAX);
               cassette |= $1;
             }
           }
@@ -739,7 +739,7 @@ pseudo_instruction: PSEUDO_ORG value {
             {
               if (!fname_msx[0])
               {
-                strcpy(fname_msx, fname_bin);
+                strncpy(fname_msx, fname_bin, PATH_MAX);
                 fname_msx[strlen(fname_msx) - 1] = 0;
               }
               cassette |= $1;
@@ -749,7 +749,7 @@ pseudo_instruction: PSEUDO_ORG value {
             zilog = 1;
           }
         | PSEUDO_FILENAME TEXT {
-            strcpy(fname_no_ext, $2);
+            strncpy(fname_no_ext, $2, PATH_MAX);
           }
 ;
 
@@ -3774,7 +3774,7 @@ void write_bin()
 void finalize()
 {
   /* Generate the name of file with symbolic information */
-  strcpy(fname_sym, fname_no_ext);
+  strncpy(fname_sym, fname_no_ext, PATH_MAX);
   fname_sym = strcat(fname_sym, ".sym");
  
   write_bin();
