@@ -2,7 +2,7 @@
 
 #ifdef WIN32
 #define PATH_MAX 4096
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <limits.h>
 #endif
