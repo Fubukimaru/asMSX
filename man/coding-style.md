@@ -46,7 +46,7 @@ deeply nested 'if/else if/else' code or you have some other reasons to beleive i
 8. Try to address all the compiler warnings in your code: remove unused variables, avoid using uninitialized variables etc.
 9. Once the project starts using gtest/ctest, please add test units to cover new or changed code in your patch.
 10. Use static checking tools that are available: enable all the warnings in compiler, use a linter in Linux/BSD,
-use [cppcheck](http://cppcheck.sourceforge.net/) and Visual Studio Code Analysis tool.
+use [cppcheck](http://cppcheck.sourceforge.net/) and Visual Studio Code Analysis tool on Windows.
 11. If you can do it, please build your code on as many platforms as possible:
 Visual Studio 2017 on Windows 10, gcc on Linux, clang on BSD and Mac etc.
 Sometimes you'll find that header you think is everywhere, isn't everywhere.
