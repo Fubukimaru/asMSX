@@ -7,6 +7,9 @@ If you want to contribute to asMSX, please consider following our shared guildel
 
 ## 2. Highlight tabs, spaces, cr and lf explicitly if your editor supports
 
+In Visual Studio, press `Ctrl+E` and then `Ctrl+S`.
+For vim, add `set list` line to `.vimrc` file in your home directory.
+
 ## 3. Use Allman brackets
 
 ```
