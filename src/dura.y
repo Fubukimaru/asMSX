@@ -4046,67 +4046,73 @@ int d_rand()
 
 int main(int argc, char *argv[])
 {
-  FILE *f;
-  size_t t;
-  int fileArg = 1;
-  printf("-------------------------------------------------------------------------------\n");
-  printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n", VERSION, DATE);
-  printf("-------------------------------------------------------------------------------\n");  
-  if (argc > 3 || argc < 2)
-  {
-    printf("Syntax: asMSX [-z] [file.asm]\n");
-    exit(0);
-  } else if (argc == 3) {
-    if (strcmp(argv[1], "-z") == 0) {
-	  zilog = 1;
-	  fileArg = 2;
-    } else {
-	  printf("Syntax: asMSX [-z] [file.asm]\n");
-	  exit(0);
-    }
-  }   
+	FILE *f;
+	size_t t;
+	int fileArg = 1;
+
+	printf("-------------------------------------------------------------------------------\n");
+	printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n", VERSION, DATE);
+	printf("-------------------------------------------------------------------------------\n");
+
+	if (argc > 3 || argc < 2)
+	{
+		printf("Syntax: asMSX [-z] [file.asm]\n");
+		exit(0);
+	}
+	else if (argc == 3)
+	{
+		if (strcmp(argv[1], "-z") == 0)
+		{
+			zilog = 1;
+			fileArg = 2;
+		}
+		else
+		{
+			printf("Syntax: asMSX [-z] [file.asm]\n");
+			exit(0);
+		}
+	}   
   
-  clock();
-  initialize_system();
-  fname_asm = malloc(PATH_MAX + 1);
-  fname_src = malloc(PATH_MAX + 1);
-  fname_p2 = malloc(PATH_MAX + 1);
-  fname_bin = malloc(PATH_MAX + 1);
-  fname_sym = malloc(PATH_MAX + 1);
-  fname_txt = malloc(PATH_MAX + 1);
-  fname_no_ext = malloc(PATH_MAX + 1);
-  if (!fname_no_ext)
-  {
-    fprintf(stderr, "Error: can't allocate memory for fname_no_ext\n");
-    exit(1);
-  }
+	clock();
+	initialize_system();
+	fname_asm = malloc(PATH_MAX + 1);
+	fname_src = malloc(PATH_MAX + 1);
+	fname_p2 = malloc(PATH_MAX + 1);
+	fname_bin = malloc(PATH_MAX + 1);
+	fname_sym = malloc(PATH_MAX + 1);
+	fname_txt = malloc(PATH_MAX + 1);
+	fname_no_ext = malloc(PATH_MAX + 1);
+	if (!fname_no_ext)
+	{
+		fprintf(stderr, "Error: can't allocate memory for fname_no_ext\n");
+		exit(1);
+	}
 
-  strcpy(fname_no_ext, argv[fileArg]);
-  strcpy(fname_asm, fname_no_ext);
+	strcpy(fname_no_ext, argv[fileArg]);
+	strcpy(fname_asm, fname_no_ext);
 
-  for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
+	for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
 
-  if (t)
-    fname_no_ext[t] = 0;
-  else
-    strcat(fname_asm, ".asm");
+	if (t)
+		fname_no_ext[t] = 0;
+	else
+		strcat(fname_asm, ".asm");
 
-  /* Generate the name of binary file */
-  strcpy(fname_bin, fname_no_ext);
+	/* Generate the name of binary file */
+	strcpy(fname_bin, fname_no_ext);
 
-  preprocessor1(fname_asm);
-  preprocessor3(zilog);
-  snprintf(fname_p2, PATH_MAX, "~tmppre.%i", preprocessor2());
-  printf("Assembling source file %s\n", fname_asm);
+	preprocessor1(fname_asm);
+	preprocessor3(zilog);
+	snprintf(fname_p2, PATH_MAX, "~tmppre.%i", preprocessor2());
+	printf("Assembling source file %s\n", fname_asm);
 
-  conditional[0] = 1;
+	conditional[0] = 1;
 
-  f = fopen(fname_p2, "r");
+	f = fopen(fname_p2, "r");
+	yyin = f;
 
-  yyin = f;
+	yyparse();
 
-  yyparse();
-
-  remove("~tmppre.?");
-  return 0;
+	remove("~tmppre.?");
+	return 0;
 }
