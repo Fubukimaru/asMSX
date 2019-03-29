@@ -8,7 +8,7 @@ Please read [asMSX manual](man/asmsx-en.md) to learn more.
 
 **DOWNLOAD:** You can find latest release [here](https://github.com/Fubukimaru/asMSX/releases/).
 
-If you'd like to contribute to this project, please take a look at our [coding style guide](man/coding-style.md)
+If you'd like to contribute to this project, please take a look at our [coding style guide](man/coding-style.md).
 
 # Original Spanish README
 
