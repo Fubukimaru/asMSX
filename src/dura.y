@@ -3944,90 +3944,91 @@ void create_subpage(int n, int address)
 
 void locate_32k()
 {
-  int i;
-  int locate32[31] = {
-	  0xCD, 0x38, 0x01, 0x0F,
-	  0x0F, 0xE6, 0x03, 0x4F,
-	  0x21, 0xC1, 0xFC, 0x85,
-	  0x6F, 0x7E, 0xE6, 0x80,
-	  0xB1, 0x4F, 0x2C, 0x2C,
-	  0x2C, 0x2C, 0x7E, 0xE6,
-	  0x0C, 0xB1, 0x26, 0x80,
-	  0xCD, 0x24, 0x00
+	int i;
+	int locate32[31] =
+	{
+		0xCD, 0x38, 0x01, 0x0F,
+		0x0F, 0xE6, 0x03, 0x4F,
+		0x21, 0xC1, 0xFC, 0x85,
+		0x6F, 0x7E, 0xE6, 0x80,
+		0xB1, 0x4F, 0x2C, 0x2C,
+		0x2C, 0x2C, 0x7E, 0xE6,
+		0x0C, 0xB1, 0x26, 0x80,
+		0xCD, 0x24, 0x00
 	};
-  for (i = 0; i < 31; i++)
-    write_byte(locate32[i]);
+
+	for (i = 0; i < 31; i++)
+		write_byte(locate32[i]);
 }
 
 int selector(int address)
 {
-  address = (address / pagesize) * pagesize;
+	address = (address / pagesize) * pagesize;
 
-  if ((mapper == KONAMI) && (address == 0x4000))
-    error_message(38);
+	if ((mapper == KONAMI) && (address == 0x4000))
+		error_message(38);
 
-  if (mapper == KONAMISCC)
-    address += 0x1000;
-  else if (mapper == ASCII8)
-    address = 0x6000 + (address - 0x4000) / 4;
-  else if (mapper == ASCII16)
-  {
-    if (address == 0x4000)
-      address = 0x6000;
-    else
-      address = 0x7000;
-  }
+	if (mapper == KONAMISCC)
+		address += 0x1000;
+	else if (mapper == ASCII8)
+		address = 0x6000 + (address - 0x4000) / 4;
+	else if (mapper == ASCII16)
+	{
+		if (address == 0x4000)
+			address = 0x6000;
+		else
+			address = 0x7000;
+	}
 
-  return address;
+	return address;
 }
 
 
 void select_page_direct(int n, int address)
 {
-  int sel;
+	int sel;
  
-  sel = selector(address);
+	sel = selector(address);
  
-  if ((pass == 2) && (!usedpage[n]))
-    error_message(39);
+	if ((pass == 2) && (!usedpage[n]))
+		error_message(39);
 
-  write_byte(0xf5);
-  write_byte(0x3e);
-  write_byte(n);
-  write_byte(0x32);
-  write_word(sel);
-  write_byte(0xf1);
+	write_byte(0xf5);
+	write_byte(0x3e);
+	write_byte(n);
+	write_byte(0x32);
+	write_word(sel);
+	write_byte(0xf1);
 }
 
 void select_page_register(int r, int address)
 {
-  int sel;
+	int sel;
 
-  sel = selector(address);
+	sel = selector(address);
 
-  if (r != 7)
-  {
-    write_byte(0xf5);					/* PUSH AF */
-    write_byte(0x40 | (7 << 3) | r);	/* LD A,r */
-  }
+	if (r != 7)
+	{
+		write_byte(0xf5);					/* PUSH AF */
+		write_byte(0x40 | (7 << 3) | r);	/* LD A,r */
+	}
 
-  write_byte(0x32);
-  write_word(sel);
+	write_byte(0x32);
+	write_word(sel);
 
-  if (r != 7)
-    write_byte(0xf1);					/* POP AF */
+	if (r != 7)
+		write_byte(0xf1);					/* POP AF */
 }
 
 
 int is_defined_symbol(char *name)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < total_global; i++)
-    if (!strcmp(name, id_list[i].name))
-      return 1;
-
-  return 0;
+	for (i = 0; i < total_global; i++)
+		if (!strcmp(name, id_list[i].name))
+			return 1;
+	return 0;
 }
 
 
@@ -4039,8 +4040,8 @@ int is_defined_symbol(char *name)
 static unsigned long int rand_seed = 1;
 int d_rand()
 {
-  rand_seed = (rand_seed * 1103515245 + 12345);
-  return (unsigned int)(rand_seed / 65536) % (32767 + 1);
+	rand_seed = (rand_seed * 1103515245 + 12345);
+	return (unsigned int)(rand_seed / 65536) % (32767 + 1);
 }
 
 
