@@ -8,7 +8,7 @@
 */
 
 %{
-#include <stdio.h>
+#pragma warning (disable : 4005)
 
 #include "asmsx.h"
 

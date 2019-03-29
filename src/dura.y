@@ -1,5 +1,6 @@
 /* asMSX - an MSX / Z80 assembler
-	(C) Eduardo A. Robsy Petrus, 2000-2010
+	(c) 2013-2019 asMSX team
+	(c) 2000-2010 Eduardo A. Robsy Petrus
 	Bison grammar file
 	v.0.01a: [10/09/2000] First public version
 
@@ -93,11 +94,6 @@
 /* C headers and definitions */
 
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <math.h>
 
 #include "asmsx.h"
 
@@ -365,685 +361,787 @@ struct
 /* Grammar rules */
 
 start:	/* empty */
-		| start line
+	| start line
 ;
 
 line:	pseudo_instruction EOL
-		| mnemo_load8bit EOL
-		| mnemo_load16bit EOL
-		| mnemo_exchange EOL
-		| mnemo_math16bit EOL
-		| mnemo_math8bit EOL
-		| mnemo_general EOL
-		| mnemo_rotate EOL
-		| mnemo_bits EOL
-		| mnemo_io EOL
-		| mnemo_jump EOL
-		| mnemo_call EOL
-		| PREPRO_FILE TEXT EOL
-			{
-				strncpy(fname_src, $2, PATH_MAX);
-			}
-		| PREPRO_LINE value EOL
-			{
-				lines = $2;
-			}
-		| label line
-		| label EOL
+	| mnemo_load8bit EOL
+	| mnemo_load16bit EOL
+	| mnemo_exchange EOL
+	| mnemo_math16bit EOL
+	| mnemo_math8bit EOL
+	| mnemo_general EOL
+	| mnemo_rotate EOL
+	| mnemo_bits EOL
+	| mnemo_io EOL
+	| mnemo_jump EOL
+	| mnemo_call EOL
+	| PREPRO_FILE TEXT EOL
+	{
+		strncpy(fname_src, $2, PATH_MAX);
+	}
+	| PREPRO_LINE value EOL
+	{
+		lines = $2;
+	}
+	| label line
+	| label EOL
 ;
 
 label: IDENTIFICATOR ':'
-			{
-				register_label(strtok($1, ":"));
-			}
-		| LOCAL_IDENTIFICATOR ':'
-			{
-				register_local(strtok($1, ":"));
-			}
+	{
+		register_label(strtok($1, ":"));
+	}
+	| LOCAL_IDENTIFICATOR ':'
+	{
+		register_local(strtok($1, ":"));
+	}
 ;
 
 pseudo_instruction: PSEUDO_ORG value
-			{
-				if (conditional[conditional_level])
-				{
-					PC = $2;
-					ePC = PC;
-				}
-			}
-		| PSEUDO_PHASE value
-			{
-      if (conditional[conditional_level])
-        ePC = $2;
+	{
+		if (conditional[conditional_level])
+		{
+			PC = $2;
+			ePC = PC;
 		}
-  | PSEUDO_DEPHASE {
-      if (conditional[conditional_level])
-        ePC = PC;
-    }
-  | PSEUDO_ROM {
-      if (conditional[conditional_level])
-        type_rom();
-    }
-  | PSEUDO_MEGAROM {
-      if (conditional[conditional_level])
-        type_megarom(0);
-    }
-  | PSEUDO_MEGAROM value {
-      if (conditional[conditional_level])
-        type_megarom($2);
-    }
-  | PSEUDO_BASIC {
-      if (conditional[conditional_level])
-        type_basic();
-    }
-  | PSEUDO_MSXDOS {
-      if (conditional[conditional_level])
-        type_msxdos();
-    }
-  | PSEUDO_SINCLAIR {
-      if (conditional[conditional_level])
-        type_sinclair();
-    }
-  | PSEUDO_BIOS {
-      if (conditional[conditional_level])
-      {
-        if (!bios)
-    msx_bios();
-      }
-    }
-  | PSEUDO_PAGE value {
-      if (conditional[conditional_level])
-      {
-        subpage = 0x100;
-        if ($2 > 3)
-    error_message(22);
-        else
-        {
-    PC = 0x4000 * $2;
-    ePC = PC;
-        }
-      }
-    }
-  | PSEUDO_SEARCH {
-      if (conditional[conditional_level])
-      {
-        if ((rom_type != MEGAROM) && (rom_type != ROM))
-    error_message(41);
-        locate_32k();
-      }
-    }
-  | PSEUDO_SUBPAGE value PSEUDO_AT value {
-      if (conditional[conditional_level])
-      {
-        if (rom_type != MEGAROM)
-    error_message(40);
-        create_subpage($2, $4);
-      }
-    }
-  | PSEUDO_SELECT value PSEUDO_AT value {
-      if (conditional[conditional_level])
-      {
-        if (rom_type != MEGAROM)
-    error_message(40);
-        select_page_direct($2, $4);
-      }
-    }
-  | PSEUDO_SELECT REGISTER PSEUDO_AT value {
-      if (conditional[conditional_level])
-      {
-        if (rom_type != MEGAROM)
-    error_message(40);
-        select_page_register($2, $4);
-      }
-    }
-  | PSEUDO_START value {
-      if (conditional[conditional_level])
-        run_address = $2;
-    }
-  | PSEUDO_CALLBIOS value {
-      if (conditional[conditional_level])
-      {
-        write_byte(0xfd);
-        write_byte(0x2a);
-        write_word(0xfcc0);
-        write_byte(0xdd);
-        write_byte(0x21);
-        write_word($2);
-        write_byte(0xcd);
-        write_word(0x001c);
-      }
-    }
-  | PSEUDO_CALLDOS value {
-      if (conditional[conditional_level])
-      {
-        if (rom_type != MSXDOS)
-    error_message(25);
-        write_byte(0x0e);
-        write_byte($2);
-        write_byte(0xcd);
-        write_word(0x0005);
-      }
-    }
-  | PSEUDO_DB list_8bits {
-      ;
-    }
-  | PSEUDO_DW list_16bits {
-      ;
-    }
-  | PSEUDO_DS value_16bits {
-      if (conditional[conditional_level])
-      {
-        if (start_address > PC)
-    start_address = PC;
-        PC += $2;
-        ePC += $2;
-        if (PC > 0xffff)
-    error_message(1);
-      }
-    }
-  | PSEUDO_BYTE {
-      if (conditional[conditional_level])
-      {
-        PC++;
-        ePC++;
-      }
-    }
-  | PSEUDO_WORD {
-      if (conditional[conditional_level])
-      {
-        PC += 2;
-        ePC += 2;
-      }
-    }
-  | IDENTIFICATOR PSEUDO_EQU value {
-      if (conditional[conditional_level])
-        register_symbol(strtok($1, "="), $3, 2);
-    }
-  | IDENTIFICATOR PSEUDO_ASSIGN value {
-      if (conditional[conditional_level])
-        register_variable(strtok($1, "="), $3);
-    }
-  | PSEUDO_INCBIN TEXT {
-      if (conditional[conditional_level])
-        include_binary($2, 0, 0);
-    }
-  | PSEUDO_INCBIN TEXT PSEUDO_SKIP value {
-      if (conditional[conditional_level])
-      {
-        if ($4 <= 0)
-    error_message(30);
-        include_binary($2, $4, 0);
-      }
-    }
-  | PSEUDO_INCBIN TEXT PSEUDO_SIZE value {
-      if (conditional[conditional_level])
-      {
-        if ($4 <= 0)
-    error_message(30);
-        include_binary($2, 0, $4);
-      }
-    }
-  | PSEUDO_INCBIN TEXT PSEUDO_SKIP value PSEUDO_SIZE value {
-      if (conditional[conditional_level])
-      {
-        if (($4 <= 0) || ($6 <= 0))
-    error_message(30);
-        include_binary($2, $4, $6);
-      }
-    }
-  | PSEUDO_INCBIN TEXT PSEUDO_SIZE value PSEUDO_SKIP value {
-      if (conditional[conditional_level])
-      {
-        if (($4 <= 0) || ($6 <= 0))
-    error_message(30);
-        include_binary($2, $6, $4);
-      }
-    }
-  | PSEUDO_END {
-      if (pass == 3)
-        finalize();
-      PC = 0;
-      ePC = 0;
-      last_global = 0;
-      rom_type = 0;
-      zilog = 0;
-      if (conditional_level)
-        error_message(45);
-    }
-  | PSEUDO_DEBUG TEXT {
-      if (conditional[conditional_level])
-      {
-        write_byte(0x52);
-        write_byte(0x18);
-        write_byte((int)(strlen($2) + 4));
-        write_string($2);
-      }
-    }
-  | PSEUDO_BREAK {
-      if (conditional[conditional_level])
-      {
-        write_byte(0x40);
-        write_byte(0x18);
-        write_byte(0x00);
-      }
-    }
-  | PSEUDO_BREAK value {
-      if (conditional[conditional_level])
-      {
-        write_byte(0x40);
-        write_byte(0x18);
-        write_byte(0x02);
-        write_word($2);
-      }
-    }
-  | PSEUDO_PRINTTEXT TEXT {
-      if (conditional[conditional_level])
-      {
-        if (pass == 2)
-        {
-    if (fmsg == NULL)
-      create_txt();
-				if (fmsg)
-      fprintf(fmsg, "%s\n", $2);
-        }
-      }
-    }
-  | PSEUDO_PRINT value {
-      if (conditional[conditional_level])
-      {
-        if (pass == 2)
-        {
-    if (fmsg == NULL)
-      create_txt();
-				if (fmsg)
-      fprintf(fmsg, "%d\n", (short int)$2 & 0xffff);
-        }
-      }
-    }
-  | PSEUDO_PRINT value_real {
-      if (conditional[conditional_level])
-      {
-        if (pass == 2)
-        {
-    if (fmsg == NULL)
-      create_txt();
-				if (fmsg)
-      fprintf(fmsg, "%.4f\n", $2);
-        }
-      }
-    }
-  | PSEUDO_PRINTHEX value {
-      if (conditional[conditional_level])
-      {
-        if (pass == 2)
-        {
-    if (fmsg == NULL)
-      create_txt();
-				if (fmsg)
-      fprintf(fmsg, "$%4.4x\n", (short int)$2 & 0xffff);
-        }
-      }
-    }
-  | PSEUDO_PRINTFIX value {
-      if (conditional[conditional_level])
-      {
-        if (pass == 2)
-        {
-    if (fmsg == NULL)
-      create_txt();
-				if (fmsg)
-      fprintf(fmsg, "%.4f\n", ((float)($2 & 0xffff)) / 256);
-        }
-      }
-    }
-  | PSEUDO_SIZE value {
-      if (conditional[conditional_level] && (pass == 2))
-      {
-        if (size > 0)
-    error_message(15);
-        else
-    size = $2;
-      }
-    }
-  | PSEUDO_IF value {
-      if (conditional_level == 15)
+	}
+	| PSEUDO_PHASE value
+	{
+		if (conditional[conditional_level])
+		ePC = $2;
+	}
+	| PSEUDO_DEPHASE
+	{
+		if (conditional[conditional_level])
+			ePC = PC;
+	}
+	| PSEUDO_ROM
+	{
+		if (conditional[conditional_level])
+			type_rom();
+	}
+	| PSEUDO_MEGAROM
+	{
+		if (conditional[conditional_level])
+			type_megarom(0);
+	}
+	| PSEUDO_MEGAROM value 
+	{
+		if (conditional[conditional_level])
+			type_megarom($2);
+	}
+	| PSEUDO_BASIC
+	{
+		if (conditional[conditional_level])
+			type_basic();
+	}
+	| PSEUDO_MSXDOS
+	{
+		if (conditional[conditional_level])
+			type_msxdos();
+	}
+	| PSEUDO_SINCLAIR
+	{
+		if (conditional[conditional_level])
+			type_sinclair();
+	}
+	| PSEUDO_BIOS
+	{
+		if (conditional[conditional_level])
+		{
+			if (!bios)
+				msx_bios();
+		}
+	}
+	| PSEUDO_PAGE value
+	{
+		if (conditional[conditional_level])
+		{
+			subpage = 0x100;
+			if ($2 > 3)
+				error_message(22);
+			else
 			{
-        error_message(44);
-			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
+				PC = 0x4000 * $2;
+				ePC = PC;
 			}
-      conditional_level++;
-      if ($2)
-        conditional[conditional_level] = 1 & conditional[conditional_level - 1];
-      else
-        conditional[conditional_level] = 0;
-    }
-  | PSEUDO_IFDEF IDENTIFICATOR {
-      if (conditional_level == 15)
+		}
+	}
+	| PSEUDO_SEARCH
+	{
+		if (conditional[conditional_level])
+		{
+			if ((rom_type != MEGAROM) && (rom_type != ROM))
+				error_message(41);
+			locate_32k();
+		}
+	}
+	| PSEUDO_SUBPAGE value PSEUDO_AT value
+	{
+		if (conditional[conditional_level])
+		{
+			if (rom_type != MEGAROM)
+				error_message(40);
+			create_subpage($2, $4);
+		}
+	}
+	| PSEUDO_SELECT value PSEUDO_AT value
+	{
+		if (conditional[conditional_level])
+		{
+			if (rom_type != MEGAROM)
+				error_message(40);
+			select_page_direct($2, $4);
+		}
+	}
+	| PSEUDO_SELECT REGISTER PSEUDO_AT value
+	{
+		if (conditional[conditional_level])
+		{
+			if (rom_type != MEGAROM)
+				error_message(40);
+			select_page_register($2, $4);
+		}
+	}
+	| PSEUDO_START value
+	{
+		if (conditional[conditional_level])
+			run_address = $2;
+	}
+	| PSEUDO_CALLBIOS value
+	{
+		if (conditional[conditional_level])
+		{
+			write_byte(0xfd);
+			write_byte(0x2a);
+			write_word(0xfcc0);
+			write_byte(0xdd);
+			write_byte(0x21);
+			write_word($2);
+			write_byte(0xcd);
+			write_word(0x001c);
+		}
+	}
+	| PSEUDO_CALLDOS value
+	{
+		if (conditional[conditional_level])
+		{
+			if (rom_type != MSXDOS)
+				error_message(25);
+			write_byte(0x0e);
+			write_byte($2);
+			write_byte(0xcd);
+			write_word(0x0005);
+		}
+	}
+	| PSEUDO_DB list_8bits
+	{
+		;
+	}
+	| PSEUDO_DW list_16bits
+	{
+		;
+	}
+	| PSEUDO_DS value_16bits
+	{
+		if (conditional[conditional_level])
+		{
+			if (start_address > PC)
+				start_address = PC;
+			PC += $2;
+			ePC += $2;
+			if (PC > 0xffff)
+				error_message(1);
+		}
+	}
+	| PSEUDO_BYTE
+	{
+		if (conditional[conditional_level])
+		{
+			PC++;
+			ePC++;
+		}
+	}
+	| PSEUDO_WORD
+	{
+		if (conditional[conditional_level])
+		{
+			PC += 2;
+			ePC += 2;
+		}
+	}
+	| IDENTIFICATOR PSEUDO_EQU value
+	{
+		if (conditional[conditional_level])
+		register_symbol(strtok($1, "="), $3, 2);
+	}
+	| IDENTIFICATOR PSEUDO_ASSIGN value
+	{
+		if (conditional[conditional_level])
+			register_variable(strtok($1, "="), $3);
+	}
+	| PSEUDO_INCBIN TEXT
+	{
+		if (conditional[conditional_level])
+			include_binary($2, 0, 0);
+	}
+	| PSEUDO_INCBIN TEXT PSEUDO_SKIP value
+	{
+		if (conditional[conditional_level])
+		{
+			if ($4 <= 0)
+				error_message(30);
+			include_binary($2, $4, 0);
+		}
+	}
+	| PSEUDO_INCBIN TEXT PSEUDO_SIZE value
+	{
+		if (conditional[conditional_level])
+		{
+			if ($4 <= 0)
+				error_message(30);
+			include_binary($2, 0, $4);
+		}
+	}
+	| PSEUDO_INCBIN TEXT PSEUDO_SKIP value PSEUDO_SIZE value
+	{
+		if (conditional[conditional_level])
+		{
+			if (($4 <= 0) || ($6 <= 0))
+				error_message(30);
+			include_binary($2, $4, $6);
+		}
+	}
+	| PSEUDO_INCBIN TEXT PSEUDO_SIZE value PSEUDO_SKIP value
+	{
+		if (conditional[conditional_level])
+		{
+			if (($4 <= 0) || ($6 <= 0))
+				error_message(30);
+			include_binary($2, $6, $4);
+		}
+	}
+	| PSEUDO_END
+	{
+		if (pass == 3)
+			finalize();
+		PC = 0;
+		ePC = 0;
+		last_global = 0;
+		rom_type = 0;
+		zilog = 0;
+		if (conditional_level)
+			error_message(45);
+	}
+	| PSEUDO_DEBUG TEXT
+	{
+		if (conditional[conditional_level])
+		{
+			write_byte(0x52);
+			write_byte(0x18);
+			write_byte((int)(strlen($2) + 4));
+			write_string($2);
+		}
+	}
+	| PSEUDO_BREAK
+	{
+		if (conditional[conditional_level])
+		{
+			write_byte(0x40);
+			write_byte(0x18);
+			write_byte(0x00);
+		}
+	}
+	| PSEUDO_BREAK value
+	{
+		if (conditional[conditional_level])
+		{
+			write_byte(0x40);
+			write_byte(0x18);
+			write_byte(0x02);
+			write_word($2);
+		}
+	}
+	| PSEUDO_PRINTTEXT TEXT
+	{
+		if (conditional[conditional_level])
+		{
+			if (pass == 2)
 			{
-        error_message(44);
-			  exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
+				if (fmsg == NULL)
+					create_txt();
+				if (fmsg)
+					fprintf(fmsg, "%s\n", $2);
 			}
-      conditional_level++;
-      if (is_defined_symbol($2))
-        conditional[conditional_level] = 1 & conditional[conditional_level - 1];
-      else
-        conditional[conditional_level] = 0;
-    }
-  | PSEUDO_ELSE {
-      if (!conditional_level)
-        error_message(42);
-      conditional[conditional_level] = (conditional[conditional_level] ^ 1) & conditional[conditional_level - 1];
-    }
-  | PSEUDO_ENDIF {
-      if (!conditional_level)
-        error_message(43);
-      conditional_level--;
-    }
-  | PSEUDO_CASSETTE TEXT {
-      if (conditional[conditional_level])
-      {
-        if (!fname_msx[0])
-    strncpy(fname_msx, $2, PATH_MAX);
-        cassette |= $1;
-      }
-    }
-  | PSEUDO_CASSETTE {
-      if (conditional[conditional_level])
-      {
-        if (!fname_msx[0])
-        {
-    strncpy(fname_msx, fname_bin, PATH_MAX);
-    fname_msx[strlen(fname_msx) - 1] = 0;
-        }
-        cassette |= $1;
-      }
-    }
-  | PSEUDO_ZILOG {
-      zilog = 1;
-    }
-  | PSEUDO_FILENAME TEXT {
-      strncpy(fname_no_ext, $2, PATH_MAX);
-    }
+		}
+	}
+	| PSEUDO_PRINT value
+	{
+		if (conditional[conditional_level])
+		{
+			if (pass == 2)
+			{
+				if (fmsg == NULL)
+					create_txt();
+				if (fmsg)
+					fprintf(fmsg, "%d\n", (short int)$2 & 0xffff);
+			}
+		}
+	}
+	| PSEUDO_PRINT value_real
+	{
+		if (conditional[conditional_level])
+		{
+			if (pass == 2)
+			{
+				if (fmsg == NULL)
+					create_txt();
+				if (fmsg)
+					fprintf(fmsg, "%.4f\n", $2);
+			}
+		}
+	}
+	| PSEUDO_PRINTHEX value
+	{
+		if (conditional[conditional_level])
+		{
+			if (pass == 2)
+			{
+				if (fmsg == NULL)
+					create_txt();
+				if (fmsg)
+					fprintf(fmsg, "$%4.4x\n", (short int)$2 & 0xffff);
+			}
+		}
+	}
+	| PSEUDO_PRINTFIX value
+	{
+		if (conditional[conditional_level])
+		{
+			if (pass == 2)
+			{
+				if (fmsg == NULL)
+					create_txt();
+				if (fmsg)
+					fprintf(fmsg, "%.4f\n", ((float)($2 & 0xffff)) / 256);
+			}
+		}
+	}
+	| PSEUDO_SIZE value
+	{
+		if (conditional[conditional_level] && (pass == 2))
+		{
+			if (size > 0)
+				error_message(15);
+			else
+				size = $2;
+		}
+	}
+	| PSEUDO_IF value
+	{
+		if (conditional_level == 15)
+		{
+			error_message(44);
+			exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
+		}
+		conditional_level++;
+		if ($2)
+			conditional[conditional_level] = 1 & conditional[conditional_level - 1];
+		else
+			conditional[conditional_level] = 0;
+	}
+	| PSEUDO_IFDEF IDENTIFICATOR
+	{
+		if (conditional_level == 15)
+		{
+			error_message(44);
+			exit(1);	/* this is to stop code analyzer warning about conditional[] buffer overrun */
+		}
+		conditional_level++;
+		if (is_defined_symbol($2))
+			conditional[conditional_level] = 1 & conditional[conditional_level - 1];
+		else
+			conditional[conditional_level] = 0;
+	}
+	| PSEUDO_ELSE
+	{
+		if (!conditional_level)
+			error_message(42);
+		conditional[conditional_level] = (conditional[conditional_level] ^ 1) & conditional[conditional_level - 1];
+	}
+	| PSEUDO_ENDIF
+	{
+		if (!conditional_level)
+			error_message(43);
+		conditional_level--;
+	}
+	| PSEUDO_CASSETTE TEXT
+	{
+		if (conditional[conditional_level])
+		{
+			if (!fname_msx[0])
+				strncpy(fname_msx, $2, PATH_MAX);
+			cassette |= $1;
+		}
+	}
+	| PSEUDO_CASSETTE
+	{
+		if (conditional[conditional_level])
+		{
+			if (!fname_msx[0])
+			{
+				strncpy(fname_msx, fname_bin, PATH_MAX);
+				fname_msx[strlen(fname_msx) - 1] = 0;
+			}
+			cassette |= $1;
+		}
+	}
+	| PSEUDO_ZILOG
+	{
+		zilog = 1;
+	}
+	| PSEUDO_FILENAME TEXT
+	{
+		strncpy(fname_no_ext, $2, PATH_MAX);
+	}
 ;
 
-indirect_IX: '[' REGISTER_16_IX ']' {
-      $$ = 0;
-    }
-	| '[' REGISTER_16_IX '+' value_8bits ']' {
-      $$ = $4;
-    }
-	| '[' REGISTER_16_IX '-' value_8bits ']' {
-      $$ = -$4;
-    }
-;
-	
-indirect_IY: '[' REGISTER_16_IY ']' {
-      $$ = 0;
-    }
-	| '[' REGISTER_16_IY '+' value_8bits ']' {
-      $$ = $4;
-    }
-	| '[' REGISTER_16_IY '-' value_8bits ']' {
-      $$ = -$4;
-    }
-;
-	
-mnemo_load8bit: MNEMO_LD REGISTER ',' REGISTER {
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_IX {
-      if (($2 > 3) && ($2 != 7))
-        error_message(2);
-      write_byte(0xdd);
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER_IX ',' REGISTER {
-      if (($4 > 3) && ($4 != 7))
-        error_message(2);
-      write_byte(0xdd);
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER_IX ',' REGISTER_IX {
-      write_byte(0xdd);
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_IY {
-      if (($2 > 3) && ($2 != 7))
-        error_message(2);
-      write_byte(0xfd);
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER_IY ',' REGISTER {
-      if (($4 > 3) && ($4 != 7))
-        error_message(2);
-      write_byte(0xfd);
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER_IY ',' REGISTER_IY {
-      write_byte(0xfd);
-      write_byte(0x40 | ($2 << 3) | $4);
-    }
-  | MNEMO_LD REGISTER ',' value_8bits {
-      write_byte(0x06 | ($2 << 3));
-      write_byte($4);
-    }
-  | MNEMO_LD REGISTER_IX ',' value_8bits {
-      write_byte(0xdd);
-      write_byte(0x06 | ($2 << 3));
-      write_byte($4);
-    }
-  | MNEMO_LD REGISTER_IY ',' value_8bits {
-      write_byte(0xfd);
-      write_byte(0x06 | ($2 << 3));
-      write_byte($4);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_IND_HL {
-      write_byte(0x46 | ($2 << 3));
-    }
-  | MNEMO_LD REGISTER ',' indirect_IX {
-      write_byte(0xdd);
-      write_byte(0x46 | ($2 << 3));
-      write_byte($4);
-    }
-  | MNEMO_LD REGISTER ',' indirect_IY {
-      write_byte(0xfd);
-      write_byte(0x46 | ($2 << 3));
-      write_byte($4);
-    }
-  | MNEMO_LD REGISTER_IND_HL ',' REGISTER {
-      write_byte(0x70 | $4);
-    }
-  | MNEMO_LD indirect_IX ',' REGISTER {
-      write_byte(0xdd);
-      write_byte(0x70 | $4);
-      write_byte($2);
-    }
-  | MNEMO_LD indirect_IY ',' REGISTER {
-      write_byte(0xfd);
-      write_byte(0x70 | $4);
-      write_byte($2);
-    }
-  | MNEMO_LD REGISTER_IND_HL ',' value_8bits {
-      write_byte(0x36);
-      write_byte($4);
-    }
-  | MNEMO_LD indirect_IX ',' value_8bits {
-      write_byte(0xdd);
-      write_byte(0x36);
-      write_byte($2);
-      write_byte($4);
-    }
-  | MNEMO_LD indirect_IY ',' value_8bits {
-      write_byte(0xfd);
-      write_byte(0x36);
-      write_byte($2);
-      write_byte($4);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_IND_BC {
-      if ($2 != 7)
-        error_message(4);
-      write_byte(0x0a);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_IND_DE {
-      if ($2 != 7)
-        error_message(4);
-      write_byte(0x1a);
-    }
-  | MNEMO_LD REGISTER ',' '[' value_16bits ']' {
-      if ($2 != 7)
-        error_message(4);
-      write_byte(0x3a);
-      write_word($5);
-    }
-  | MNEMO_LD REGISTER_IND_BC ',' REGISTER {
-      if ($4 != 7)
-        error_message(5);
-      write_byte(0x02);
-    }
-  | MNEMO_LD REGISTER_IND_DE ',' REGISTER {
-      if ($4 != 7)
-        error_message(5);
-      write_byte(0x12);
-    }
-  | MNEMO_LD '[' value_16bits ']' ',' REGISTER {
-      if ($6 != 7)
-        error_message(5);
-      write_byte(0x32);
-      write_word($3);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_I {
-      if ($2 != 7)
-        error_message(4);
-      write_byte(0xed);
-      write_byte(0x57);
-    }
-  | MNEMO_LD REGISTER ',' REGISTER_R {
-      if ($2 != 7)
-        error_message(4);
-      write_byte(0xed);
-      write_byte(0x5f);
-    }
-  | MNEMO_LD REGISTER_I ',' REGISTER {
-      if ($4 != 7)
-        error_message(5);
-      write_byte(0xed);
-      write_byte(0x47);
-    }
-  | MNEMO_LD REGISTER_R ',' REGISTER {
-      if ($4 != 7)
-        error_message(5);
-      write_byte(0xed);
-      write_byte(0x4f);
-    }
+indirect_IX: '[' REGISTER_16_IX ']'
+	{
+		$$ = 0;
+	}
+	| '[' REGISTER_16_IX '+' value_8bits ']'
+	{
+		$$ = $4;
+	}
+	| '[' REGISTER_16_IX '-' value_8bits ']'
+	{
+		$$ = -$4;
+	}
 ;
 
-mnemo_load16bit: MNEMO_LD REGISTER_PAIR ',' value_16bits {
-      write_byte(0x01 | ($2 << 4));
-      write_word($4);
+indirect_IY: '[' REGISTER_16_IY ']'
+	{
+		$$ = 0;
+	}
+	| '[' REGISTER_16_IY '+' value_8bits ']'
+	{
+		$$ = $4;
+	}
+	| '[' REGISTER_16_IY '-' value_8bits ']'
+	{
+		$$ = -$4;
+	}
+;
+
+mnemo_load8bit: MNEMO_LD REGISTER ',' REGISTER
+	{
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_IX
+	{
+		if (($2 > 3) && ($2 != 7))
+			error_message(2);
+		write_byte(0xdd);
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER_IX ',' REGISTER
+	{
+		if (($4 > 3) && ($4 != 7))
+			error_message(2);
+		write_byte(0xdd);
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER_IX ',' REGISTER_IX
+	{
+		write_byte(0xdd);
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_IY
+	{
+		if (($2 > 3) && ($2 != 7))
+			error_message(2);
+		write_byte(0xfd);
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER_IY ',' REGISTER
+	{
+		if (($4 > 3) && ($4 != 7))
+			error_message(2);
+		write_byte(0xfd);
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER_IY ',' REGISTER_IY
+	{
+		write_byte(0xfd);
+		write_byte(0x40 | ($2 << 3) | $4);
+	}
+	| MNEMO_LD REGISTER ',' value_8bits
+	{
+		write_byte(0x06 | ($2 << 3));
+		write_byte($4);
+	}
+	| MNEMO_LD REGISTER_IX ',' value_8bits
+	{
+		write_byte(0xdd);
+		write_byte(0x06 | ($2 << 3));
+		write_byte($4);
+	}
+	| MNEMO_LD REGISTER_IY ',' value_8bits
+	{
+		write_byte(0xfd);
+		write_byte(0x06 | ($2 << 3));
+		write_byte($4);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_IND_HL
+	{
+      write_byte(0x46 | ($2 << 3));
     }
-  | MNEMO_LD REGISTER_16_IX ',' value_16bits {
-      write_byte(0xdd);
-      write_byte(0x21);
-      write_word($4);
-    }
-  | MNEMO_LD REGISTER_16_IY ',' value_16bits {
-      write_byte(0xfd);
-      write_byte(0x21);
-      write_word($4);
-    }
-  | MNEMO_LD REGISTER_PAIR ',' '[' value_16bits ']' {
-      if ($2 != 2)
-      {
-        write_byte(0xed);
-        write_byte(0x4b | ($2 << 4));
-      }
-      else 
-        write_byte(0x2a);
-      write_word($5);
-    }
-  | MNEMO_LD REGISTER_16_IX ',' '[' value_16bits ']' {
-      write_byte(0xdd);
-      write_byte(0x2a);
-      write_word($5);
-    }
-  | MNEMO_LD REGISTER_16_IY ',' '[' value_16bits ']' {
-      write_byte(0xfd);
-      write_byte(0x2a);
-      write_word($5);
-    }
-  | MNEMO_LD '[' value_16bits ']' ',' REGISTER_PAIR {
-      if ($6 != 2)
-      {
-        write_byte(0xed);
-        write_byte(0x43 | ($6 << 4));
-      }
-      else
-        write_byte(0x22);
-      write_word($3);
-    }
-  | MNEMO_LD '[' value_16bits ']' ',' REGISTER_16_IX {
-      write_byte(0xdd);
-      write_byte(0x22);
-      write_word($3);
-    }
-  | MNEMO_LD '[' value_16bits ']' ',' REGISTER_16_IY {
-      write_byte(0xfd);
-      write_byte(0x22);
-      write_word($3);
-    }
-  | MNEMO_LD_SP ',' '[' value_16bits ']' {
-      write_byte(0xed);
-      write_byte(0x7b);
-      write_word($4);
-    }
-  | MNEMO_LD_SP ',' value_16bits {
-      write_byte(0x31);
-      write_word($3);
-    }
-  | MNEMO_LD_SP ',' REGISTER_PAIR {
-      if ($3 != 2)
-        error_message(2);
-      write_byte(0xf9);
-    }
-  | MNEMO_LD_SP ',' REGISTER_16_IX {
-      write_byte(0xdd);
-      write_byte(0xf9);
-    }
-  | MNEMO_LD_SP ',' REGISTER_16_IY {
-      write_byte(0xfd);
-      write_byte(0xf9);
-    }
-  | MNEMO_PUSH REGISTER_PAIR {
-      if ($2 == 3)
-        error_message(2);
-      write_byte(0xc5 | ($2 << 4));
-    }
-  | MNEMO_PUSH REGISTER_AF {
-      write_byte(0xf5);
-    }
-  | MNEMO_PUSH REGISTER_16_IX {
-      write_byte(0xdd);
-      write_byte(0xe5);
-    }
-  | MNEMO_PUSH REGISTER_16_IY {
-      write_byte(0xfd);
-      write_byte(0xe5);
-    }
-  | MNEMO_POP REGISTER_PAIR {
-      if ($2 == 3)
-        error_message(2);
-      write_byte(0xc1 | ($2 << 4));
-    }
-  | MNEMO_POP REGISTER_AF {
-      write_byte(0xf1);
-    }
-  | MNEMO_POP REGISTER_16_IX {
-      write_byte(0xdd);
-      write_byte(0xe1);
-    }
-  | MNEMO_POP REGISTER_16_IY {
-      write_byte(0xfd);
-      write_byte(0xe1);
-    }
+	| MNEMO_LD REGISTER ',' indirect_IX
+	{
+		write_byte(0xdd);
+		write_byte(0x46 | ($2 << 3));
+		write_byte($4);
+	}
+	| MNEMO_LD REGISTER ',' indirect_IY
+	{
+		write_byte(0xfd);
+		write_byte(0x46 | ($2 << 3));
+		write_byte($4);
+	}
+	| MNEMO_LD REGISTER_IND_HL ',' REGISTER
+	{
+		write_byte(0x70 | $4);
+	}
+	| MNEMO_LD indirect_IX ',' REGISTER
+	{
+		write_byte(0xdd);
+		write_byte(0x70 | $4);
+		write_byte($2);
+	}
+	| MNEMO_LD indirect_IY ',' REGISTER
+	{
+		write_byte(0xfd);
+		write_byte(0x70 | $4);
+		write_byte($2);
+	}
+	| MNEMO_LD REGISTER_IND_HL ',' value_8bits
+	{
+		write_byte(0x36);
+		write_byte($4);
+	}
+	| MNEMO_LD indirect_IX ',' value_8bits
+	{
+		write_byte(0xdd);
+		write_byte(0x36);
+		write_byte($2);
+		write_byte($4);
+	}
+	| MNEMO_LD indirect_IY ',' value_8bits
+	{
+		write_byte(0xfd);
+		write_byte(0x36);
+		write_byte($2);
+		write_byte($4);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_IND_BC
+	{
+		if ($2 != 7)
+			error_message(4);
+		write_byte(0x0a);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_IND_DE
+	{
+		if ($2 != 7)
+			error_message(4);
+		write_byte(0x1a);
+	}
+	| MNEMO_LD REGISTER ',' '[' value_16bits ']'
+	{
+		if ($2 != 7)
+			error_message(4);
+		write_byte(0x3a);
+		write_word($5);
+	}
+	| MNEMO_LD REGISTER_IND_BC ',' REGISTER
+	{
+		if ($4 != 7)
+			error_message(5);
+		write_byte(0x02);
+	}
+	| MNEMO_LD REGISTER_IND_DE ',' REGISTER {
+		if ($4 != 7)
+			error_message(5);
+		write_byte(0x12);
+	}
+	| MNEMO_LD '[' value_16bits ']' ',' REGISTER
+	{
+		if ($6 != 7)
+			error_message(5);
+		write_byte(0x32);
+		write_word($3);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_I
+	{
+		if ($2 != 7)
+			error_message(4);
+		write_byte(0xed);
+		write_byte(0x57);
+	}
+	| MNEMO_LD REGISTER ',' REGISTER_R
+	{
+		if ($2 != 7)
+			error_message(4);
+		write_byte(0xed);
+		write_byte(0x5f);
+	}
+	| MNEMO_LD REGISTER_I ',' REGISTER
+	{
+		if ($4 != 7)
+			error_message(5);
+		write_byte(0xed);
+		write_byte(0x47);
+	}
+	| MNEMO_LD REGISTER_R ',' REGISTER
+	{
+		if ($4 != 7)
+			error_message(5);
+		write_byte(0xed);
+		write_byte(0x4f);
+	}
+;
+
+mnemo_load16bit: MNEMO_LD REGISTER_PAIR ',' value_16bits
+	{
+		write_byte(0x01 | ($2 << 4));
+		write_word($4);
+	}
+	| MNEMO_LD REGISTER_16_IX ',' value_16bits
+	{
+		write_byte(0xdd);
+		write_byte(0x21);
+		write_word($4);
+	}
+	| MNEMO_LD REGISTER_16_IY ',' value_16bits
+	{
+		write_byte(0xfd);
+		write_byte(0x21);
+		write_word($4);
+	}
+	| MNEMO_LD REGISTER_PAIR ',' '[' value_16bits ']'
+	{
+		if ($2 != 2)
+		{
+			write_byte(0xed);
+			write_byte(0x4b | ($2 << 4));
+		}
+		else 
+			write_byte(0x2a);
+		write_word($5);
+	}
+	| MNEMO_LD REGISTER_16_IX ',' '[' value_16bits ']'
+	{
+		write_byte(0xdd);
+		write_byte(0x2a);
+		write_word($5);
+	}
+	| MNEMO_LD REGISTER_16_IY ',' '[' value_16bits ']'
+	{
+		write_byte(0xfd);
+		write_byte(0x2a);
+		write_word($5);
+	}
+	| MNEMO_LD '[' value_16bits ']' ',' REGISTER_PAIR
+	{
+		if ($6 != 2)
+		{
+			write_byte(0xed);
+			write_byte(0x43 | ($6 << 4));
+		}
+		else
+			write_byte(0x22);
+		write_word($3);
+	}
+	| MNEMO_LD '[' value_16bits ']' ',' REGISTER_16_IX
+	{
+		write_byte(0xdd);
+		write_byte(0x22);
+		write_word($3);
+	}
+	| MNEMO_LD '[' value_16bits ']' ',' REGISTER_16_IY
+	{
+		write_byte(0xfd);
+		write_byte(0x22);
+		write_word($3);
+	}
+	| MNEMO_LD_SP ',' '[' value_16bits ']'
+	{
+		write_byte(0xed);
+		write_byte(0x7b);
+		write_word($4);
+	}
+	| MNEMO_LD_SP ',' value_16bits
+	{
+		write_byte(0x31);
+		write_word($3);
+	}
+	| MNEMO_LD_SP ',' REGISTER_PAIR
+	{
+		if ($3 != 2)
+			error_message(2);
+		write_byte(0xf9);
+	}
+	| MNEMO_LD_SP ',' REGISTER_16_IX
+	{
+		write_byte(0xdd);
+		write_byte(0xf9);
+	}
+	| MNEMO_LD_SP ',' REGISTER_16_IY
+	{
+		write_byte(0xfd);
+		write_byte(0xf9);
+	}
+	| MNEMO_PUSH REGISTER_PAIR
+	{
+		if ($2 == 3)
+			error_message(2);
+		write_byte(0xc5 | ($2 << 4));
+	}
+	| MNEMO_PUSH REGISTER_AF
+	{
+		write_byte(0xf5);
+	}
+	| MNEMO_PUSH REGISTER_16_IX
+	{
+		write_byte(0xdd);
+		write_byte(0xe5);
+	}
+	| MNEMO_PUSH REGISTER_16_IY
+	{
+		write_byte(0xfd);
+		write_byte(0xe5);
+	}
+	| MNEMO_POP REGISTER_PAIR
+	{
+		if ($2 == 3)
+			error_message(2);
+		write_byte(0xc1 | ($2 << 4));
+	}
+	| MNEMO_POP REGISTER_AF
+	{
+		write_byte(0xf1);
+	}
+	| MNEMO_POP REGISTER_16_IX
+	{
+		write_byte(0xdd);
+		write_byte(0xe1);
+	}
+	| MNEMO_POP REGISTER_16_IY
+	{
+		write_byte(0xfd);
+		write_byte(0xe1);
+	}
 ;
 
 mnemo_exchange: MNEMO_EX REGISTER_PAIR ',' REGISTER_PAIR {

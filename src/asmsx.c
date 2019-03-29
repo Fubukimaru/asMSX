@@ -4,13 +4,6 @@
  * Wav writting code is based on research in https://github.com/oboroc/msxtape-py
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <stdint.h>
-#include <math.h>
-
 #include "asmsx.h"
 
 #define FNAME_MSX_LEN 6

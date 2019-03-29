@@ -12,7 +12,10 @@
 */
 
 %{
-#include <stdio.h>
+#pragma warning (disable : 4005)
+
+#include "asmsx.h"
+
 #define MAX_INCLUDE_LEVEL 16
 
 static char *p1_text, *p1_tmpstr, *p1_name;

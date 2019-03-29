@@ -5,11 +5,12 @@
 	Functions:
 		1.-Identify ZILOG macro
 		2.-Set accordingly indirection and mathematical style 
-		
 */
 
 %{
-#include <stdio.h>
+#pragma warning (disable : 4005)
+
+#include "asmsx.h"
 
 static FILE *p3_output;
 static char *p3_text;
