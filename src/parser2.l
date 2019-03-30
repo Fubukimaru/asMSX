@@ -29,128 +29,129 @@ extern void error_message(int);
 
 %%
 
-<INITIAL>"#"line[ \t]*[0-9]+\n {
-                  strcat(p2_text, yytext);
-                  p2_lines = atoi(&yytext[5]);
-                  BEGIN(line);
-                }
+<INITIAL>"#"line[ \t]*[0-9]+\n	{
+									strcat(p2_text, yytext);
+									p2_lines = atoi(&yytext[5]);
+									BEGIN(line);
+								}
 
-<line>.?rept[ \t]+      BEGIN(repnum);
+<line>.?rept[ \t]+				BEGIN(repnum);
 
-<line>.         {
-                  strcat(p2_text, yytext);
-                  BEGIN(INITIAL);
-                }
+<line>.							{
+									strcat(p2_text, yytext);
+									BEGIN(INITIAL);
+								}
 
-<repnum>[0-9]+[ \t]* {
-                  p2_number = atoi(yytext);
-                  p2_buffer[0] = 0;
-                  p2_text[0] = 0;
-                  BEGIN(rept);
-                }
+<repnum>[0-9]+[ \t]*			{
+									p2_number = atoi(yytext);
+									p2_buffer[0] = 0;
+									p2_text[0] = 0;
+									BEGIN(rept);
+								}
 
-<rept>.?rept[ \t]+[0-9]+[ \t]* {
-                  p2_buffer = strcat(p2_buffer, yytext);
-                  p2_nested++;
-                  p2_level++;
-                }
+<rept>.?rept[ \t]+[0-9]+[ \t]*	{
+									p2_buffer = strcat(p2_buffer, yytext);
+									p2_nested++;
+									p2_level++;
+								}
 
-<rept>"#"line[ \t]*[0-9]+\n[ \t]*.?endr[ \t]*\n {
-                  if (p2_nested)
-                  {
-                    p2_nested--;
-                    p2_buffer = strcat(p2_buffer, yytext);
-                  }
-                  else
-                  {
-                    int i;
+<rept>"#"line[ \t]*[0-9]+\n[ \t]*.?endr[ \t]*\n	{
+													if (p2_nested)
+													{
+														p2_nested--;
+														p2_buffer = strcat(p2_buffer, yytext);
+													}
+													else
+													{
+														int i;
 
-                    for (i = 0; i < p2_number; i++)
-                      fprintf(p2_output, "%s", p2_buffer);
+														for (i = 0; i < p2_number; i++)
+															fprintf(p2_output, "%s", p2_buffer);
 
-                    p2_buffer[0] = 0;
-                    BEGIN(INITIAL);
-                  }
-                }
+														p2_buffer[0] = 0;
+														BEGIN(INITIAL);
+													}
+												}
 
-<rept>.	        p2_buffer = strcat(p2_text, yytext);
+<rept>.							p2_buffer = strcat(p2_text, yytext);
 
-<rept>\n        p2_buffer = strcat(p2_buffer, yytext);
+<rept>\n						p2_buffer = strcat(p2_buffer, yytext);
 
-<rept><<EOF>>   error_message(2);
+<rept><<EOF>>					error_message(2);
 
-<repnum>.       prompt_error2(1);
+<repnum>.						prompt_error2(1);
 
-<INITIAL>\n     {
-                  fprintf(p2_output, "%s%s", p2_text, yytext);
-                  p2_text[0] = 0;
-                }
+<INITIAL>\n						{
+									fprintf(p2_output, "%s%s", p2_text, yytext);
+									p2_text[0] = 0;
+								}
 
-<INITIAL>.      strcat(p2_text, yytext);
+<INITIAL>.						strcat(p2_text, yytext);
 
 %%
 
 int prompt_error2(int c)
 {
-  fprintf(stderr, ", line %d: ", p2_lines);
-  switch (c)
-  {
-    case 1:
-      fprintf(stderr, "number expected in REPT\n");
-      break;
-    case 2:
-      fprintf(stderr, "REPT without ENDR\n");
-      break;
-    default:
-      fprintf(stderr, "Unknown error in prompt_error2()\n");
-  }
-  fclose(p2_output);
-  exit(c);
+	fprintf(stderr, ", line %d: ", p2_lines);
+	switch (c)
+	{
+		case 1:
+			fprintf(stderr, "number expected in REPT\n");
+			break;
+		case 2:
+			fprintf(stderr, "REPT without ENDR\n");
+			break;
+		default:
+			fprintf(stderr, "Unknown error in prompt_error2()\n");
+	}
+	fclose(p2_output);
+	exit(c);
 }
 
 int preprocessor2()
 {
-  FILE *input;
-  char *filename;
-  int loop = 0;
+	FILE *input;
+	char *filename;
+	int loop = 0;
 
-  filename = malloc(PATH_MAX + 1);
-  p2_text = malloc(0x1000);
-  p2_buffer = malloc(0x4000);
-  p2_text[0] = 0;
+	filename = malloc(PATH_MAX + 1);
+	p2_text = malloc(0x1000);
+	p2_buffer = malloc(0x4000);
+	p2_text[0] = 0;
 
-  printf("Expanding system macros\n");
+	printf("Expanding system macros\n");
 
-  do
-  {
-    snprintf(filename, PATH_MAX, "~tmppre.%i", loop + 1);
+	do
+	{
+		snprintf(filename, PATH_MAX, "~tmppre.%i", loop + 1);
 
-    if ((input = fopen(filename, "r")) == NULL)
-    {
-      fprintf(stderr, "Fatal: cannot process file %s\n", filename);
-      exit(1);
-    }
+		if ((input = fopen(filename, "r")) == NULL)
+		{
+			fprintf(stderr, "Fatal: cannot process file %s\n", filename);
+			exit(1);
+		}
 
-    yyin = input;
+		yyin = input;
  
-    loop++;
+		loop++;
 
-    snprintf(filename, PATH_MAX, "~tmppre.%i", loop + 1);
+		snprintf(filename, PATH_MAX, "~tmppre.%i", loop + 1);
 
-    p2_output = fopen(filename, "w");
-    p2_level = 0;
-    p2_nested = 0;
+		p2_output = fopen(filename, "w");
+		p2_level = 0;
+		p2_nested = 0;
 
-    yylex();
+		yylex();
 
-    fclose(input);
-    fclose(p2_output);
-  } while (p2_level);
+		fclose(input);
+		fclose(p2_output);
+	}
+	while (p2_level);
 
 /*
-  free(filename);
-  free(p2_text);
-  free(p2_buffer);
+	free(filename);
+	free(p2_text);
+	free(p2_buffer);
 */
-  return loop + 1;
+	return loop + 1;
 }
