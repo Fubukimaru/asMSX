@@ -114,7 +114,7 @@ int preprocessor2()
 	char *filename;
 	int loop = 0;
 
-	filename = malloc(PATH_MAX + 1);
+	filename = malloc(PATH_MAX);
 	p2_text = malloc(0x1000);
 	p2_buffer = malloc(0x4000);
 	p2_text[0] = 0;
@@ -123,7 +123,7 @@ int preprocessor2()
 
 	do
 	{
-		snprintf(filename, PATH_MAX, "~tmppre.%i", loop + 1);
+		snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 1);
 
 		if ((input = fopen(filename, "r")) == NULL)
 		{
@@ -135,7 +135,7 @@ int preprocessor2()
  
 		loop++;
 
-		snprintf(filename, PATH_MAX, "~tmppre.%i", loop + 1);
+		snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 1);
 
 		p2_output = fopen(filename, "w");
 		p2_level = 0;

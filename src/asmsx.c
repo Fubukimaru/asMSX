@@ -228,8 +228,8 @@ void write_tape(
 	const char *rom_buf
 )
 {
-	char fname_cas[PATH_MAX + 1];
-	char fname_wav[PATH_MAX + 1];
+	char fname_cas[PATH_MAX];
+	char fname_wav[PATH_MAX];
 	char _fname_msx[FNAME_MSX_LEN + 1];
 	FILE *casf = NULL;
 	FILE *wavf = NULL;

@@ -380,7 +380,7 @@ line:	pseudo_instruction EOL
 	| mnemo_call EOL
 	| PREPRO_FILE TEXT EOL
 	{
-		strncpy(fname_src, $2, PATH_MAX);
+		strncpy(fname_src, $2, PATH_MAX - 1);
 	}
 	| PREPRO_LINE value EOL
 	{
@@ -783,7 +783,7 @@ pseudo_instruction: PSEUDO_ORG value
 		if (conditional[conditional_level])
 		{
 			if (!fname_msx[0])
-				strncpy(fname_msx, $2, PATH_MAX);
+				strncpy(fname_msx, $2, PATH_MAX - 1);
 			cassette |= $1;
 		}
 	}
@@ -793,7 +793,7 @@ pseudo_instruction: PSEUDO_ORG value
 		{
 			if (!fname_msx[0])
 			{
-				strncpy(fname_msx, fname_bin, PATH_MAX);
+				strncpy(fname_msx, fname_bin, PATH_MAX - 1);
 				fname_msx[strlen(fname_msx) - 1] = 0;
 			}
 			cassette |= $1;
@@ -805,7 +805,7 @@ pseudo_instruction: PSEUDO_ORG value
 	}
 	| PSEUDO_FILENAME TEXT
 	{
-		strncpy(fname_no_ext, $2, PATH_MAX);
+		strncpy(fname_no_ext, $2, PATH_MAX - 1);
 	}
 ;
 
@@ -3914,8 +3914,8 @@ int read_local(char *name)
 void create_txt()
 {
 	/* Generate the name of output text file */
-	strncpy(fname_txt, fname_no_ext, PATH_MAX);
-	fname_txt = strncat(fname_txt, ".txt", PATH_MAX);
+	strncpy(fname_txt, fname_no_ext, PATH_MAX - 1);
+	fname_txt = strncat(fname_txt, ".txt", PATH_MAX - 1);
 	fmsg = fopen(fname_txt, "wt");
 	if (fmsg == NULL)
 		return;
@@ -4248,7 +4248,7 @@ void write_bin()
 void finalize()
 {
 	/* Generate the name of file with symbolic information */
-	strncpy(fname_sym, fname_no_ext, PATH_MAX);
+	strncpy(fname_sym, fname_no_ext, PATH_MAX - 1);
 	fname_sym = strcat(fname_sym, ".sym");
  
 	write_bin();
@@ -4519,17 +4519,17 @@ int main(int argc, char *argv[])
 	}
 	memset(rom_buf, 0, rom_buf_size);
 
-	fname_msx = malloc(PATH_MAX + 1);
+	fname_msx = malloc(PATH_MAX);
 	fname_msx[0] = 0;
 	register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 
-	fname_asm = malloc(PATH_MAX + 1);
-	fname_src = malloc(PATH_MAX + 1);
-	fname_p2 = malloc(PATH_MAX + 1);
-	fname_bin = malloc(PATH_MAX + 1);
-	fname_sym = malloc(PATH_MAX + 1);
-	fname_txt = malloc(PATH_MAX + 1);
-	fname_no_ext = malloc(PATH_MAX + 1);
+	fname_asm = malloc(PATH_MAX);
+	fname_src = malloc(PATH_MAX);
+	fname_p2 = malloc(PATH_MAX);
+	fname_bin = malloc(PATH_MAX);
+	fname_sym = malloc(PATH_MAX);
+	fname_txt = malloc(PATH_MAX);
+	fname_no_ext = malloc(PATH_MAX);
 	if (!fname_no_ext)
 	{
 		fprintf(stderr, "Error: can't allocate memory for fname_no_ext\n");
@@ -4551,7 +4551,7 @@ int main(int argc, char *argv[])
 
 	preprocessor1(fname_asm);
 	preprocessor3(zilog);
-	snprintf(fname_p2, PATH_MAX, "~tmppre.%i", preprocessor2());
+	snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor2());
 	printf("Assembling source file %s\n", fname_asm);
 
 	conditional[0] = 1;
