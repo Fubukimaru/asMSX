@@ -1,7 +1,9 @@
 /* asMSX - an MSX / Z80 assembler
-	(c) 2013-2019 asMSX team
-	(c) 2000-2010 Eduardo A. Robsy Petrus
+
+	(c) 2000-2010 Eduardo A. Robsy Petrus, (c) 2013-2019 asMSX team
+
 	Bison grammar file
+
 	v.0.01a: [10/09/2000] First public version
 
 	v.0.01b: [03/05/2001] Bugfixes. Added PRINTFIX, FIXMUL, FIXDIV
