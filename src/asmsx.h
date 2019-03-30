@@ -8,11 +8,12 @@
 #include <assert.h>
 #include <stdint.h>
 
+#ifndef PATH_MAX
 #ifdef WIN32
-#define PATH_MAX 4096
-#include <Windows.h>
+#define PATH_MAX (_MAX_PATH)
 #else
 #include <limits.h>
+#endif
 #endif
 
 /* rom type */
