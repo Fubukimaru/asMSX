@@ -4,13 +4,6 @@
  * Wav writting code is based on research in https://github.com/oboroc/msxtape-py
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <stdint.h>
-#include <math.h>
-
 #include "asmsx.h"
 
 #define FNAME_MSX_LEN 6
@@ -235,11 +228,11 @@ void write_tape(
 	const char *rom_buf
 )
 {
-	char fname_cas[PATH_MAX + 1];
-	char fname_wav[PATH_MAX + 1];
+	char fname_cas[PATH_MAX];
+	char fname_wav[PATH_MAX];
 	char _fname_msx[FNAME_MSX_LEN + 1];
-	FILE *wavf = NULL;
 	FILE *casf = NULL;
+	FILE *wavf = NULL;
 	int i;
 	struct WavHeader wh;
 
@@ -275,7 +268,7 @@ void write_tape(
 	{	/* 16 bit or higher samples */
 		ws.min_vol = -(int32_t)pow(2, ws.bytes_per_sample * 8 - 1);
 		ws.max_vol = -ws.min_vol - 1;
-		/* expand or remove assert if need to support samples 24-bit or higher samples */
+		/* expand or remove assert if need to support samples 24-bit or higher */
 		assert((ws.bytes_per_sample == 2) && (ws.min_vol == -32768) && (ws.max_vol == 32767));
 	}
 	
@@ -430,4 +423,16 @@ void write_tape(
 		fclose(wavf);
 		printf("Audio file %s saved [%2.2f sec]\n", fname_wav, (double)ws.samples_count / (ws.sample_rate * ws.num_channels * ws.bytes_per_sample));
 	}
+}
+
+/*
+ Deterministic version of rand() to keep generated binary files
+ consistent across platforms and compilers. Code snippet is from
+ http://stackoverflow.com/questions/4768180/rand-implementation
+*/
+static unsigned long int rand_seed = 1;
+int d_rand()
+{
+	rand_seed = (rand_seed * 1103515245 + 12345);
+	return (unsigned int)(rand_seed / 65536) % (32767 + 1);
 }

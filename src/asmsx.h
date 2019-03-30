@@ -1,10 +1,19 @@
 #pragma once
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include <assert.h>
+#include <stdint.h>
+
+#ifndef PATH_MAX
 #ifdef WIN32
-#define PATH_MAX 4096
-#include <windows.h>
+#define PATH_MAX (_MAX_PATH)
 #else
 #include <limits.h>
+#endif
 #endif
 
 /* rom type */
@@ -23,3 +32,4 @@
 
 /* function declarations */
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
+int d_rand();
