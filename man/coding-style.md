@@ -1,5 +1,5 @@
 
-# asMSX conding style
+# asMSX coding style
 
 If you want to contribute to asMSX, please consider following our shared guildelines for coding style
 
