@@ -4343,7 +4343,6 @@ void type_megarom(int n)
 		run_address = ePC;
 }
 
-
 void type_basic()
 {
 	if ((pass == 1) && (!start_address))
@@ -4469,7 +4468,6 @@ void select_page_register(int r, int address)
 		write_byte(0xf1);					/* POP AF */
 }
 
-
 int is_defined_symbol(char *name)
 {
 	int i;
@@ -4479,20 +4477,6 @@ int is_defined_symbol(char *name)
 			return 1;
 	return 0;
 }
-
-
-/*
- Deterministic version of rand() to keep generated binary files
- consistent across platforms and compilers. Code snippet is from
- http://stackoverflow.com/questions/4768180/rand-implementation
-*/
-static unsigned long int rand_seed = 1;
-int d_rand()
-{
-	rand_seed = (rand_seed * 1103515245 + 12345);
-	return (unsigned int)(rand_seed / 65536) % (32767 + 1);
-}
-
 
 int main(int argc, char *argv[])
 {

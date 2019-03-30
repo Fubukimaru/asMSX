@@ -424,3 +424,15 @@ void write_tape(
 		printf("Audio file %s saved [%2.2f sec]\n", fname_wav, (double)ws.samples_count / (ws.sample_rate * ws.num_channels * ws.bytes_per_sample));
 	}
 }
+
+/*
+ Deterministic version of rand() to keep generated binary files
+ consistent across platforms and compilers. Code snippet is from
+ http://stackoverflow.com/questions/4768180/rand-implementation
+*/
+static unsigned long int rand_seed = 1;
+int d_rand()
+{
+	rand_seed = (rand_seed * 1103515245 + 12345);
+	return (unsigned int)(rand_seed / 65536) % (32767 + 1);
+}
