@@ -431,7 +431,7 @@ void write_tape(
  http://stackoverflow.com/questions/4768180/rand-implementation
 */
 static unsigned long int rand_seed = 1;
-int d_rand()
+int d_rand(void)
 {
 	rand_seed = (rand_seed * 1103515245 + 12345);
 	return (unsigned int)(rand_seed / 65536) % (32767 + 1);
