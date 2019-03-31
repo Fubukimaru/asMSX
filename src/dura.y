@@ -3826,7 +3826,7 @@ void register_local(char *name)
 	id_list[total_global - 1].page = subpage;
 }
 
-void register_symbol(char *name, int n, int rom_type)
+void register_symbol(char *name, int n, int _rom_type)
 {
 	int i;
 	char *_name;
@@ -3858,7 +3858,7 @@ void register_symbol(char *name, int n, int rom_type)
 	free(_name);
 
 	id_list[total_global - 1].value = n;
-	id_list[total_global - 1].type = rom_type;
+	id_list[total_global - 1].type = _rom_type;
 }
 
 void register_variable(char *name, int n)
