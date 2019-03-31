@@ -12,8 +12,6 @@
 */
 
 %{
-#pragma warning (disable : 4005)
-
 #include "asmsx.h"
 
 #define MAX_INCLUDE_LEVEL 16

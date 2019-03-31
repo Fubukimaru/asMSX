@@ -8,8 +8,6 @@
 */
 
 %{
-#pragma warning (disable : 4005)
-
 #include "asmsx.h"
 
 static FILE *p2_output;
