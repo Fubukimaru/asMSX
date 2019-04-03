@@ -9,7 +9,7 @@ In vim, add following lines to your `.vimrc`:
 
     set tabstop=4
     set shiftwidth=4
-    set expandtab
+    set noexpandtab
 
 Visual Studio seems to come with those settings by default.
 
