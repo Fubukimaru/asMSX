@@ -5,14 +5,22 @@ If you want to contribute to asMSX, please consider following our shared guildel
 
 ## 1. Set your editor to use tabs and show them as 4 spaces
 
+In vim, add following lines to your `.vimrc`:
+
+    set tabstop=4
+    set shiftwidth=4
+    set expandtab
+
+Visual Studio seems to come with those settings by default.
+
 ## 2. Highlight tabs, spaces, cr and lf explicitly if your editor supports
 
+In vim, add those lines to your `.vimrc` to highlight spaces and tabs:
+
+    syntax on
+    set syntax=whitespace
+
 In Visual Studio, press `Ctrl+R` and `Ctrl+W`.
-
-For vim, use those commands:
-
-    :syntax on
-    :set syntax=whitespace
 
 ## 3. Use Allman brackets
 
