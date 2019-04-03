@@ -13,7 +13,7 @@ In vim, add following lines to your `.vimrc`:
 
 Visual Studio seems to come with those settings by default.
 
-## 2. Highlight tabs, spaces, cr and lf explicitly if your editor supports
+## 2. Highlight tabs, spaces, cr and lf explicitly if you can
 
 In vim, add those lines to your `.vimrc` to highlight spaces and tabs:
 
