@@ -62,3 +62,7 @@ use [cppcheck](http://cppcheck.sourceforge.net/) and Visual Studio Code Analysis
 11. If you can do it, please build your code on as many platforms as possible:
 Visual Studio 2017 on Windows 10, gcc on Linux, clang on BSD and Mac etc.
 Sometimes you'll find that header you think is everywhere, isn't everywhere.
+12. Consider reading John Carmack's article [In-depth: Functional programming in C++](http://www.gamasutra.com/view/news/169296/Indepth_Functional_programming_in_C.php).
+It works well for plain C programs too.
+13. Consider reading [How to C in 2016](https://matt.sh/howto-c). Good tips.
+14. [List of verifications tools](https://stackoverflow.com/questions/413477/is-there-a-good-valgrind-substitute-for-windows).
