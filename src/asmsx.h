@@ -32,4 +32,4 @@
 
 /* function declarations */
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
-int d_rand();
+int d_rand(void);

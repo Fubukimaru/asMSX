@@ -5,10 +5,22 @@ If you want to contribute to asMSX, please consider following our shared guildel
 
 ## 1. Set your editor to use tabs and show them as 4 spaces
 
-## 2. Highlight tabs, spaces, cr and lf explicitly if your editor supports
+In vim, add following lines to your `.vimrc`:
 
-In Visual Studio, press `Ctrl+E` and then `Ctrl+S`.
-For vim, add `set list` line to `.vimrc` file in your home directory.
+    set tabstop=4
+    set shiftwidth=4
+    set noexpandtab
+
+Visual Studio seems to come with those settings by default.
+
+## 2. Highlight tabs, spaces, cr and lf explicitly if you can
+
+In vim, add those lines to your `.vimrc` to highlight spaces and tabs:
+
+    syntax on
+    set syntax=whitespace
+
+In Visual Studio, press `Ctrl+R` and `Ctrl+W`.
 
 ## 3. Use Allman brackets
 
@@ -50,3 +62,7 @@ use [cppcheck](http://cppcheck.sourceforge.net/) and Visual Studio Code Analysis
 11. If you can do it, please build your code on as many platforms as possible:
 Visual Studio 2017 on Windows 10, gcc on Linux, clang on BSD and Mac etc.
 Sometimes you'll find that header you think is everywhere, isn't everywhere.
+12. Consider reading John Carmack's article [In-depth: Functional programming in C++](http://www.gamasutra.com/view/news/169296/Indepth_Functional_programming_in_C.php).
+It works well for plain C programs too.
+13. Consider reading [How to C in 2016](https://matt.sh/howto-c). Good tips.
+14. [List of verifications tools](https://stackoverflow.com/questions/413477/is-there-a-good-valgrind-substitute-for-windows).

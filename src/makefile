@@ -1,11 +1,12 @@
 all:	asmsx
 
+CC=gcc
 c_files = dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c asmsx.c
 
 asmsx:  $(c_files) asmsx.h
-	gcc $(c_files) -o$@ -lm -Os -s -Wall -Wextra
+	$(CC) $(c_files) -o$@ -lm -Os -s -Wall -Wextra
 asmsx-debug:	$(c_files) asmsx.h
-	gcc -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra
+	$(CC) -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra
 asmsx.exe: $(c_files) asmsx.h
 	i686-w64-mingw32-gcc $(c_files) -o$@ -lm -Os -s -Wall -Wextra
 dura.tab.c dura.tab.h:	dura.y
