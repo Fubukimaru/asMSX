@@ -108,7 +108,7 @@
 #define FREQ_LO 0x8000
 #define SILENCE 0x0000
 
-const size_t rom_buf_size = 0x1000000;	/* 16 megabytes */
+const size_t rom_buf_size = 0x1000000;	/* 16 megabytes buffer for rom image */
 
 extern FILE *yyin;		/* yyin is defined in Flex-generated lexer */
 extern int yylex(void);
@@ -4507,8 +4507,8 @@ int main(int argc, char *argv[])
 			printf("Syntax: asMSX [-z] [file.asm]\n");
 			exit(0);
 		}
-	}   
-  
+	}
+
 	clock();
 
 	rom_buf = malloc(rom_buf_size);
@@ -4523,18 +4523,13 @@ int main(int argc, char *argv[])
 	fname_msx[0] = 0;
 	register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 
-	fname_asm = malloc(PATH_MAX);
-	fname_src = malloc(PATH_MAX);
-	fname_p2 = malloc(PATH_MAX);
-	fname_bin = malloc(PATH_MAX);
-	fname_sym = malloc(PATH_MAX);
-	fname_txt = malloc(PATH_MAX);
-	fname_no_ext = malloc(PATH_MAX);
-	if (!fname_no_ext)
-	{
-		fprintf(stderr, "Error: can't allocate memory for fname_no_ext\n");
-		exit(1);
-	}
+	fname_asm = malloc(PATH_MAX);		assert(fname_asm != NULL);
+	fname_src = malloc(PATH_MAX);		assert(fname_src != NULL);
+	fname_p2 = malloc(PATH_MAX);		assert(fname_p2 != NULL);
+	fname_bin = malloc(PATH_MAX);		assert(fname_bin != NULL);
+	fname_sym = malloc(PATH_MAX);		assert(fname_sym != NULL);
+	fname_txt = malloc(PATH_MAX);		assert(fname_txt != NULL);
+	fname_no_ext = malloc(PATH_MAX);	assert(fname_no_ext != NULL);
 
 	strcpy(fname_no_ext, argv[fileArg]);
 	strcpy(fname_asm, fname_no_ext);
