@@ -30,3 +30,9 @@ TEST(Tape, build_tape_file_name)
 	build_tape_file_name(NULL, outstr);
 	EXPECT_STREQ(outstr, "      ");
 }
+
+int main(int argc, char** argv)
+{
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+}
