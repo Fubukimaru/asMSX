@@ -1,6 +1,7 @@
 # asMSX testing guide
 
-We use [gtest](https://github.com/google/googletest/blob/master/googletest/docs/primer.md) framework for our test coverage.
+We use [Google Test (gtest)](https://github.com/google/googletest/blob/master/googletest/docs/primer.md)
+framework for our test coverage.
 
 Currently only one basic test for build_tape_file_name() function is implemented.
 More should follow as the code is massaged into testable state.
