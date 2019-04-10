@@ -4,7 +4,7 @@ We use [Google Test (gtest)](https://github.com/google/googletest/blob/master/go
 framework for our test coverage.
 
 Currently only one basic test for build_tape_file_name() function is implemented.
-More should follow as the code is massaged into testable state.
+More should follow as the code is refactored into a testable state.
 
 ## Set up gtest in Windows and Visual Studio 2019
 
