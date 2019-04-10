@@ -6,9 +6,18 @@ framework for our test coverage.
 Currently only one basic test for build_tape_file_name() function is implemented.
 More should follow as the code is refactored into a testable state.
 
+
 ## Set up gtest in Windows and Visual Studio 2019
 
-You'll need to make sure that nuget package 
+Just like the normal, we'll need flex and bison from
+[winflexbison](https://sourceforge.net/projects/winflexbison/) in path.
+
+Open solution (build\vs2019\asmsx.sln). Right click on asmsx-gtest project.
+Choose `Manage NuGet Packages...`. If you don't already have it, install
+`Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn` package.
+
+Now you should be able to rebuild solution and see test run results in `Test Explorer` panel.
+
 
 ## Set up gtest in Ubuntu Linux
 
