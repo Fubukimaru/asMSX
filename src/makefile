@@ -25,5 +25,6 @@ clean:
 test:	test.cpp asmsx.c asmsx.h
 	gcc -c asmsx.c $(OPT)
 	g++ -o test asmsx.o test.cpp -L/usr/local/lib -lgtest -lpthread $(OPT)
+	./test
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
