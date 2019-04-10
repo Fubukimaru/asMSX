@@ -31,8 +31,26 @@ Build and install gtest:
     sudo make
     sudo make install
 
-Clone asMSX repository:
+Clone asMSX repository, build and run test cases:
 
     git clone https://github.com/Fubukimaru/asMSX
+    cd asMSX/src
+    make test
 
-And here is the difficulty lol
+You should see something like this:
+
+```
+gcc -c asmsx.c -lm -O2 -Os -s -Wall -Wextra
+g++ -o test asmsx.o test.cpp -L/usr/local/lib -lgtest -lpthread -lm -O2 -Os -s -Wall -Wextra
+./test
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from Tape
+[ RUN      ] Tape.build_tape_file_name
+[       OK ] Tape.build_tape_file_name (0 ms)
+[----------] 1 test from Tape (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (4 ms total)
+[  PASSED  ] 1 test.
+```
