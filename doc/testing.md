@@ -16,17 +16,13 @@ Update/upgrade:
     sudo apt update
     sudo apt upgrade
 
-If you didn't already, install gcc, flex and bison
+Install prerequisite tools and libraries:
 
-    sudo apt-get install build-essential flex bison
+    sudo apt-get install build-essential cmake flex bison libpthread-stubs0-dev
 
-Install gtest from package repository:
+Install gtest source package:
 
     sudo apt-get install libgtest-dev
-
-Install `cmake`, we'll need it to build gtest libraries.
-
-    sudo apt-get install cmake
 
 Build and install gtest:
 
