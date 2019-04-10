@@ -21,7 +21,10 @@ lex.parser3.c:	parser3.l
 	flex -i -Pparser3 $<
 clean:
 	rm -f *.o *.tab.* lex.*.c asmsx asmsx-debug asmsx.exe ~*
-test:	clean asmsx
-	sh ../code/test.sh
+test:	asmsx.c test.cpp
+	gcc -c asmsx.c
+	g++ -c test.cpp
+	g++ -o test asmsx.o test.o
+	
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
