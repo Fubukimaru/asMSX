@@ -24,7 +24,7 @@ clean:
 	rm -f *.o *.tab.* lex.*.c asmsx asmsx-debug test *.exe ~*
 test:	test.cpp asmsx.c asmsx.h
 	gcc -c asmsx.c $(OPT)
-	g++ -o test asmsx.o test.cpp -L/usr/local/lib -lgtest -gtest_main -lpthread $(OPT)
+	g++ -o test asmsx.o test.cpp -L/usr/local/lib -lgtest -lgtest_main -lpthread $(OPT)
 	./test
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
