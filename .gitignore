@@ -3,7 +3,6 @@
 # GCC compilation derivate files
 bin/
 asmsx.exe
-asmsx
 *.o
 *.tab.h
 *.tab.c
@@ -32,3 +31,4 @@ Release/
 *.vcxproj.user
 build/vs2019/*.txt
 packages/
+.vs/
