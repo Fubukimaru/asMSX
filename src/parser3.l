@@ -19,7 +19,7 @@ static char *p3_text;
 %s line
 %s zilog
 
-%%          
+%%
 
 <INITIAL>"#"line[ \t]*[0-9]+\n	{
 									strcat(p3_text, yytext);

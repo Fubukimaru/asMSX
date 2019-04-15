@@ -3,7 +3,6 @@
 # GCC compilation derivate files
 bin/
 asmsx.exe
-asmsx
 *.o
 *.tab.h
 *.tab.c
@@ -24,10 +23,12 @@ code/*.txt
 # add random junk that made it into repo here
 .Rhistory
 
-# Visual Studio 2015
+# Visual Studio
 Debug/
 Release/
 *.VC.db
 *.VC.opendb
 *.vcxproj.user
-build/vs2017/*.txt
+build/vs2019/*.txt
+packages/
+.vs/

@@ -6,33 +6,28 @@
 
 #include "asmsx.h"
 
-#define FNAME_MSX_LEN 6
-
 /* Build a valid MSX tape file name from any input string:
-	 - remove path from file name, if any;
-	 - if file name is empty, raise an error, since something is wrong with asMSX itself;
-	 - if file name is longer then 6 characters, trim it to first 6;
-	 - if file name is shorter then 6 characters, pad it with spaces to 6.
+	- remove path from file name, if any;
+	- if file name is longer then 6 characters, trim it to first 6;
+	- if file name is shorter then 6 characters, pad it with spaces to 6;
+	- if file name is empty or NULL, return six spaces.
 */
 void build_tape_file_name(const char *instr, char *outstr)
 {
-	char *tmp;
-	int i;
+	char* tmp = "";
 
-	/* point tmp to the beginning of file name itself, skipping the path to it */
-	tmp = (char *)instr;
-	for (i = 0; i < (int)strlen(instr); i++)
-		if ((instr[i] == '/') || (instr[i] == '\\') || (instr[i] == ':'))
-			tmp = (char *)instr + i + 1;
-
-	if (strlen(tmp) == 0)
+	/* set tape file name to 6 spaces if provided name is NULL */
+	if (instr != NULL)
 	{
-		fprintf(stderr, "ERROR: file name not found in string \"%s\" passed to %s\n", instr, __func__);
-		exit(1);
+		/* point tmp to the beginning of file name itself, skipping the path to it */
+		tmp = (char*)instr;
+		for (int i = 0; i < (int)strlen(instr); i++)
+			if ((instr[i] == '/') || (instr[i] == '\\') || (instr[i] == ':'))
+				tmp = (char*)instr + i + 1;
 	}
 
-	for (i = 0; i < FNAME_MSX_LEN; i++)
-		if (i < (int)strlen(tmp))
+	for (int i = 0; i < FNAME_MSX_LEN; i++)
+		if ((tmp != NULL) && (i < (int)strlen(tmp)))
 			outstr[i] = tmp[i];
 		else
 			outstr[i] = ' ';

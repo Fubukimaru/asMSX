@@ -4,11 +4,13 @@ asMSX is a Z80 cross-assembler for MSX, originally developed by Eduardo "pitpan"
 This project is based on [GPLv3 code release by Lucas "cjv99"](https://code.google.com/archive/p/asmsx-license-gpl/).
 MRC wiki has an entry for [asMSX](https://www.msx.org/wiki/asMSX).
 
-Please read [asMSX manual](man/asmsx-en.md) to learn more.
+Please read [asMSX manual](doc/asmsx-en.md) to learn more.
 
 **DOWNLOAD:** You can find latest release [here](https://github.com/Fubukimaru/asMSX/releases/).
 
-If you'd like to contribute to this project, please take a look at our [coding style guide](man/coding-style.md).
+If you'd like to contribute to this project, please take a look at our [coding style guide](doc/coding-style.md).
+
+Please help us improve test coverage for the code. Read our [testing guide](doc/testing.md) and contribure!
 
 # Original Spanish README
 

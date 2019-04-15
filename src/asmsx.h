@@ -30,6 +30,9 @@
 #define ASCII8 2
 #define ASCII16 3
 
+/* MSX tape file name length */
+#define FNAME_MSX_LEN 6
+
 /* function declarations */
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
 int d_rand(void);
