@@ -91,6 +91,11 @@
 	v.0.19.0: [15/03/2019]
 		Completed source code translation to English.
 		Replaced WAV writing code with new working version.
+	v.0.19.1: [16/04/2019]
+        Added gtest for test coverage.
+        Fixed error messages: now file, line number and error always are in the 
+            same lines (Great for vim make!)
+        New support for macOS.
 */
 
 /* C headers and definitions */
@@ -99,8 +104,8 @@
 
 #include "asmsx.h"
 
-#define VERSION "0.19.0"
-#define DATE "15/03/2019"
+#define VERSION "0.19.1"
+#define DATE "16/04/2019"
 
 #define MAX_ID 32000
 

@@ -1,3 +1,10 @@
+# April 16, 2019 - v.0.19.1
+
+- Added gtest for test coverage.
+- Fixed error messages: now file, line number and error always are in the 
+    same lines (Great for vim make!)
+- New support for macOS.
+
 # March 13, 2019
 
 Replaced WAV writing code with new working version.
