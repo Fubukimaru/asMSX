@@ -160,6 +160,8 @@ int conditional[16];
 int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
 
+char error_buffer[52];
+
 struct
 {
 	char *name;
@@ -3521,154 +3523,153 @@ void msx_bios()
 
 void error_message(int n)
 {
-	fprintf(stderr, "%s, line %d: ", strtok(fname_src, "\042"), lines);
-
 	switch (n)
 	{
 		case 0:
-			fprintf(stderr, "syntax error\n");
+			sprintf(error_buffer, "syntax error\n");
 			break;
 		case 1:
-			fprintf(stderr, "memory overflow\n");
+			sprintf(error_buffer, "memory overflow\n");
 			break;
 		case 2:
-			fprintf(stderr, "wrong register combination\n");
+			sprintf(error_buffer, "wrong register combination\n");
 			break;
 		case 3:
-			fprintf(stderr, "wrong interruption mode\n");
+			sprintf(error_buffer, "wrong interruption mode\n");
 			break;
 		case 4:
-			fprintf(stderr, "destiny register should be A\n");
+			sprintf(error_buffer, "destiny register should be A\n");
 			break;
 		case 5:
-			fprintf(stderr, "source register should be A\n");
+			sprintf(error_buffer, "source register should be A\n");
 			break;
 		case 6:
-			fprintf(stderr, "value should be 0\n");
+			sprintf(error_buffer, "value should be 0\n");
 			break;
 		case 7:
-			fprintf(stderr, "missing condition\n");
+			sprintf(error_buffer, "missing condition\n");
 			break;
 		case 8:
-			fprintf(stderr, "unreachable address\n");
+			sprintf(error_buffer, "unreachable address\n");
 			break;
 		case 9:
-			fprintf(stderr, "wrong condition\n");
+			sprintf(error_buffer, "wrong condition\n");
 			break;
 		case 10:
-			fprintf(stderr, "wrong restart address\n");
+			sprintf(error_buffer, "wrong restart address\n");
 			break;
 		case 11:
-			fprintf(stderr, "symbol table overflow\n");
+			sprintf(error_buffer, "symbol table overflow\n");
 			break;
 		case 12:
-			fprintf(stderr, "undefined identifier\n");
+			sprintf(error_buffer, "undefined identifier\n");
 			break;
 		case 13:
-			fprintf(stderr, "undefined local label\n");
+			sprintf(error_buffer, "undefined local label\n");
 			break;
 		case 14:
-			fprintf(stderr, "symbol redefinition\n");
+			sprintf(error_buffer, "symbol redefinition\n");
 			break;
 		case 15:
-			fprintf(stderr, "size redefinition\n");
+			sprintf(error_buffer, "size redefinition\n");
 			break;
 		case 16:
-			fprintf(stderr, "reserved word used as identifier\n");
+			sprintf(error_buffer, "reserved word used as identifier\n");
 			break;
 		case 17:
-			fprintf(stderr, "code size overflow\n");
+			sprintf(error_buffer, "code size overflow\n");
 			break;
 		case 18:
-			fprintf(stderr, "binary file not found\n");
+			sprintf(error_buffer, "binary file not found\n");
 			break;
 		case 19:
-			fprintf(stderr, "ROM directive should preceed any code\n");
+			sprintf(error_buffer, "ROM directive should preceed any code\n");
 			break;
 		case 20:
-			fprintf(stderr, "type previously defined\n");
+			sprintf(error_buffer, "type previously defined\n");
 			break;
 		case 21:
-			fprintf(stderr, "BASIC directive should preceed any code\n");
+			sprintf(error_buffer, "BASIC directive should preceed any code\n");
 			break;
 		case 22:
-			fprintf(stderr, "page out of range\n");
+			sprintf(error_buffer, "page out of range\n");
 			break;
 		case 23:
-			fprintf(stderr, "MSXDOS directive should preceed any code\n");
+			sprintf(error_buffer, "MSXDOS directive should preceed any code\n");
 			break;
 		case 24:
-			fprintf(stderr, "no code in the whole file\n");
+			sprintf(error_buffer, "no code in the whole file\n");
 			break;
 		case 25:
-			fprintf(stderr, "only available for MSXDOS\n");
+			sprintf(error_buffer, "only available for MSXDOS\n");
 			break;
 		case 26:
-			fprintf(stderr, "machine not defined\n");
+			sprintf(error_buffer, "machine not defined\n");
 			break;
 		case 27:
-			fprintf(stderr, "MegaROM directive should preceed any code\n");
+			sprintf(error_buffer, "MegaROM directive should preceed any code\n");
 			break;
 		case 28:
-			fprintf(stderr, "cannot write ROM code/data to page 3\n");
+			sprintf(error_buffer, "cannot write ROM code/data to page 3\n");
 			break;
 		case 29:
-			fprintf(stderr, "included binary shorter than expected\n");
+			sprintf(error_buffer, "included binary shorter than expected\n");
 			break;
 		case 30:
-			fprintf(stderr, "wrong number of bytes to skip/include\n");
+			sprintf(error_buffer, "wrong number of bytes to skip/include\n");
 			break;
 		case 31:
-			fprintf(stderr, "megaROM subpage overflow\n");
+			sprintf(error_buffer, "megaROM subpage overflow\n");
 			break;
 		case 32:
-			fprintf(stderr, "subpage 0 can only be defined by megaROM directive\n");
+			sprintf(error_buffer, "subpage 0 can only be defined by megaROM directive\n");
 			break;
 		case 33:
-			fprintf(stderr, "unsupported mapper type\n");
+			sprintf(error_buffer, "unsupported mapper type\n");
 			break;
 		case 34:
-			fprintf(stderr, "megaROM code should be between 4000h and BFFFh\n");
+			sprintf(error_buffer, "megaROM code should be between 4000h and BFFFh\n");
 			break;
 		case 35:
-			fprintf(stderr, "code/data without subpage\n");
+			sprintf(error_buffer, "code/data without subpage\n");
 			break;
 		case 36:
-			fprintf(stderr, "megaROM mapper subpage out of range\n");
+			sprintf(error_buffer, "megaROM mapper subpage out of range\n");
 			break;
 		case 37:
-			fprintf(stderr, "megaROM subpage already defined\n");
+			sprintf(error_buffer, "megaROM subpage already defined\n");
 			break;
 		case 38:
-			fprintf(stderr, "Konami megaROM forces page 0 at 4000h\n");
+			sprintf(error_buffer, "Konami megaROM forces page 0 at 4000h\n");
 			break;
 		case 39:
-			fprintf(stderr, "megaROM subpage not defined\n");
+			sprintf(error_buffer, "megaROM subpage not defined\n");
 			break;
 		case 40:
-			fprintf(stderr, "megaROM-only macro used\n");
+			sprintf(error_buffer, "megaROM-only macro used\n");
 			break;
 		case 41:
-			fprintf(stderr, "only for ROMs and megaROMs\n");
+			sprintf(error_buffer, "only for ROMs and megaROMs\n");
 			break;
 		case 42:
-			fprintf(stderr, "ELSE without IF\n");
+			sprintf(error_buffer, "ELSE without IF\n");
 			break;
 		case 43:
-			fprintf(stderr, "ENDIF without IF\n");
+			sprintf(error_buffer, "ENDIF without IF\n");
 			break;
 		case 44:
-			fprintf(stderr, "Cannot nest more IF's\n");
+			sprintf(error_buffer, "Cannot nest more IF's\n");
 			break;
 		case 45:
-			fprintf(stderr, "IF not closed\n");
+			sprintf(error_buffer, "IF not closed\n");
 			break;
 		case 46:
-			fprintf(stderr, "Sinclair directive should preceed any code\n");
+			sprintf(error_buffer, "Sinclair directive should preceed any code\n");
 			break;
 		default:
-			fprintf(stderr, "Unexpected error code %d\n", n);
+			sprintf(error_buffer, "Unexpected error code %d\n", n);
 	}
+	fprintf(stderr, "%s, line %d: %s", strtok(fname_src, "\042"), lines, error_buffer);
 	remove("~tmppre.?");
 	exit(n + 1);
 }
@@ -3678,33 +3679,34 @@ void warning_message(int n)
 	if (pass != 2)
 		return;
 
-	fprintf(stderr, "%s, line %d: Warning: ", strtok(fname_src, "\042"), lines);
 	switch (n)
 	{
 		case 0:
-			fprintf(stderr, "undefined error\n");
+			sprintf(error_buffer, "undefined error\n");
 			break;
 		case 1:
-			fprintf(stderr, "16-bit overflow\n");
+			sprintf(error_buffer, "16-bit overflow\n");
 			break;
 		case 2:
-			fprintf(stderr, "8-bit overflow\n");
+			sprintf(error_buffer, "8-bit overflow\n");
 			break;
 		case 3:
-			fprintf(stderr, "3-bit overflow\n");
+			sprintf(error_buffer, "3-bit overflow\n");
 			break;
 		case 4:
-			fprintf(stderr, "output cannot be converted to CAS\n");
+			sprintf(error_buffer, "output cannot be converted to CAS\n");
 			break;
 		case 5:
-			fprintf(stderr, "non official Zilog syntax\n");
+			sprintf(error_buffer, "non official Zilog syntax\n");
 			break;
 		case 6:
-			fprintf(stderr, "undocumented Zilog instruction\n");
+			sprintf(error_buffer, "undocumented Zilog instruction\n");
 			break;
 		default:
-			fprintf(stderr, "unexpected warning %d\n", n);
+			sprintf(error_buffer, "unexpected warning %d\n", n);
 	}
+
+	fprintf(stderr, "%s, line %d: Warning: %s", strtok(fname_src, "\042"), lines, error_buffer);
 	warnings++;
 }
 
