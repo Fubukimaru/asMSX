@@ -1,11 +1,14 @@
 all:	asmsx
 
 CC=gcc
+CCOSX=o64-clang
 c_files=dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c asmsx.c
 OPT=-lm -O2 -Os -s -Wall -Wextra
 
 asmsx:  $(c_files) asmsx.h
 	$(CC) $(c_files) -o$@ $(OPT)
+asmsx.osx:  $(c_files) asmsx.h
+	$(CCOSX) $(c_files) -o$@ $(OPT)
 asmsx-debug:	$(c_files) asmsx.h
 	$(CC) -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra
 asmsx.exe: $(c_files) asmsx.h
