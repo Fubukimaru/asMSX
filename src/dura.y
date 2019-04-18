@@ -3528,6 +3528,7 @@ void msx_bios()
 
 void error_message(int n)
 {
+    fflush(stdout); // Flush output so error is in the end.
 	switch (n)
 	{
 		case 0:
