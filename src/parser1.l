@@ -88,7 +88,7 @@ extern int prompt_error1(int);
 							strcpy(p1_include_stack[p1_include_index].name, p1_name);
 							p1_include_stack[p1_include_index].line = yylineno;
 							p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
-
+                            
 							yyin = fopen(p1_tmpstr, "r");
 							if (!yyin)
 							{
@@ -96,7 +96,7 @@ extern int prompt_error1(int);
 								exit(3);
 							}
 
-							printf("Including file %s\n", p1_tmpstr);
+                            if (verbose) printf("Including file %s\n", p1_tmpstr);
 							yylineno = 1;                                    
 							strcpy(p1_name, p1_tmpstr);                  
 							fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
@@ -245,7 +245,6 @@ int preprocessor1(char *input_name)
 	/* Start lexical scanner */
 	yyin = p1_input_file;
 	yylex();
-
 	/* Close p1_output_file file */
 	fclose(p1_output_file);
 

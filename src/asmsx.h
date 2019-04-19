@@ -33,6 +33,12 @@
 /* MSX tape file name length */
 #define FNAME_MSX_LEN 6
 
+/* Globals */ //TODO: All globals must be removed in the future
+char verbose;
+char zilog;
+
+
+
 /* function declarations */
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
 int d_rand(void);

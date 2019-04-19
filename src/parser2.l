@@ -116,7 +116,6 @@ int preprocessor2()
 	p2_text = malloc(0x1000);
 	p2_buffer = malloc(0x4000);
 	p2_text[0] = 0;
-
 	printf("Expanding system macros\n");
 
 	do
