@@ -16,6 +16,11 @@
 #endif
 #endif
 
+
+// Our modules
+#include "types.h"
+#include "labels.h"
+
 /* rom type */
 #define Z80 0
 #define ROM 1
@@ -32,6 +37,7 @@
 
 /* MSX tape file name length */
 #define FNAME_MSX_LEN 6
+
 
 /* Globals */ //TODO: All globals must be removed in the future
 char verbose;

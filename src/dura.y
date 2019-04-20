@@ -103,6 +103,7 @@
 %{
 
 #include "asmsx.h"
+//#include "types.h"
 
 #define VERSION "0.19.1"
 #define DATE "16/04/2019"
@@ -167,14 +168,11 @@ int maxpage[4] = {32, 64, 256, 256};
 
 char error_buffer[52];
 
-struct
-{
-	char *name;
-	int value;
-	int type;
-	int page;
-} id_list[MAX_ID];
+labels id_list[MAX_ID];
+
 %}
+
+// Element for parsing
 
 %union
 {
@@ -3789,22 +3787,22 @@ void relative_jump(int direction)
 void register_label(char *name)
 {
 	int i;
+    printf("Registering label: %s - on pass %u\n", name, pass);
+    fflush(stdout);
 
 	if (pass == 2) 
     {
-		for (i = 0; i < total_global; i++)
-			if (!strcmp(name, id_list[i].name))
-			{
-				last_global = i;
-				return;
-			}
+        i = search_label(id_list, name, 0, total_global);
+        if (i >= 0) { // If label found
+            last_global = i;
+            return;
+        }
     }
 
-	for (i = 0; i < total_global; i++)
-    {
-		if (!strcmp(name, id_list[i].name))
-			error_message(14);
-    }
+    // Find if the label is already registered
+    i = search_label(id_list, name, 0, total_global);
+    if (i != -1) error_message(14); // If label found - Error, redefined!
+ 
 
 	if (++total_global == MAX_ID)
 		error_message(11);
@@ -3824,12 +3822,15 @@ void register_local(char *name)
 	if (pass == 2)
 		return;
 
-	for (i = last_global; i < total_global; i++)
-    {
-		if (!strcmp(name, id_list[i].name))
-			error_message(14);
-    }
+    printf("Registering local label: %s - on pass %u\n", name, pass);
+    fflush(stdout);
 
+    // Search if the local label is defined in our scope 
+    //  Scope starts on last_global
+    i = search_label(id_list, name, last_global, total_global);
+	if (i != -1) error_message(14);
+
+    // If maximum number of label names is exceeded, crash!
 	if (++total_global == MAX_ID)
 		error_message(11);
 
@@ -3848,15 +3849,16 @@ void register_symbol(char *name, int n, int _rom_type)
 	if (pass == 2)
 		return;
 
-	for (i = 0; i < total_global; i++)
-    {
-		if (!strcmp(name, id_list[i].name))
-		{
-			error_message(14);
-			return;
-		}
-    }
+    printf("Registering symbol: %s - on pass %u\n", name, pass);
+    fflush(stdout);
 
+    // Search if the local label is defined in our scope 
+    //  Scope starts on last_global
+    i = search_label(id_list, name, 0, total_global);
+	if (i != -1) error_message(14);
+
+
+    // If maximum number of label names is exceeded, crash!
 	if (++total_global == MAX_ID)
 		error_message(11);
 
@@ -3881,13 +3883,23 @@ void register_variable(char *name, int n)
 {
 	int i;
 
-	for (i = 0; i < total_global; i++)
+    // TODO: Clean, this is old code
+	//for (i = 0; i < total_global; i++)
+    //{
+	//	if ((!strcmp(name, id_list[i].name)) && (id_list[i].type == 3))
+	//	{
+	//		id_list[i].value = n;
+	//		return;
+	//	}
+    //
+
+    // Search whether the variable is defined
+    //  If it is defined, assign the new value found  
+    i = search_label_with_type(id_list, name, 0, total_global, 3);
+    if (i != -1)
     {
-		if ((!strcmp(name, id_list[i].name)) && (id_list[i].type == 3))
-		{
-			id_list[i].value = n;
-			return;
-		}
+        id_list[i].value = n;
+            return;
     }
 
 	if (++total_global == MAX_ID)
@@ -3901,17 +3913,23 @@ void register_variable(char *name, int n)
 
 int read_label(char *name)
 {
+    printf("Reading label: %s - on pass %u\n", name, pass);
+    fflush(stdout);
+
+    // Search the label
 	int i;
+    
+    // Find the label and return its value if found.
+    i = search_label(id_list, name, 0, total_global);
+    if (i != -1) return id_list[i].value;
+    
 
-	for (i = 0; i < total_global; i++)
-    {
-		if (!strcmp(name, id_list[i].name))
-			return id_list[i].value;
-    }
-
+    // If label not found and we're in the first pass, we leave it for the
+    // second pass
 	if ((pass == 1) && (i == total_global))
 		return ePC;
 
+    // Else, ERROR
 	error_message(12);
 	exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
@@ -3920,14 +3938,21 @@ int read_local(char *name)
 {
 	int i;
 
-	if (pass == 1)
+	if (pass == 1) 
 		return ePC;
 
-	for (i = last_global; i < total_global; i++)
-    {
-		if (!strcmp(name, id_list[i].name))
-			return id_list[i].value;
-    }
+    printf("Reading local label: %s - on pass %u\n", name, pass);
+    fflush(stdout);
+
+	// for (i = last_global; i < total_global; i++)
+    // {
+	// 	if (!strcmp(name, id_list[i].name))
+	// 		return id_list[i].value;
+    // }
+
+    // Find the local label and return its value if found.
+    i = search_label(id_list, name, last_global, total_global);
+    if (i != -1) return id_list[i].value;
 
 	error_message(13);
 	exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
@@ -4520,10 +4545,13 @@ int is_defined_symbol(char *name)
 {
 	int i;
 
-	for (i = 0; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			return 1;
-	return 0;
+    i = search_label_with_type(id_list, name, 0, total_global, 3);
+    return(i != -1) // if not -1, found -> TRUE
+    
+	//for (i = 0; i < total_global; i++)
+	//	if (!strcmp(name, id_list[i].name))
+	//		return 1;
+	//return 0;
 }
 
 int main(int argc, char *argv[])
