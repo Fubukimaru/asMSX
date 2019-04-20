@@ -12,3 +12,6 @@ $AS zone.asm
 rm -f ~* *.txt *.sym
 sha1sum -c test.sha1 > test.output 2> test.error
 
+
+cat test.error
+cat test.output
