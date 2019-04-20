@@ -3926,7 +3926,7 @@ int read_label(char *name)
 
     // If label not found and we're in the first pass, we leave it for the
     // second pass
-	if ((pass == 1) && (i == total_global))
+	if ((pass == 1) && (i == -1))
 		return ePC;
 
     // Else, ERROR
@@ -4545,13 +4545,13 @@ int is_defined_symbol(char *name)
 {
 	int i;
 
-    i = search_label_with_type(id_list, name, 0, total_global, 3);
-    return(i != -1); // if not -1, found -> TRUE
+    //i = search_label_with_type(id_list, name, 0, total_global, 3);
+    //return(i != -1); // if not -1, found -> TRUE
     
-	//for (i = 0; i < total_global; i++)
-	//	if (!strcmp(name, id_list[i].name))
-	//		return 1;
-	//return 0;
+	for (i = 0; i < total_global; i++)
+		if (!strcmp(name, id_list[i].name))
+			return 1;
+	return 0;
 }
 
 int main(int argc, char *argv[])
