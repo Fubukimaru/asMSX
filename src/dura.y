@@ -4545,13 +4545,13 @@ int is_defined_symbol(char *name)
 {
 	int i;
 
-    //i = search_label_with_type(id_list, name, 0, total_global, 3);
-    //return(i != -1); // if not -1, found -> TRUE
+    i = search_label_with_type(id_list, name, 0, total_global, 3);
+    return(i != -1); // if not -1, found -> TRUE
     
-	for (i = 0; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			return 1;
-	return 0;
+	//for (i = 0; i < total_global; i++)
+	//	if (!strcmp(name, id_list[i].name))
+	//		return 1;
+	//return 0;
 }
 
 int main(int argc, char *argv[])
