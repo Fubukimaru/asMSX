@@ -13,7 +13,8 @@ asmsx:  $(c_files) $(HEADERS)
 	$(CC) $(c_files) -o$@ $(OPT)
 asmsx.osx:  $(c_files) $(HEADERS)
 	$(CCOSX) $(c_files) -o$@ $(OPT)
-asmsx-debug:	$(c_files) $(HEADERS)
+asmsx-debug:	$(c_files) $(HEADERS) dura.y
+	bison --graph -t -d dura.y
 	$(CC) -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra
 asmsx.exe: $(c_files) $(HEADERS)
 	i686-w64-mingw32-gcc $(c_files) -o$@ $(OPT)
@@ -40,3 +41,4 @@ test:	test.cpp asmsx.c labels.c $(HEADERS)
 	./test
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
+
