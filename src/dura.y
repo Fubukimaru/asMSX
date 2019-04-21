@@ -3787,8 +3787,11 @@ void relative_jump(int direction)
 void register_label(char *name)
 {
 	int i;
-    printf("Registering label: %s - on pass %u\n", name, pass);
-    fflush(stdout);
+    if (verbose >= 2) 
+    {
+        printf("Registering label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
 	if (pass == 2) 
     {
@@ -3821,9 +3824,11 @@ void register_local(char *name)
 
 	if (pass == 2)
 		return;
-
-    printf("Registering local label: %s - on pass %u\n", name, pass);
-    fflush(stdout);
+    
+    if (verbose >= 2) {
+        printf("Registering local label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
     // Search if the local label is defined in our scope 
     //  Scope starts on last_global
@@ -3849,8 +3854,10 @@ void register_symbol(char *name, int n, int _rom_type)
 	if (pass == 2)
 		return;
 
-    printf("Registering symbol: %s - on pass %u\n", name, pass);
-    fflush(stdout);
+    if (verbose >= 2) {
+        printf("Registering symbol: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
     // Search if the local label is defined in our scope 
     //  Scope starts on last_global
@@ -3913,8 +3920,11 @@ void register_variable(char *name, int n)
 
 int read_label(char *name)
 {
-    printf("Reading label: %s - on pass %u\n", name, pass);
-    fflush(stdout);
+    if (verbose >= 2) 
+    {
+        printf("Reading label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
     // Search the label
 	int i;
@@ -3940,10 +3950,11 @@ int read_local(char *name)
 
 	if (pass == 1) 
 		return ePC;
-
-    printf("Reading local label: %s - on pass %u\n", name, pass);
-    fflush(stdout);
-
+    if (verbose >= 2)
+    {
+        printf("Reading local label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 	// for (i = last_global; i < total_global; i++)
     // {
 	// 	if (!strcmp(name, id_list[i].name))
@@ -4583,6 +4594,11 @@ int main(int argc, char *argv[])
 			fileArg = 2;
 		}
         else if (strcmp(argv[1], "-v") == 0)
+		{
+			verbose = 1;
+			fileArg = 2;
+		}
+        else if (strcmp(argv[1], "-vv") == 0)
 		{
 			verbose = 1;
 			fileArg = 2;
