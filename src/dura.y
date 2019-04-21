@@ -103,6 +103,7 @@
 %{
 
 #include "asmsx.h"
+//#include "types.h"
 
 #define VERSION "0.19.1"
 #define DATE "16/04/2019"
@@ -160,21 +161,18 @@ int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
 int run_address = 0, warnings = 0, lines, parity;
-int zilog = 0, pass = 1, bios = 0, rom_type = 0;
+int pass = 1, bios = 0, rom_type = 0;
 int conditional[16];
 int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
 
 char error_buffer[52];
 
-struct
-{
-	char *name;
-	int value;
-	int type;
-	int page;
-} id_list[MAX_ID];
+labels id_list[MAX_ID];
+
 %}
+
+// Element for parsing
 
 %union
 {
@@ -3789,18 +3787,25 @@ void relative_jump(int direction)
 void register_label(char *name)
 {
 	int i;
+    if (verbose >= 2) 
+    {
+        printf("Registering label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
-	if (pass == 2)
-		for (i = 0; i < total_global; i++)
-			if (!strcmp(name, id_list[i].name))
-			{
-				last_global = i;
-				return;
-			}
+	if (pass == 2) 
+    {
+        i = search_label(id_list, name, 0, total_global);
+        if (i >= 0) { // If label found
+            last_global = i;
+            return;
+        }
+    }
 
-	for (i = 0; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			error_message(14);
+    // Find if the label is already registered
+    i = search_label(id_list, name, 0, total_global);
+    if (i != -1) error_message(14); // If label found - Error, redefined!
+ 
 
 	if (++total_global == MAX_ID)
 		error_message(11);
@@ -3819,11 +3824,18 @@ void register_local(char *name)
 
 	if (pass == 2)
 		return;
+    
+    if (verbose >= 2) {
+        printf("Registering local label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
-	for (i = last_global; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			error_message(14);
+    // Search if the local label is defined in our scope 
+    //  Scope starts on last_global
+    i = search_label(id_list, name, last_global, total_global);
+	if (i != -1) error_message(14);
 
+    // If maximum number of label names is exceeded, crash!
 	if (++total_global == MAX_ID)
 		error_message(11);
 
@@ -3842,13 +3854,17 @@ void register_symbol(char *name, int n, int _rom_type)
 	if (pass == 2)
 		return;
 
-	for (i = 0; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-		{
-			error_message(14);
-			return;
-		}
+    if (verbose >= 2) {
+        printf("Registering symbol: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
 
+    // Search if the symbol is defined. Error if found
+    i = search_label(id_list, name, 0, total_global);
+	if (i != -1) error_message(14);
+
+
+    // If maximum number of label names is exceeded, crash!
 	if (++total_global == MAX_ID)
 		error_message(11);
 
@@ -3873,12 +3889,24 @@ void register_variable(char *name, int n)
 {
 	int i;
 
-	for (i = 0; i < total_global; i++)
-		if ((!strcmp(name, id_list[i].name)) && (id_list[i].type == 3))
-		{
-			id_list[i].value = n;
-			return;
-		}
+    // TODO: Clean, this is old code
+	//for (i = 0; i < total_global; i++)
+    //{
+	//	if ((!strcmp(name, id_list[i].name)) && (id_list[i].type == 3))
+	//	{
+	//		id_list[i].value = n;
+	//		return;
+	//	}
+    //
+
+    // Search whether the variable is defined
+    //  If it is defined, assign the new value found  
+    i = search_label_with_type(id_list, name, 0, total_global, 3);
+    if (i != -1)
+    {
+        id_list[i].value = n;
+            return;
+    }
 
 	if (++total_global == MAX_ID)
 		error_message(11);
@@ -3891,15 +3919,26 @@ void register_variable(char *name, int n)
 
 int read_label(char *name)
 {
+    if (verbose >= 2) 
+    {
+        printf("Reading label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
+
+    // Search the label
 	int i;
+    
+    // Find the label and return its value if found.
+    i = search_label(id_list, name, 0, total_global);
+    if (i != -1) return id_list[i].value;
+    
 
-	for (i = 0; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			return id_list[i].value;
-
-	if ((pass == 1) && (i == total_global))
+    // If label not found and we're in the first pass, we leave it for the
+    // second pass
+	if ((pass == 1) && (i == -1))
 		return ePC;
 
+    // Else, ERROR
 	error_message(12);
 	exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
 }
@@ -3908,12 +3947,22 @@ int read_local(char *name)
 {
 	int i;
 
-	if (pass == 1)
+	if (pass == 1) 
 		return ePC;
+    if (verbose >= 2)
+    {
+        printf("Reading local label: %s - on pass %u\n", name, pass);
+        fflush(stdout);
+    }
+	// for (i = last_global; i < total_global; i++)
+    // {
+	// 	if (!strcmp(name, id_list[i].name))
+	// 		return id_list[i].value;
+    // }
 
-	for (i = last_global; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			return id_list[i].value;
+    // Find the local label and return its value if found.
+    i = search_label(id_list, name, last_global, total_global);
+    if (i != -1) return id_list[i].value;
 
 	error_message(13);
 	exit(0);	/* error_message() never returns; add exit() to stop compiler warnings about bad return value */
@@ -3940,7 +3989,9 @@ void write_sym()
 
 	j = 0;
 	for (i = 0; i < total_global; i++)
+    {
 		j += id_list[i].type;
+    }
 
 	if (j > 0)
 	{
@@ -3955,8 +4006,10 @@ void write_sym()
 
 		j = 0;
 		for (i = 0; i < total_global; i++)
+        {
 			if (id_list[i].type == 1)
 				j++;
+        }
 		if (j > 0)
 		{
 			fprintf(f, "; global and local labels\n");
@@ -3972,27 +4025,36 @@ void write_sym()
 
 		j = 0;
 		for (i = 0; i < total_global; i++)
+        {
 			if (id_list[i].type == 2)
 				j++;
+        }
 		if (j > 0)
 		{
 			fprintf(f, "; other identifiers\n");
 			for (i = 0; i < total_global; i++)
+            {
 				if (id_list[i].type == 2)
 					fprintf(f, "%4.4Xh %s\n", id_list[i].value, id_list[i].name);
-		}
+            }
+        }
 
 		j = 0;
 		for (i = 0; i < total_global; i++)
+        {
 			if (id_list[i].type == 3)
 				j++;
+        }
 		if (j > 0)
 		{
 			fprintf(f, "; variables - value on exit\n");
 			for (i = 0; i < total_global; i++)
+            {
 				if (id_list[i].type == 3)
 					fprintf(f, "%4.4Xh %s\n", id_list[i].value, id_list[i].name);
-		}
+            
+            }
+        }
 
 		fclose(f);
 		printf("Symbol file %s saved\n", fname_sym);
@@ -4014,18 +4076,19 @@ void include_binary(char *fname, int skip, int n)
 
 	if ((f = fopen(fname, "rb")) == NULL)
 		error_message(18);
+    if (verbose) {
+        if (pass == 1)
+             printf("Including binary file %s", fname);
 
-	if (pass == 1)
-		printf("Including binary file %s", fname);
+        if ((pass == 1) && skip)
+            printf(", skipping %i bytes", skip);
 
-	if ((pass == 1) && skip)
-		printf(", skipping %i bytes", skip);
+        if ((pass == 1) && n)
+            printf(", saving %i bytes", n);
 
-	if ((pass == 1) && n)
-		printf(", saving %i bytes", n);
-
-	if (pass == 1)
-		printf("\n");
+        if (pass == 1)
+            printf("\n");
+    }
  
 	if (skip)
 		for (i = 0; (!feof(f)) && (i < skip); i++)
@@ -4212,10 +4275,12 @@ void write_bin()
 
 
 		for (t = 0; t < 10; t++) 
+        {
 			if (t < strlen(fname_no_ext))
 				write_zx_byte(fname_no_ext[t]);
 			else
 				write_zx_byte(0x20);
+        }
 
 		write_zx_word(end_address - start_address + 1);
 		write_zx_word(start_address);	/* load address */
@@ -4243,13 +4308,21 @@ void write_bin()
 					putc(rom_buf[i], fbin);
 		}
 		else if (rom_type != MEGAROM)
+        {   
 			for (i = start_address; i < start_address + size * 1024; i++)
+            {
 				putc(rom_buf[i], fbin);
+            }
+        }
 		else
+        {
 			for (i = 0; i < size * 1024; i++)
+            {
 				putc(rom_buf[i], fbin);
-	}
-
+            
+            }
+        }
+    }
 	fclose(fbin);
 }
 
@@ -4481,12 +4554,22 @@ void select_page_register(int r, int address)
 int is_defined_symbol(char *name)
 {
 	int i;
-
-	for (i = 0; i < total_global; i++)
-		if (!strcmp(name, id_list[i].name))
-			return 1;
-	return 0;
+    i = search_label(id_list, name, 0, total_global);
+    return(i != -1); // if not -1, found -> TRUE... 
 }
+
+
+#if YYDEBUG == 1
+#define YYPRINT(file, type, value)   yyprint (file, type, value)
+static void
+yyprint (file, type, value)
+     FILE *file;
+     int type;
+     YYSTYPE value;
+{
+    fprintf (file, " %s", "value");
+}
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -4498,6 +4581,11 @@ int main(int argc, char *argv[])
 	printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n", VERSION, DATE);
 	printf("-------------------------------------------------------------------------------\n");
 
+    // TODO: Use an argument parser for this.
+
+    // External vars init
+    zilog = 0;
+    verbose = 0;
 	if (argc > 3 || argc < 2)
 	{
 		printf("Syntax: asMSX [-z] [file.asm]\n");
@@ -4510,9 +4598,32 @@ int main(int argc, char *argv[])
 			zilog = 1;
 			fileArg = 2;
 		}
+        else if (strcmp(argv[1], "-v") == 0)
+		{
+			verbose = 1;
+			fileArg = 2;
+		}
+        else if (strcmp(argv[1], "-vv") == 0)
+		{
+			verbose = 2;
+			fileArg = 2;
+		}
+        #if YYDEBUG == 1
+        else if (strcmp(argv[1], "-d") == 0)
+		{
+			yydebug = 1;
+			fileArg = 2;
+		}
+        #endif
 		else
 		{
-			printf("Syntax: asMSX [-z] [file.asm]\n");
+            
+            #if YYDEBUG == 1
+			printf("Syntax: asMSX [-z|-d|-v|-vv] [file.asm]\n");
+            #else
+			printf("Syntax: asMSX [-z|-v|-vv] [file.asm]\n");
+            #endif 
+
 			exit(0);
 		}
 	}
