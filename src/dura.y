@@ -4600,7 +4600,7 @@ int main(int argc, char *argv[])
 		}
         else if (strcmp(argv[1], "-vv") == 0)
 		{
-			verbose = 1;
+			verbose = 2;
 			fileArg = 2;
 		}
 		else
