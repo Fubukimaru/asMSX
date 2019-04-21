@@ -4554,16 +4554,8 @@ void select_page_register(int r, int address)
 int is_defined_symbol(char *name)
 {
 	int i;
-
-    i = search_label_with_type(id_list, name, 0, total_global, 3);
-    //return(i != -1); // if not -1, found -> TRUE... THIS DOESN'T WORK!
-    if (i == -1) return 0; //Not found
-    else return 1;
-    
-	//for (i = 0; i < total_global; i++)
-	//	if (!strcmp(name, id_list[i].name))
-	//		return 1;
-	//return 0;
+    i = search_label(id_list, name, 0, total_global);
+    return(i != -1); // if not -1, found -> TRUE... 
 }
 
 
