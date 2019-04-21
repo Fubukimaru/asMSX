@@ -3859,8 +3859,7 @@ void register_symbol(char *name, int n, int _rom_type)
         fflush(stdout);
     }
 
-    // Search if the local label is defined in our scope 
-    //  Scope starts on last_global
+    // Search if the symbol is defined. Error if found
     i = search_label(id_list, name, 0, total_global);
 	if (i != -1) error_message(14);
 
@@ -4557,13 +4556,28 @@ int is_defined_symbol(char *name)
 	int i;
 
     i = search_label_with_type(id_list, name, 0, total_global, 3);
-    return(i != -1); // if not -1, found -> TRUE
+    //return(i != -1); // if not -1, found -> TRUE... THIS DOESN'T WORK!
+    if (i == -1) return 0; //Not found
+    else return 1;
     
 	//for (i = 0; i < total_global; i++)
 	//	if (!strcmp(name, id_list[i].name))
 	//		return 1;
 	//return 0;
 }
+
+
+#if YYDEBUG == 1
+#define YYPRINT(file, type, value)   yyprint (file, type, value)
+static void
+yyprint (file, type, value)
+     FILE *file;
+     int type;
+     YYSTYPE value;
+{
+    fprintf (file, " %s", "value");
+}
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -4574,7 +4588,6 @@ int main(int argc, char *argv[])
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n", VERSION, DATE);
 	printf("-------------------------------------------------------------------------------\n");
-
 
     // TODO: Use an argument parser for this.
 
@@ -4603,9 +4616,22 @@ int main(int argc, char *argv[])
 			verbose = 2;
 			fileArg = 2;
 		}
+        #if YYDEBUG == 1
+        else if (strcmp(argv[1], "-d") == 0)
+		{
+			yydebug = 1;
+			fileArg = 2;
+		}
+        #endif
 		else
 		{
-			printf("Syntax: asMSX [-z] [file.asm]\n");
+            
+            #if YYDEBUG == 1
+			printf("Syntax: asMSX [-z|-d|-v|-vv] [file.asm]\n");
+            #else
+			printf("Syntax: asMSX [-z|-v|-vv] [file.asm]\n");
+            #endif 
+
 			exit(0);
 		}
 	}
