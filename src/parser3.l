@@ -44,7 +44,7 @@ static char *p3_text;
 									BEGIN(INITIAL);
 								}
 
-<zilog>\42[^\42\n]+\42			strcat(p3_text, yytext);
+<zilog>\"[^\"\n]+\"				strcat(p3_text, yytext);
 
 <zilog>"("						strcat(p3_text, "[");
 <zilog>")"						strcat(p3_text, "]");

@@ -39,7 +39,7 @@ extern int prompt_error1(int);
 
 %%
 
-<INITIAL>\42[^\42]*\42  strcat(p1_text, yytext);
+<INITIAL>\"[^\"]*\"  strcat(p1_text, yytext);
 
 <INITIAL>"."?include/[ \042\t]+	{
 									p1_tmpstr = NULL;
@@ -53,7 +53,7 @@ extern int prompt_error1(int);
 							// 0.18.4 Hotfix Unterminated string (Spaces at the end of the the include)
 							// - Bad fix. Fix with flex grammar properly
 							if (p1_tmpstr == NULL)
-								p1_tmpstr = strtok(yytext, "\42");					
+								p1_tmpstr = strtok(yytext, "\"");
 						}
 
 <inclusion>[ \t]*\n		{
@@ -88,7 +88,7 @@ extern int prompt_error1(int);
 							strcpy(p1_include_stack[p1_include_index].name, p1_name);
 							p1_include_stack[p1_include_index].line = yylineno;
 							p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
-                            
+
 							yyin = fopen(p1_tmpstr, "r");
 							if (!yyin)
 							{
@@ -138,19 +138,19 @@ extern int prompt_error1(int);
 <pascal_comment>[^}]*	/* Skip all within */
 <pascal_comment>"}"		BEGIN(INITIAL);
 
-<INITIAL>\42			{
+<INITIAL>\"				{
 							strcat(p1_text, yytext);
 							BEGIN(chain);
 						}
 
-<chain>\42				{
+<chain>\"				{
 							strcat(p1_text, yytext);
 							BEGIN(INITIAL);
 						}
 
 <chain>\n				prompt_error1(1);
 
-<chain>[^\42\n]			strcat(p1_text, yytext);
+<chain>[^\"\n]			strcat(p1_text, yytext);
 
 <INITIAL>[ \t]+			{
 							if (strlen(p1_text) > 0)

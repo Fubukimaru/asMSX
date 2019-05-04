@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\asmsx.c" />
+    <ClCompile Include="..\..\..\src\labels.c" />
     <ClCompile Include="lex.parser1.c" />
     <ClCompile Include="lex.parser2.c" />
     <ClCompile Include="lex.parser3.c" />
@@ -176,6 +177,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\asmsx.h" />
+    <ClInclude Include="..\..\..\src\labels.h" />
+    <ClInclude Include="..\..\..\src\types.h" />
     <ClInclude Include="dura.tab.h" />
   </ItemGroup>
   <ItemGroup>
