@@ -2,7 +2,7 @@
 # commands
 #
 
-ASM=asmsx
+ASM=../../src/asmsx
 # ASM=\bin\asMSX\src\asmsx
 CCOMPILER=gcc
 COPY=cmd /c copy
