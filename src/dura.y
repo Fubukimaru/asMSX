@@ -4465,7 +4465,8 @@ void create_subpage(int n, int address)
 	if ((address < 0x4000) || (address > 0xbfff))
 		error_message(35);
 
-	if (n > maxpage[mapper])
+    // Pages start in 0, therefore >=
+	if (n >= maxpage[mapper])
 		error_message(36);
 
 	subpage = n;
