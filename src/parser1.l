@@ -16,9 +16,9 @@
 
 #define MAX_INCLUDE_LEVEL 16
 
-static char *p1_text, *p1_tmpstr, *p1_name;
+static char *p1_text = NULL, *p1_tmpstr = NULL, *p1_name = NULL;
 static int p1_include_index = 0;
-static FILE *p1_output_file, *p1_input_file;
+static FILE *p1_output_file = NULL, *p1_input_file = NULL;
 
 static struct
 {
@@ -84,7 +84,7 @@ extern int prompt_error1(int);
 									exit(4);
 								}
 
-							p1_include_stack[p1_include_index].name = malloc(256);
+							p1_include_stack[p1_include_index].name = malloc(1024);
 							strcpy(p1_include_stack[p1_include_index].name, p1_name);
 							p1_include_stack[p1_include_index].line = yylineno;
 							p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
@@ -199,14 +199,14 @@ int prompt_error1(int c)
 int preprocessor1(char *input_name)
 {
 	/* Memory allocation for strings */
-	p1_text = malloc(256);
+	p1_text = malloc(1024);
 	if (!p1_text)
 	{
 		fprintf(stderr, "Fatal: can't allocate memory for p1_text\n");
 		exit(1);
 	}
 
-	p1_name = malloc(256);
+	p1_name = malloc(1024);
 	if (!p1_name)
 	{
 		fprintf(stderr, "Fatal: can't allocate memory for p1_name\n");
@@ -214,7 +214,7 @@ int preprocessor1(char *input_name)
 	}
   
 	/*
-	p1_tmpstr = malloc(256);
+	p1_tmpstr = malloc(1024);
 	if (!p1_tmpstr)
 	{
 		fprintf(stderr, "Fatal: can't allocate memory for p1_tmpstr\n");

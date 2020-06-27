@@ -96,6 +96,8 @@
         Fixed error messages: now file, line number and error always are in the 
             same lines (Great for vim make!)
         New support for macOS.
+	v.0.19.2: [15/06/2020]
+        Fixed some error related with dinamic memory allocation.
 */
 
 /* C headers and definitions */
@@ -105,8 +107,8 @@
 #include "asmsx.h"
 //#include "types.h"
 
-#define VERSION "0.19.1"
-#define DATE "16/04/2019"
+#define VERSION "0.19.2"
+#define DATE "15/06/2020"
 
 #define MAX_ID 32000
 
