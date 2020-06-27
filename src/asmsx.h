@@ -40,8 +40,8 @@
 
 
 /* Globals */ //TODO: All globals must be removed in the future
-char verbose;
-char zilog;
+extern char verbose;
+extern char zilog;
 
 
 

@@ -166,6 +166,10 @@ int conditional[16];
 int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
 
+// Flags
+char verbose;
+char zilog;
+
 char error_buffer[52];
 
 labels id_list[MAX_ID];
