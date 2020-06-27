@@ -97,7 +97,10 @@
             same lines (Great for vim make!)
         New support for macOS.
 	v.0.19.2: [15/06/2020]
-        Fixed some error related with dinamic memory allocation.
+        - Corrected wrally test 
+        - Source code lines now can have up to 1024 bytes of length, instead of
+          256. This is useful for long DBs (LocoMJ) instead of splitting them
+          using several DB instructions.
 */
 
 /* C headers and definitions */
