@@ -12,7 +12,7 @@ $AS zone.asm
 
 cd wrally
 ../$AS src/rally.asm 
-mv src/rally.z80 ../rally.rom
+mv src/rally.z80 ..
 cd ..
 
 

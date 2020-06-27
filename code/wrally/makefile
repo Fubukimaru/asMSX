@@ -114,7 +114,7 @@ TOOLS=\
 #
 
 # default target:
-default: rally.rom
+default: rally.z80
 
 gfx: $(GFXS)
 
@@ -150,7 +150,7 @@ cleanall: clean cleangfx cleanspr cleandata
 # GFXs
 #
 
-rally.rom: $(SRCS) $(GFXS) $(SPRS) $(DATAS)
+rally.z80: $(SRCS) $(GFXS) $(SPRS) $(DATAS)
 	#$(REMOVE) src/rally.txt
 	$(ASM) $<
 	#$(TYPE) src/rally.txt
