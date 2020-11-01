@@ -70,6 +70,7 @@ struct WavState
 	int32_t		max_vol;
 };
 
+
 void wav_sample(const int b, const FILE *wavf, struct WavState *wsp)
 {
 	int rc, i;
@@ -430,4 +431,13 @@ int d_rand(void)
 {
 	rand_seed = (rand_seed * 1103515245 + 12345);
 	return (unsigned int)(rand_seed / 65536) % (32767 + 1);
+}
+
+// Safe version of strcat that checks if there is an overflow
+char* safe_strcat(char* dest, char* orig, unsigned int max_size) {
+    if ((strlen(dest) + strlen(orig)) > max_size) {
+        error_message(47);
+    }
+    strcat(dest, orig);
+    return(dest);
 }

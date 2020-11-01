@@ -101,6 +101,9 @@
         - Source code lines now can have up to 1024 bytes of length, instead of
           256. This is useful for long DBs (LocoMJ) instead of splitting them
           using several DB instructions.
+    v.0.19.3: [01/11/2020]
+        - Segmentation faults due to big strings or missing quotes are now
+          catched with safe_strcat.
 */
 
 /* C headers and definitions */
@@ -3533,13 +3536,6 @@ void msx_bios()
 	register_symbol("PCMREC", 0x0189, 0);
 }
 
-char* safe_strcat(char* dest, char* orig, unsigned int max_size) {
-    if ((strlen(dest) + strlen(orig)) > max_size) {
-        error_message(47);
-    }
-    strcat(dest, orig);
-    return(dest);
-}
 
 void error_message(int n)
 {

@@ -11,6 +11,7 @@
 #include "asmsx.h"
 
 #define P2_TEXT_SIZE 0x1000
+#define P2_BUFF_SIZE 0x4000
 
 static FILE *p2_output;
 static char *p2_text, *p2_buffer;
@@ -73,7 +74,6 @@ extern void error_message(int);
 													}
 												}
 
-                                // TODO: is this right?
 <rept>.							p2_buffer = safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
 
 <rept>\n						p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);

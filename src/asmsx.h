@@ -48,3 +48,4 @@ extern char zilog;
 /* function declarations */
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
 int d_rand(void);
+extern char* safe_strcat(char* dest, char* orig, unsigned int max_size); 
