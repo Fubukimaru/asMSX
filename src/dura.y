@@ -141,6 +141,7 @@ void type_msxdos();
 void type_sinclair();
 void msx_bios();
 void error_message(int);
+void error_message_line(int, bool);
 void locate_32k();
 void create_subpage(int, int);
 void select_page_direct(int, int);
@@ -4618,7 +4619,7 @@ int main(int argc, char *argv[])
 
     // External vars init
     zilog = 0;
-    verbose = 0;
+    verbose = 1;
 	if (argc > 3 || argc < 2)
 	{
 		printf("Syntax: asMSX [-z] [file.asm]\n");
@@ -4628,22 +4629,26 @@ int main(int argc, char *argv[])
 	{
 		if (strcmp(argv[1], "-z") == 0)
 		{
+            // Zilog compatibility mode
 			zilog = 1;
 			fileArg = 2;
 		}
-        else if (strcmp(argv[1], "-v") == 0)
+        else if (strcmp(argv[1], "-s") == 0)
 		{
-			verbose = 1;
+            // Silent
+			verbose = 0;
 			fileArg = 2;
 		}
         else if (strcmp(argv[1], "-vv") == 0)
 		{
+            // Very verbose
 			verbose = 2;
 			fileArg = 2;
 		}
         #if YYDEBUG == 1
         else if (strcmp(argv[1], "-d") == 0)
 		{
+            // DEBUG
 			yydebug = 1;
 			fileArg = 2;
 		}

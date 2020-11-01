@@ -438,5 +438,6 @@ char* safe_strcat(char* dest, char* orig, unsigned int max_size) {
     if ((strlen(dest) + strlen(orig)) > max_size) {
         error_message_line(47, false);
     }
+    strcat(dest, orig);
     return(dest);
 }
