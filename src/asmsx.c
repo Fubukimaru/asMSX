@@ -436,8 +436,7 @@ int d_rand(void)
 // Safe version of strcat that checks if there is an overflow
 char* safe_strcat(char* dest, char* orig, unsigned int max_size) {
     if ((strlen(dest) + strlen(orig)) > max_size) {
-        error_message(47);
+        error_message_line(47, false);
     }
-    strcat(dest, orig);
     return(dest);
 }

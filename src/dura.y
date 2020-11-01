@@ -113,8 +113,8 @@
 #include "asmsx.h"
 //#include "types.h"
 
-#define VERSION "0.19.2"
-#define DATE "15/06/2020"
+#define VERSION "0.19.3"
+#define DATE "01/11/2020"
 
 #define MAX_ID 32000
 
@@ -3536,8 +3536,8 @@ void msx_bios()
 	register_symbol("PCMREC", 0x0189, 0);
 }
 
-
-void error_message(int n)
+// Function for errors
+void error_message_line(int n, bool show_line)
 {
     fflush(stdout); // Flush output so error is in the end.
 	switch (n)
@@ -3690,9 +3690,19 @@ void error_message(int n)
 		default:
 			sprintf(error_buffer, "Unexpected error code %d\n", n);
 	}
-	fprintf(stderr, "%s, line %d: %s", strtok(fname_src, "\042"), lines, error_buffer);
+    if (show_line) {
+	    fprintf(stderr, "%s, line %d: %s", strtok(fname_src, "\042"), lines, error_buffer);
+    } else {
+	    fprintf(stderr, "%s", error_buffer);
+    }
 	remove("~tmppre.?");
 	exit(n + 1);
+}
+
+
+void error_message(int n)
+{
+    error_message_line(n, true);
 }
 
 
