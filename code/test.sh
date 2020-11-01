@@ -21,3 +21,9 @@ sha1sum -c test.sha1 > test.output 2> test.error
 
 cat test.output
 cat test.error
+
+if [ -s test.error ]
+then
+    echo "There were errors!"
+    exit 1
+fi
