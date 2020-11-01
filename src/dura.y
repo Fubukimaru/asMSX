@@ -141,7 +141,7 @@ void type_msxdos();
 void type_sinclair();
 void msx_bios();
 void error_message(int);
-void error_message_line(int, bool);
+void error_message_line(int, unsigned int);
 void locate_32k();
 void create_subpage(int, int);
 void select_page_direct(int, int);
@@ -3538,7 +3538,7 @@ void msx_bios()
 }
 
 // Function for errors
-void error_message_line(int n, bool show_line)
+void error_message_line(int n, unsigned int show_line)
 {
     fflush(stdout); // Flush output so error is in the end.
 	switch (n)
@@ -3703,7 +3703,7 @@ void error_message_line(int n, bool show_line)
 
 void error_message(int n)
 {
-    error_message_line(n, true);
+    error_message_line(n, 1);
 }
 
 
