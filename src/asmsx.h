@@ -51,6 +51,5 @@ extern char error_buffer[124];
 extern void write_tape(const int, const char *, const char *, const int, const int, const int, const int, const char *);
 int d_rand(void);
 extern char* safe_strcat(char* dest, char* orig, unsigned int max_size, char* fname_src, int lines);
-extern void error_message_line(int n, unsigned int show_line, char* fname_src, int lines);
-extern void error_message(int);
+extern void error_message(int n, char* fname_src, int lines);
 extern void warning_message(int n, char* fname_src, int lines, int pass, int* warnings);

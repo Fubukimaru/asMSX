@@ -24,7 +24,7 @@ static char *p3_text;
 %%
 
 <INITIAL>"#"line[ \t]*[0-9]+\n	{
-									safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
+									safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 									BEGIN(line);
 								}
 
@@ -33,26 +33,26 @@ static char *p3_text;
 									p3_text[0] = 0;
 								}
 
-<INITIAL>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
+<INITIAL>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 
 <line>.?zilog[ \t]*\n			{
-                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
+                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 									printf("Using standard Zilog syntax\n");
 									BEGIN(zilog); //Done in main
 								}
 
 <line>.							{
-                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
+                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 									BEGIN(INITIAL);
 								}
 
-<zilog>\"[^\"\n]+\"				safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
+<zilog>\"[^\"\n]+\"				safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 
-<zilog>"("						safe_strcat(p3_text, "[", P3_TEXT_SIZE, fname_src, lines);
-<zilog>")"						safe_strcat(p3_text, "]", P3_TEXT_SIZE, fname_src, lines);
-<zilog>"["						safe_strcat(p3_text, "(", P3_TEXT_SIZE, fname_src, lines);
-<zilog>"]"						safe_strcat(p3_text, ")", P3_TEXT_SIZE, fname_src, lines);
-<zilog>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
+<zilog>"("						safe_strcat(p3_text, "[", P3_TEXT_SIZE, fname_src, -1);
+<zilog>")"						safe_strcat(p3_text, "]", P3_TEXT_SIZE, fname_src, -1);
+<zilog>"["						safe_strcat(p3_text, "(", P3_TEXT_SIZE, fname_src, -1);
+<zilog>"]"						safe_strcat(p3_text, ")", P3_TEXT_SIZE, fname_src, -1);
+<zilog>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 <zilog>\n						{
 									fprintf(p3_output, "%s%s", p3_text, yytext);
 									p3_text[0] = 0;

@@ -41,7 +41,7 @@ extern int prompt_error1(int);
 %%
 
 <INITIAL>\"[^\"]*\"  {
-    safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, lines);
+    safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, -1);
 }
 
 <INITIAL>"."?include/[ \042\t]+	{
@@ -142,25 +142,25 @@ extern int prompt_error1(int);
 <pascal_comment>"}"		BEGIN(INITIAL);
 
 <INITIAL>\"				{
-							safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, lines);
+							safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, -1);
 							BEGIN(chain);
 						}
 
 <chain>\"				{
-							safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, lines);
+							safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, -1);
 							BEGIN(INITIAL);
 						}
 
 <chain>\n				prompt_error1(1);
 
 <chain>[^\"\n]			{
-                            safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, lines);
+                            safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, -1);
 
                         }
 
 <INITIAL>[ \t]+			{
 							if (strlen(p1_text) > 0)
-								safe_strcat(p1_text, " ", P1_TEXT_SIZE, fname_src, lines); /* Should be 0 for Windows */
+								safe_strcat(p1_text, " ", P1_TEXT_SIZE, fname_src, -1); /* Should be 0 for Windows */
 						}
 
 <INITIAL>\n				{
@@ -170,7 +170,7 @@ extern int prompt_error1(int);
 						}
 
 <INITIAL>.				{
-                            safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, lines);
+                            safe_strcat(p1_text, yytext, P1_TEXT_SIZE, fname_src, -1);
                         }
 
 %%

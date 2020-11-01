@@ -437,7 +437,7 @@ int d_rand(void)
 
 
 // Function for errors
-void error_message_line(int n, unsigned int show_line, char* fname_src, int lines)
+void error_message(int n, char* fname_src, int lines)
 {
     fflush(stdout); // Flush output so error is in the end.
 	switch (n)
@@ -590,19 +590,13 @@ void error_message_line(int n, unsigned int show_line, char* fname_src, int line
 		default:
 			sprintf(error_buffer, "Unexpected error code %d\n", n);
 	}
-    if (show_line) {
+    if (lines >= 0) {
 	    fprintf(stderr, "%s, line %d: %s", strtok(fname_src, "\042"), lines, error_buffer);
     } else {
 	    fprintf(stderr, "%s", error_buffer);
     }
 	remove("~tmppre.?");
 	exit(n + 1);
-}
-
-
-void error_message(int n)
-{
-    error_message_line(n, 1, 0, 0);
 }
 
 void warning_message(int n, char* fname_src, int lines, int pass, int* warnings)
@@ -647,7 +641,7 @@ void warning_message(int n, char* fname_src, int lines, int pass, int* warnings)
 char* safe_strcat(char* dest, char* orig, unsigned int max_size, char* fname_src, int lines) 
 {
     if ((strlen(dest) + strlen(orig)) > max_size) {
-        error_message_line(47, 0, fname_src, lines);
+        error_message(47, fname_src, lines);
     }
     strcat(dest, orig);
     return(dest);

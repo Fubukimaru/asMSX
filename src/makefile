@@ -38,6 +38,7 @@ clean:
 test:	test.cpp asmsx.c labels.c $(HEADERS)
 	gcc -c asmsx.c labels.c $(OPT)
 	gcc -o test labels.o asmsx.o test.cpp -L/usr/local/lib -lgtest -lgtest_main -lpthread -lstdc++ $(OPT)
+	../code/test.sh
 	./test
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
