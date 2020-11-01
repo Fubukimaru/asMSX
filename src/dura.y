@@ -104,6 +104,7 @@
     v.0.19.3: [01/11/2020]
         - Segmentation faults due to big strings or missing quotes are now
           catched with safe_strcat.
+        - Modularized error and warning reporting functions.
 */
 
 /* C headers and definitions */
