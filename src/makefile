@@ -5,7 +5,7 @@ CCOSX=o64-clang
 c_files=dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c asmsx.c\
 		labels.c
 OPT=-lm -O2 -Os -s -Wall -Wextra
-VERSION=0.19.2
+VERSION=0.19.3
 
 HEADERS= asmsx.h labels.h
 

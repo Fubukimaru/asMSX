@@ -103,8 +103,10 @@
           using several DB instructions.
     v.0.19.3: [01/11/2020]
         - Segmentation faults due to big strings or missing quotes are now
-          catched with safe_strcat.
+          catched with safe_strcat. Thanks @jamque for reporting :).
         - Modularized error and warning reporting functions.
+        - Added CI to the repo (Thanks @duhow!)
+        - Default verbose level set to 1. New -s (silent) flag added.
 */
 
 /* C headers and definitions */
