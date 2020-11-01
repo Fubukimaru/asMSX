@@ -24,7 +24,7 @@ static char *p3_text;
 %%
 
 <INITIAL>"#"line[ \t]*[0-9]+\n	{
-									safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
+									safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
 									BEGIN(line);
 								}
 
@@ -33,26 +33,26 @@ static char *p3_text;
 									p3_text[0] = 0;
 								}
 
-<INITIAL>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
+<INITIAL>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
 
 <line>.?zilog[ \t]*\n			{
-                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
+                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
 									printf("Using standard Zilog syntax\n");
 									BEGIN(zilog); //Done in main
 								}
 
 <line>.							{
-                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
+                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
 									BEGIN(INITIAL);
 								}
 
-<zilog>\"[^\"\n]+\"				safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
+<zilog>\"[^\"\n]+\"				safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
 
-<zilog>"("						safe_strcat(p3_text, "[", P3_TEXT_SIZE);
-<zilog>")"						safe_strcat(p3_text, "]", P3_TEXT_SIZE);
-<zilog>"["						safe_strcat(p3_text, "(", P3_TEXT_SIZE);
-<zilog>"]"						safe_strcat(p3_text, ")", P3_TEXT_SIZE);
-<zilog>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
+<zilog>"("						safe_strcat(p3_text, "[", P3_TEXT_SIZE, fname_src, lines);
+<zilog>")"						safe_strcat(p3_text, "]", P3_TEXT_SIZE, fname_src, lines);
+<zilog>"["						safe_strcat(p3_text, "(", P3_TEXT_SIZE, fname_src, lines);
+<zilog>"]"						safe_strcat(p3_text, ")", P3_TEXT_SIZE, fname_src, lines);
+<zilog>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, lines);
 <zilog>\n						{
 									fprintf(p3_output, "%s%s", p3_text, yytext);
 									p3_text[0] = 0;

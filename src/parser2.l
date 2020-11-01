@@ -31,7 +31,7 @@ extern void error_message(int);
 %%
 
 <INITIAL>"#"line[ \t]*[0-9]+\n	{
-									safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
+									safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, lines);
 									p2_lines = atoi(&yytext[5]);
 									BEGIN(line);
 								}
@@ -39,7 +39,7 @@ extern void error_message(int);
 <line>.?rept[ \t]+				BEGIN(repnum);
 
 <line>.							{
-									safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
+									safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, lines);
 									BEGIN(INITIAL);
 								}
 
@@ -51,7 +51,7 @@ extern void error_message(int);
 								}
 
 <rept>.?rept[ \t]+[0-9]+[ \t]*	{
-									p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);
+									p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, lines);
 									p2_nested++;
 									p2_level++;
 								}
@@ -60,7 +60,7 @@ extern void error_message(int);
 													if (p2_nested)
 													{
 														p2_nested--;
-														p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);
+														p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, lines);
 													}
 													else
 													{
@@ -74,9 +74,9 @@ extern void error_message(int);
 													}
 												}
 
-<rept>.							p2_buffer = safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
+<rept>.							p2_buffer = safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, lines);
 
-<rept>\n						p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);
+<rept>\n						p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, lines);
 
 <rept><<EOF>>					error_message(2);
 
@@ -87,7 +87,7 @@ extern void error_message(int);
 									p2_text[0] = 0;
 								}
 
-<INITIAL>.						safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
+<INITIAL>.						safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, lines);
 
 %%
 

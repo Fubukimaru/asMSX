@@ -35,9 +35,9 @@ lex.parser3.c:	parser3.l
 	flex -i -Pparser3 $<
 clean:
 	rm -f *.o *.tab.* lex.*.c asmsx asmsx-debug test *.exe ~* *.osx asmsx_*.zip
-test:	test.cpp asmsx.c labels.c dura.y $(HEADERS)
+test:	test.cpp asmsx.c labels.c $(HEADERS)
 	gcc -c asmsx.c labels.c $(OPT)
-	gcc -o test labels.o asmsx.o test.cpp -L/usr/local/lib -lgtest -lgtest_main -lpthread $(OPT)
+	gcc -o test labels.o asmsx.o test.cpp -L/usr/local/lib -lgtest -lgtest_main -lpthread -lstdc++ $(OPT)
 	./test
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
