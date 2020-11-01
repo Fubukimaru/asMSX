@@ -1,0 +1,47 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.2
+    - name: install deps
+      run: |
+        nuget restore build/vs2019/asmsx.sln
+        nuget install build/vs2019/asmsx-gtest/packages.config -OutputDirectory build/vs2019/asmsx-gtest/packages
+        choco install winflexbison
+    - name: make
+      run: msbuild build/vs2019/asmsx.sln
+
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install deps
+      run: |
+        sudo apt update
+        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
+    - name: make
+      run: |
+        cd src
+        make
+    - name: prepare for test
+      run: |
+        cd /usr/src/gtest
+        sudo cmake CMakeLists.txt
+        sudo make
+        sudo make install
+    - name: test
+      run: |
+        cd src
+        make test
