@@ -15,6 +15,7 @@
 #include "asmsx.h"
 
 #define MAX_INCLUDE_LEVEL 16
+#define P1_TEXT_SIZE 1024
 
 static char *p1_text = NULL, *p1_tmpstr = NULL, *p1_name = NULL;
 static int p1_include_index = 0;
@@ -39,7 +40,9 @@ extern int prompt_error1(int);
 
 %%
 
-<INITIAL>\"[^\"]*\"  strcat(p1_text, yytext);
+<INITIAL>\"[^\"]*\"  {
+    safe_strcat(p1_text, yytext, P1_TEXT_SIZE);
+}
 
 <INITIAL>"."?include/[ \042\t]+	{
 									p1_tmpstr = NULL;
@@ -131,7 +134,7 @@ extern int prompt_error1(int);
 <INITIAL>\15			/* Skip line feeds */
 
 <INITIAL>"/*"			BEGIN(comment); /* Skip C/C++ multiple line comments */
-<comment>[^"*/"]*		/* Skip all within */
+<comment>[^"*/"]*	    /* Skip all within */
 <comment>"*/"			BEGIN(INITIAL);
 
 <INITIAL>"{"			BEGIN(pascal_comment);  /* Skip Pascal multiple line comments */
@@ -139,22 +142,25 @@ extern int prompt_error1(int);
 <pascal_comment>"}"		BEGIN(INITIAL);
 
 <INITIAL>\"				{
-							strcat(p1_text, yytext);
+							safe_strcat(p1_text, yytext, P1_TEXT_SIZE);
 							BEGIN(chain);
 						}
 
 <chain>\"				{
-							strcat(p1_text, yytext);
+							safe_strcat(p1_text, yytext, P1_TEXT_SIZE);
 							BEGIN(INITIAL);
 						}
 
 <chain>\n				prompt_error1(1);
 
-<chain>[^\"\n]			strcat(p1_text, yytext);
+<chain>[^\"\n]			{
+                            safe_strcat(p1_text, yytext, P1_TEXT_SIZE);
+
+                        }
 
 <INITIAL>[ \t]+			{
 							if (strlen(p1_text) > 0)
-								strcat(p1_text, " "); /* Should be 0 for Windows */
+								safe_strcat(p1_text, " ", P1_TEXT_SIZE); /* Should be 0 for Windows */
 						}
 
 <INITIAL>\n				{
@@ -163,7 +169,9 @@ extern int prompt_error1(int);
 							p1_text[0] = 0;
 						}
 
-<INITIAL>.				strcat(p1_text, yytext);
+<INITIAL>.				{
+                            safe_strcat(p1_text, yytext, P1_TEXT_SIZE);
+                        }
 
 %%
 
@@ -199,7 +207,7 @@ int prompt_error1(int c)
 int preprocessor1(char *input_name)
 {
 	/* Memory allocation for strings */
-	p1_text = malloc(1024);
+	p1_text = malloc(P1_TEXT_SIZE);
 	if (!p1_text)
 	{
 		fprintf(stderr, "Fatal: can't allocate memory for p1_text\n");

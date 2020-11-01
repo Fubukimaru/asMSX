@@ -12,6 +12,8 @@
 
 static FILE *p3_output;
 static char *p3_text;
+
+#define P3_TEXT_SIZE 0x1000
 %}
 
 %option noinput nounput noyywrap
@@ -22,7 +24,7 @@ static char *p3_text;
 %%
 
 <INITIAL>"#"line[ \t]*[0-9]+\n	{
-									strcat(p3_text, yytext);
+									safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
 									BEGIN(line);
 								}
 
@@ -31,26 +33,26 @@ static char *p3_text;
 									p3_text[0] = 0;
 								}
 
-<INITIAL>.						strcat(p3_text, yytext);
+<INITIAL>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
 
 <line>.?zilog[ \t]*\n			{
-									strcat(p3_text, yytext);
+                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
 									printf("Using standard Zilog syntax\n");
 									BEGIN(zilog); //Done in main
 								}
 
 <line>.							{
-									strcat(p3_text, yytext);
+                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
 									BEGIN(INITIAL);
 								}
 
-<zilog>\"[^\"\n]+\"				strcat(p3_text, yytext);
+<zilog>\"[^\"\n]+\"				safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
 
-<zilog>"("						strcat(p3_text, "[");
-<zilog>")"						strcat(p3_text, "]");
-<zilog>"["						strcat(p3_text, "(");
-<zilog>"]"						strcat(p3_text, ")");
-<zilog>.						strcat(p3_text, yytext);
+<zilog>"("						safe_strcat(p3_text, "[", P3_TEXT_SIZE);
+<zilog>")"						safe_strcat(p3_text, "]", P3_TEXT_SIZE);
+<zilog>"["						safe_strcat(p3_text, "(", P3_TEXT_SIZE);
+<zilog>"]"						safe_strcat(p3_text, ")", P3_TEXT_SIZE);
+<zilog>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE);
 <zilog>\n						{
 									fprintf(p3_output, "%s%s", p3_text, yytext);
 									p3_text[0] = 0;
@@ -63,7 +65,7 @@ int preprocessor3(int zilogVal)
 	const char* tmp0 = "~tmppre.0";
 	FILE *input;
 
-	p3_text = malloc(0x1000);
+	p3_text = malloc(P3_TEXT_SIZE);
 	p3_text[0] = 0;
 
 	if ((input = fopen(tmp0, "r")) == NULL)

@@ -10,6 +10,8 @@
 %{
 #include "asmsx.h"
 
+#define P2_TEXT_SIZE 0x1000
+
 static FILE *p2_output;
 static char *p2_text, *p2_buffer;
 static int p2_number, p2_lines, p2_level, p2_nested=0;
@@ -28,7 +30,7 @@ extern void error_message(int);
 %%
 
 <INITIAL>"#"line[ \t]*[0-9]+\n	{
-									strcat(p2_text, yytext);
+									safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
 									p2_lines = atoi(&yytext[5]);
 									BEGIN(line);
 								}
@@ -36,7 +38,7 @@ extern void error_message(int);
 <line>.?rept[ \t]+				BEGIN(repnum);
 
 <line>.							{
-									strcat(p2_text, yytext);
+									safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
 									BEGIN(INITIAL);
 								}
 
@@ -48,7 +50,7 @@ extern void error_message(int);
 								}
 
 <rept>.?rept[ \t]+[0-9]+[ \t]*	{
-									p2_buffer = strcat(p2_buffer, yytext);
+									p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);
 									p2_nested++;
 									p2_level++;
 								}
@@ -57,7 +59,7 @@ extern void error_message(int);
 													if (p2_nested)
 													{
 														p2_nested--;
-														p2_buffer = strcat(p2_buffer, yytext);
+														p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);
 													}
 													else
 													{
@@ -71,9 +73,10 @@ extern void error_message(int);
 													}
 												}
 
-<rept>.							p2_buffer = strcat(p2_text, yytext);
+                                // TODO: is this right?
+<rept>.							p2_buffer = safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
 
-<rept>\n						p2_buffer = strcat(p2_buffer, yytext);
+<rept>\n						p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE);
 
 <rept><<EOF>>					error_message(2);
 
@@ -84,7 +87,7 @@ extern void error_message(int);
 									p2_text[0] = 0;
 								}
 
-<INITIAL>.						strcat(p2_text, yytext);
+<INITIAL>.						safe_strcat(p2_text, yytext, P2_TEXT_SIZE);
 
 %%
 
@@ -113,8 +116,8 @@ int preprocessor2()
 	int loop = 0;
 
 	filename = malloc(PATH_MAX);
-	p2_text = malloc(0x1000);
-	p2_buffer = malloc(0x4000);
+	p2_text = malloc(P2_TEXT_SIZE);
+	p2_buffer = malloc(P2_BUFF_SIZE);
 	p2_text[0] = 0;
 	printf("Expanding system macros\n");
 

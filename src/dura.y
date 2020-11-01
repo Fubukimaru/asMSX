@@ -175,7 +175,7 @@ int maxpage[4] = {32, 64, 256, 256};
 char verbose;
 char zilog;
 
-char error_buffer[52];
+char error_buffer[124];
 
 labels id_list[MAX_ID];
 
@@ -3533,6 +3533,14 @@ void msx_bios()
 	register_symbol("PCMREC", 0x0189, 0);
 }
 
+char* safe_strcat(char* dest, char* orig, unsigned int max_size) {
+    if ((strlen(dest) + strlen(orig)) > max_size) {
+        error_message(47);
+    }
+    strcat(dest, orig);
+    return(dest);
+}
+
 void error_message(int n)
 {
     fflush(stdout); // Flush output so error is in the end.
@@ -3679,6 +3687,10 @@ void error_message(int n)
 		case 46:
 			sprintf(error_buffer, "Sinclair directive should preceed any code\n");
 			break;
+		case 47:
+			sprintf(error_buffer, "Parser memory overflow. Hint: check that all\
+ the quotes are closed\n");
+			break;
 		default:
 			sprintf(error_buffer, "Unexpected error code %d\n", n);
 	}
@@ -3686,6 +3698,7 @@ void error_message(int n)
 	remove("~tmppre.?");
 	exit(n + 1);
 }
+
 
 void warning_message(int n)
 {
@@ -4577,7 +4590,7 @@ yyprint (file, type, value)
      int type;
      YYSTYPE value;
 {
-    fprintf (file, " %s", "value");
+    fprintf (file, " %u %s", type, value);
 }
 #endif
 
@@ -4586,6 +4599,10 @@ int main(int argc, char *argv[])
 	FILE *f;
 	size_t t;
 	int fileArg = 1;
+
+    #if YYDEBUG == 1
+    yydebug=1;
+    #endif
 
 	printf("-------------------------------------------------------------------------------\n");
 	printf(" asMSX v.%s. MSX cross-assembler. Eduardo A. Robsy Petrus [%s]\n", VERSION, DATE);
