@@ -140,8 +140,6 @@ void type_basic();
 void type_msxdos();
 void type_sinclair();
 void msx_bios();
-extern void error_message(int);
-extern void warning_message(int);
 void locate_32k();
 void create_subpage(int, int);
 void select_page_direct(int, int);
