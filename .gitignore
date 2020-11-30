@@ -20,6 +20,10 @@ code/*.txt
 *.sym
 *.rom
 
+# Private code for testing that cannot be in the repo
+
+private/
+
 # add random junk that made it into repo here
 .Rhistory
 

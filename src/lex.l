@@ -1,6 +1,7 @@
 %{
 #include "dura.tab.h"
 
+
 extern int ePC, pass;
 extern char *fname_p2;
 %}
@@ -395,6 +396,7 @@ random		return PSEUDO_RANDOM;
 "<<"		return SHIFT_L;
 
 <<EOF>>				{
+                        // Do another pass
 						unput('\n');
 						pass++;
 

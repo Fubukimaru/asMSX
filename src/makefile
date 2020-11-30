@@ -13,8 +13,9 @@ asmsx:  $(c_files) $(HEADERS)
 	$(CC) $(c_files) -o$@ $(OPT)
 asmsx.osx:  $(c_files) $(HEADERS)
 	$(CCOSX) $(c_files) -o$@ $(OPT)
-asmsx-debug:	$(c_files) $(HEADERS) dura.y
+asmsx-debug:	$(c_files) $(HEADERS) dura.y lex.l
 	bison --graph -t -d dura.y
+	flex -d -i lex.l
 	$(CC) -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra -DFLEX_DEBUG
 asmsx.exe: $(c_files) $(HEADERS)
 	i686-w64-mingw32-gcc $(c_files) -o$@ $(OPT)
