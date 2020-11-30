@@ -15,7 +15,7 @@ asmsx.osx:  $(c_files) $(HEADERS)
 	$(CCOSX) $(c_files) -o$@ $(OPT)
 asmsx-debug:	$(c_files) $(HEADERS) dura.y
 	bison --graph -t -d dura.y
-	$(CC) -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra
+	$(CC) -ggdb $(c_files) -o$@ -lm -Os -Wall -Wextra -DFLEX_DEBUG
 asmsx.exe: $(c_files) $(HEADERS)
 	i686-w64-mingw32-gcc $(c_files) -o$@ $(OPT)
 release: asmsx asmsx.exe asmsx.osx
@@ -42,4 +42,7 @@ test:	test.cpp asmsx.c labels.c $(HEADERS)
 	./test
 install:	asmsx
 	sudo cp asmsx /usr/local/bin
+
+install-debug:	asmsx-debug
+	sudo cp asmsx-debug /usr/local/bin
 

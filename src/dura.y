@@ -567,8 +567,10 @@ pseudo_instruction: PSEUDO_ORG value
 		{
 			if (start_address > PC)
 				start_address = PC;
+            fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
 			PC += $2;
 			ePC += $2;
+            fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
 			if (PC > 0xffff)
 				error_message(1, fname_src, lines);
 		}
@@ -3614,8 +3616,7 @@ void register_label(char *name)
 	int i;
     if (verbose >= 2) 
     {
-        printf("Registering label: %s - on pass %u\n", name, pass);
-        fflush(stdout);
+        fprintf(stderr, "Registering label: %s - on pass %u\n", name, pass);
     }
 
 	if (pass == 2) 
@@ -3651,8 +3652,7 @@ void register_local(char *name)
 		return;
     
     if (verbose >= 2) {
-        printf("Registering local label: %s - on pass %u\n", name, pass);
-        fflush(stdout);
+        fprintf(stderr, "Registering local label: %s - on pass %u\n", name, pass);
     }
 
     // Search if the local label is defined in our scope 
@@ -3680,8 +3680,7 @@ void register_symbol(char *name, int n, int _rom_type)
 		return;
 
     if (verbose >= 2) {
-        printf("Registering symbol: %s - on pass %u\n", name, pass);
-        fflush(stdout);
+        fprintf(stderr, "Registering symbol: %s - on pass %u\n", name, pass);
     }
 
     // Search if the symbol is defined. Error if found
@@ -3746,8 +3745,7 @@ int read_label(char *name)
 {
     if (verbose >= 2) 
     {
-        printf("Reading label: %s - on pass %u\n", name, pass);
-        fflush(stdout);
+        fprintf(stderr,"Reading label: %s - on pass %u\n", name, pass);
     }
 
     // Search the label
@@ -3755,6 +3753,10 @@ int read_label(char *name)
     
     // Find the label and return its value if found.
     i = search_label(id_list, name, 0, total_global);
+    if (verbose >= 2) 
+    {
+        fprintf(stderr, "- Label index in vector: %i\n", i);
+    }
     if (i != -1) return id_list[i].value;
     
 
@@ -3776,8 +3778,7 @@ int read_local(char *name)
 		return ePC;
     if (verbose >= 2)
     {
-        printf("Reading local label: %s - on pass %u\n", name, pass);
-        fflush(stdout);
+        fprintf(stderr, "Reading local label: %s - on pass %u\n", name, pass);
     }
 	// for (i = last_global; i < total_global; i++)
     // {

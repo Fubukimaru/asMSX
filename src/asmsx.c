@@ -610,13 +610,13 @@ void warning_message(int n, char* fname_src, int lines, int pass, int* warnings)
 			sprintf(error_buffer, "undefined error\n");
 			break;
 		case 1:
-			sprintf(error_buffer, "16-bit overflow\n");
+			sprintf(error_buffer, "16-bit overflow. Cropping to fit 16 bits.\n");
 			break;
 		case 2:
-			sprintf(error_buffer, "8-bit overflow\n");
+			sprintf(error_buffer, "8-bit overflow. Cropping to fit 8 bits.\n");
 			break;
 		case 3:
-			sprintf(error_buffer, "3-bit overflow\n");
+			sprintf(error_buffer, "3-bit overflow. Cropping to fit 3 bits.\n");
 			break;
 		case 4:
 			sprintf(error_buffer, "output cannot be converted to CAS\n");
