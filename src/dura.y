@@ -10,7 +10,6 @@
 %{
 
 #include "asmsx.h"
-//#include "types.h"
 
 #define VERSION "0.19.3"
 #define DATE "01/11/2020"
@@ -293,10 +292,20 @@ line:	pseudo_instruction EOL
 	| PREPRO_FILE TEXT EOL
 	{
 		strncpy(fname_src, $2, PATH_MAX - 1);
+        if (verbose >= 2) 
+        {
+            fprintf(stderr, "Prepro file value: %s (size %i) - on pass %u\n",
+                    fname_src, PATH_MAX - 1, pass);
+        }
+
 	}
 	| PREPRO_LINE value EOL
 	{
 		lines = $2;
+        if (verbose >= 2) 
+        {
+            fprintf(stderr, "Prepro line value: %i - on pass %u\n", lines, pass);
+        }
 	}
 	| label line
 	| label EOL
@@ -323,7 +332,7 @@ pseudo_instruction: PSEUDO_ORG value
 	| PSEUDO_PHASE value
 	{
 		if (conditional[conditional_level])
-		ePC = $2;
+		    ePC = $2;
 	}
 	| PSEUDO_DEPHASE
 	{
@@ -540,8 +549,9 @@ pseudo_instruction: PSEUDO_ORG value
 	}
 	| PSEUDO_END
 	{
+        // End current pass
 		if (pass == 3)
-			finalize();
+			finalize(); // Finish assembly
 		PC = 0;
 		ePC = 0;
 		last_global = 0;
@@ -3519,7 +3529,7 @@ void register_label(char *name)
     {
         i = search_label(id_list, name, 0, total_global);
         if (i >= 0) { // If label found
-            last_global = i;
+            last_global = i; // Set the current scope to this one for locals
             return;
         }
     }
@@ -3533,7 +3543,7 @@ void register_label(char *name)
 		error_message(11, fname_src, lines);
 
 	id_list[total_global - 1].name = malloc(strlen(name) + 4);
-	strcpy(id_list[total_global - 1].name, name);
+	strncpy(id_list[total_global - 1].name, name, strlen(name) + 4);
 	id_list[total_global - 1].value = ePC;
 	id_list[total_global - 1].type = 1;
 	id_list[total_global - 1].page = subpage;
@@ -3561,7 +3571,7 @@ void register_local(char *name)
 		error_message(11, fname_src, lines);
 
 	id_list[total_global - 1].name = malloc(strlen(name) + 4);
-	strcpy(id_list[total_global - 1].name, name);
+	strncpy(id_list[total_global - 1].name, name, strlen(name) + 4);
 	id_list[total_global - 1].value = ePC;
 	id_list[total_global - 1].type = 1;
 	id_list[total_global - 1].page = subpage;
@@ -3588,7 +3598,7 @@ void register_symbol(char *name, int n, int _rom_type)
 	if (++total_global == MAX_ID)
 		error_message(11, fname_src, lines);
 
-	id_list[total_global - 1].name = malloc(strlen(name) + 1);
+	id_list[total_global - 1].name = malloc(strlen(name) + 4);
 
 	/* guarantees we won't pass string literal to strtok(), which causes SEGFAULT on GCC 6.2.0 */
 	_name = strdup(name);
@@ -3598,7 +3608,8 @@ void register_symbol(char *name, int n, int _rom_type)
 		exit(1);
 	}
 
-	strcpy(id_list[total_global - 1].name, strtok(_name, " "));
+    // TODO: MAYBE THIS IS THE POINT WHERE WE GET LINE - NOP BUG - DEBUG
+	strncpy(id_list[total_global - 1].name, strtok(_name, " "), strlen(name) + 4);
 	free(_name);
 
 	id_list[total_global - 1].value = n;
@@ -3631,8 +3642,8 @@ void register_variable(char *name, int n)
 	if (++total_global == MAX_ID)
 		error_message(11, fname_src, lines);
 
-	id_list[total_global - 1].name = malloc(strlen(name) + 1);
-	strcpy(id_list[total_global - 1].name, strtok(name, " "));
+	id_list[total_global - 1].name = malloc(strlen(name) + 4);
+	strncpy(id_list[total_global - 1].name, strtok(name, " "), strlen(name) + 4);
 	id_list[total_global - 1].value = n;
 	id_list[total_global - 1].type = 3;
 }
@@ -4381,8 +4392,8 @@ int main(int argc, char *argv[])
 	fname_txt = malloc(PATH_MAX);		assert(fname_txt != NULL);
 	fname_no_ext = malloc(PATH_MAX);	assert(fname_no_ext != NULL);
 
-	strcpy(fname_no_ext, argv[fileArg]);
-	strcpy(fname_asm, fname_no_ext);
+	strncpy(fname_no_ext, argv[fileArg], PATH_MAX);
+	strncpy(fname_asm, fname_no_ext, PATH_MAX);
 
 	for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
 
@@ -4392,7 +4403,7 @@ int main(int argc, char *argv[])
 		strcat(fname_asm, ".asm");
 
 	/* Generate the name of binary file */
-	strcpy(fname_bin, fname_no_ext);
+	strncpy(fname_bin, fname_no_ext, PATH_MAX);
 
 	preprocessor1(fname_asm);
 	preprocessor3(zilog);
