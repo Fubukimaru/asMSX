@@ -11,8 +11,8 @@
 
 #include "asmsx.h"
 
-#define VERSION "0.19.3"
-#define DATE "01/11/2020"
+#define VERSION "1 beta"
+#define DATE "01/12/2020"
 
 #define MAX_ID 32000
 
@@ -472,10 +472,10 @@ pseudo_instruction: PSEUDO_ORG value
 		{
 			if (start_address > PC)
 				start_address = PC;
-            fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
+            // TODO: fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
 			PC += $2;
 			ePC += $2;
-            fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
+            // fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
 			if (PC > 0xffff)
 				error_message(1, fname_src, lines);
 		}

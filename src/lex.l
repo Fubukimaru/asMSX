@@ -409,20 +409,27 @@ random		return PSEUDO_RANDOM;
 					}
 
 \"[^\"\n]+\"		{
+                        // TODO: Does strtok return a new array?
+                        // Also, I assume that it's called twice so that we get
+                        // the second token...?
 						yylval.txt = strtok(yytext, "\"");
 						yylval.txt = strtok(yytext, "\"");
 						return TEXT;
 					}
 
 [a-z_][a-z0-9_]*	{
-						yylval.txt = yytext;
+						//yylval.txt = yytext;
+                        // TODO: FREE THE TXT BEFORE?
+						/* v.1 NOP bug was due to not copying the array. */
+						yylval.txt = strdup(yytext);
 						return IDENTIFICATOR;
 					}
 
 
 ("@@"|".")[a-z0-9_]+	{
 							/* v.0.18.2 Labels are checked the last, therfore we can use "." freely */
-							yylval.txt = yytext;
+							// yylval.txt = yytext;
+						    yylval.txt = strdup(yytext);
 							return LOCAL_IDENTIFICATOR;
 						}
 
