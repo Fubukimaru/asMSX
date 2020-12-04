@@ -133,9 +133,8 @@ extern int prompt_error1(int);
 <INITIAL>"--"[^\n]*		/* Skip ADA-style comments */
 <INITIAL>\15			/* Skip line feeds */
 
-<INITIAL>"/*"			BEGIN(comment); /* Skip C/C++ multiple line comments */
-<comment>[^"*/"]*	    /* Skip all within */
-<comment>"*/"			BEGIN(INITIAL);
+[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]       { /* DO NOTHING */ }
+[/*]                                    { prompt_error1(6); }
 
 <INITIAL>"{"			BEGIN(pascal_comment);  /* Skip Pascal multiple line comments */
 <pascal_comment>[^}]*	/* Skip all within */
@@ -196,6 +195,9 @@ int prompt_error1(int c)
 			break;
 		case 5:
 			fprintf(stderr, "Wrong file name\n");
+			break;
+		case 6:
+			fprintf(stderr, "Unterminated C-like multiline comment\n");
 			break;
 		default:
 			fprintf(stderr, "Unknown error in prompt_error1()\n");
