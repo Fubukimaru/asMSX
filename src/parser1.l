@@ -133,7 +133,8 @@ extern int prompt_error1(int);
 <INITIAL>"--"[^\n]*		/* Skip ADA-style comments */
 <INITIAL>\15			/* Skip line feeds */
 
-[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]       { /* DO NOTHING */ }
+<INITIAL>[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]       { /* DO NOTHING */ }
+
 
 <INITIAL>"{"			BEGIN(pascal_comment);  /* Skip Pascal multiple line comments */
 <pascal_comment>[^}]*	/* Skip all within */
