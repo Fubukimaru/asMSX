@@ -1,6 +1,6 @@
 /* asMSX - an MSX / Z80 assembler
 
-	(c) 2000-2010 Eduardo A. Robsy Petrus, (c) 2013-2019 asMSX team
+	(c) 2000-2010 Eduardo A. Robsy Petrus, (c) 2013-2021 asMSX team
 
 	Bison grammar file
 */
