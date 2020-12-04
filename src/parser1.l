@@ -134,7 +134,6 @@ extern int prompt_error1(int);
 <INITIAL>\15			/* Skip line feeds */
 
 [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]       { /* DO NOTHING */ }
-[/*]                                    { prompt_error1(6); }
 
 <INITIAL>"{"			BEGIN(pascal_comment);  /* Skip Pascal multiple line comments */
 <pascal_comment>[^}]*	/* Skip all within */
