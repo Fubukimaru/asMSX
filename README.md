@@ -14,6 +14,24 @@ If you'd like to contribute to this project, please take a look at our [coding s
 
 Please help us improve test coverage for the code. Read our [testing guide](doc/testing.md) and contribure!
 
+## asMSX team
+The asMSX team is a undefined collective that has worked on this program or has helped with it. asMSX wont be as it is if it wasn't for the colaboration of:
+
+- Eduardo Robsy
+- @cjv99 (Thanks for buying and sharing it!)
+- Ivan Nieto
+- @theNestruo
+- @Fubukimaru
+- @oboroc
+- @jamque
+- @mvac7
+- @duhow
+- @LocoMJ
+- @libertium
+- vim
+- The game
+
+
 # Original Spanish README
 
 Estructura de carpetas
