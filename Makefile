@@ -1,25 +1,26 @@
-all:	asmsx
+all: asmsx
 
 VERSION_STATIC = 1.0.0-beta
 DATE_STATIC    = 2020-12-01
 
 VERSION := $(if $(shell git status 2>/dev/null),$(shell git describe --tags --always 2>/dev/null),$(VERSION_STATIC))
-DATE := $(if $(shell git status 2>/dev/null),$(shell git show -s --format=%as HEAD 2>/dev/null),$(DATE_STATIC))
+DATE    := $(if $(shell git status 2>/dev/null),$(shell git show -s --format=%as HEAD 2>/dev/null),$(DATE_STATIC))
 
 CC_LIN = gcc
 CC_OSX = o64-clang
 CC_WIN = i686-w64-mingw32-gcc
 
+# Default compiler
 CC = $(CC_LIN)
 OPT = -lm -O2 -Os -s -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
 OPT_DEBUG = -lm -Os  -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\" -DFLEX_DEBUG
 
 BUILD_FILES = src/dura.tab.c \
-							src/dura.tab.h \
-							src/lex.yy.c \
-							src/lex.parser1.c \
-							src/lex.parser2.c \
-							src/lex.parser3.c
+              src/dura.tab.h \
+              src/lex.yy.c \
+              src/lex.parser1.c \
+              src/lex.parser2.c \
+              src/lex.parser3.c
 
 C_FILES := src/asmsx.c src/labels.c
 
@@ -28,18 +29,18 @@ ALL_FILES := $(BUILD_FILES) $(C_FILES)
 HEADERS = src/asmsx.h src/labels.h
 
 ifeq ($(OS),Windows_NT) 
-  detected_OS := Windows
+	detected_OS := Windows
 else
-  detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Linux')
+	detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Linux')
 endif
 ifeq ($(detected_OS),Windows)
-  OPT +=  -DWIN32
+	OPT +=  -DWIN32
 endif
 ifeq ($(detected_OS),Darwin)
-  OPT +=  -DOSX
+	OPT +=  -DOSX
 endif
 ifeq ($(detected_OS),Linux)
-  OPT +=  -DLINUX
+	OPT +=  -DLINUX
 endif
 
 # Compile files rules
@@ -48,14 +49,14 @@ src/%.tab.c src/%.tab.h: src/%.y
 ifeq ($(MAKECMDGOALS),asmsx-debug)
 	bison --graph -t -o $@ -d $< 
 else
-	bison $(DEBUG) -o $@ -d $< 
+	bison -o $@ -d $< 
 endif
 
 src/lex.yy.c: src/lex.l
 ifeq ($(MAKECMDGOALS),asmsx-debug)
 	flex -d -o $@ -i $<
 else
-	flex $(FLAGS) -o $@ -i $<
+	flex -o $@ -i $<
 endif
 
 src/lex.%.c: src/%.l
