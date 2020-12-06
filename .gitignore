@@ -3,7 +3,11 @@
 # GCC compilation derivate files
 bin/
 asmsx.exe
+/asmsx
+/asmsx-debug
+/test
 *.o
+*.dot
 *.tab.h
 *.tab.c
 lex.*.c
@@ -15,7 +19,8 @@ warn*.txt
 ~*.*
 *.bin
 *.cas
-code/*.txt
+code/**/*.txt
+code/**/*.z80
 *.wav
 *.sym
 *.rom
