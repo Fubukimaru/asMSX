@@ -33,7 +33,6 @@ jobs:
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
     - name: make
       run: |
-        cd src
         make
     - name: prepare for test
       run: |
@@ -43,5 +42,4 @@ jobs:
         sudo make install
     - name: test
       run: |
-        cd src
         make test
