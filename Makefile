@@ -28,18 +28,18 @@ ALL_FILES := $(BUILD_FILES) $(C_FILES)
 HEADERS = src/asmsx.h src/labels.h
 
 ifeq ($(OS),Windows_NT) 
-    detected_OS := Windows
+  detected_OS := Windows
 else
-    detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Linux')
+  detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Linux')
 endif
 ifeq ($(detected_OS),Windows)
-    OPT +=  -DWIN32
+  OPT +=  -DWIN32
 endif
 ifeq ($(detected_OS),Darwin)
-    OPT +=  -DOSX
+  OPT +=  -DOSX
 endif
 ifeq ($(detected_OS),Linux)
-    OPT +=  -DLINUX
+  OPT +=  -DLINUX
 endif
 
 # Compile files rules
@@ -62,11 +62,13 @@ src/lex.%.c: src/%.l
 	flex -o $@ -i -P$(notdir $(basename $<)) $<
 
 src/%.o: src/%.c
-	gcc -c $< -o $@ $(OPT)
+	$(CC) -c $< -o $@ $(OPT)
 
 # Main target builds
 
-asmsx:  $(ALL_FILES) $(HEADERS)
+asmsx.osx: CC := $(CC_OSX)
+asmsx.exe: CC := $(CC_WIN)
+asmsx asmsx.osx asmsx.exe: $(ALL_FILES) $(HEADERS)
 	$(CC) $(ALL_FILES) -o$@ $(OPT)
 
 asmsx-debug: $(ALL_FILES) $(HEADERS) src/dura.y src/lex.l
