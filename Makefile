@@ -24,7 +24,7 @@ BUILD_FILES = src/dura.tab.c \
 
 C_FILES := src/asmsx.c src/labels.c
 
-ALL_FILES := $(BUILD_FILES) $(C_FILES)
+ALL_FILES := $(filter-out src/%.h,$(BUILD_FILES)) $(C_FILES)
 
 HEADERS = src/asmsx.h src/labels.h
 
