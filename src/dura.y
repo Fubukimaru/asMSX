@@ -11,8 +11,12 @@
 
 #include "asmsx.h"
 
-#define VERSION "1.0 beta"
-#define DATE "01/12/2020"
+#ifndef VERSION
+#define VERSION "1.0.0-beta"
+#endif
+#ifndef DATE
+#define DATE "2020-12-01"
+#endif
 
 #define MAX_ID 32000
 
