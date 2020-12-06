@@ -1,10 +1,10 @@
 /*
-	PARSER-3
-	(c) Eduardo Robsy Petrus, 2010
+  PARSER-3
+  (c) Eduardo Robsy Petrus, 2010
 
-	Functions:
-		1.-Identify ZILOG macro
-		2.-Set accordingly indirection and mathematical style 
+  Functions:
+    1.-Identify ZILOG macro
+    2.-Set accordingly indirection and mathematical style
 */
 
 %{
@@ -23,71 +23,69 @@ static char *p3_text;
 
 %%
 
-<INITIAL>"#"line[ \t]*[0-9]+\n	{
-									safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
-									BEGIN(line);
-								}
+<INITIAL>"#"line[ \t]*[0-9]+\n  {
+    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
+    BEGIN(line);
+}
 
-<INITIAL>\n						{
-									fprintf(p3_output, "%s%s", p3_text, yytext);
-									p3_text[0] = 0;
-								}
+<INITIAL>\n  {
+    fprintf(p3_output, "%s%s", p3_text, yytext);
+    p3_text[0] = 0;
+}
 
-<INITIAL>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
+<INITIAL>.   safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 
-<line>.?zilog[ \t]*\n			{
-                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
-									printf("Using standard Zilog syntax\n");
-									BEGIN(zilog); //Done in main
-								}
+<line>.?zilog[ \t]*\n  {
+    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
+    printf("Using standard Zilog syntax\n");
+    BEGIN(zilog); //Done in main
+}
 
-<line>.							{
-                                    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
-									BEGIN(INITIAL);
-								}
+<line>.     {
+    safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
+    BEGIN(INITIAL);
+}
 
-<zilog>\"[^\"\n]+\"				safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
+<zilog>\"[^\"\n]+\"  safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
 
-<zilog>"("						safe_strcat(p3_text, "[", P3_TEXT_SIZE, fname_src, -1);
-<zilog>")"						safe_strcat(p3_text, "]", P3_TEXT_SIZE, fname_src, -1);
-<zilog>"["						safe_strcat(p3_text, "(", P3_TEXT_SIZE, fname_src, -1);
-<zilog>"]"						safe_strcat(p3_text, ")", P3_TEXT_SIZE, fname_src, -1);
-<zilog>.						safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
-<zilog>\n						{
-									fprintf(p3_output, "%s%s", p3_text, yytext);
-									p3_text[0] = 0;
-								}
+<zilog>"("           safe_strcat(p3_text, "[", P3_TEXT_SIZE, fname_src, -1);
+<zilog>")"           safe_strcat(p3_text, "]", P3_TEXT_SIZE, fname_src, -1);
+<zilog>"["           safe_strcat(p3_text, "(", P3_TEXT_SIZE, fname_src, -1);
+<zilog>"]"           safe_strcat(p3_text, ")", P3_TEXT_SIZE, fname_src, -1);
+<zilog>.             safe_strcat(p3_text, yytext, P3_TEXT_SIZE, fname_src, -1);
+<zilog>\n    {
+    fprintf(p3_output, "%s%s", p3_text, yytext);
+    p3_text[0] = 0;
+}
 
 %%
 
-int preprocessor3(int zilogVal)
-{
-	const char* tmp0 = "~tmppre.0";
-	FILE *input;
+int preprocessor3(int zilogVal) {
+  const char* tmp0 = "~tmppre.0";
+  FILE *input;
 
-	p3_text = malloc(P3_TEXT_SIZE);
-	p3_text[0] = 0;
+  p3_text = malloc(P3_TEXT_SIZE);
+  p3_text[0] = 0;
 
-	if ((input = fopen(tmp0, "r")) == NULL)
-	{
-		fprintf(stderr, "Fatal: cannot process file %s", tmp0);
-		exit(1);
-	}
+  if ((input = fopen(tmp0, "r")) == NULL) {
+    fprintf(stderr, "Fatal: cannot process file %s", tmp0);
+    exit(1);
+  }
 
-	yyin = input;
-	p3_output = fopen("~tmppre.1","w");
+  yyin = input;
+  p3_output = fopen("~tmppre.1","w");
 
-	if(zilogVal) {
-		printf("Using standard Zilog syntax\n");
-		BEGIN(zilog);
-	}
+  if(zilogVal) {
+    printf("Using standard Zilog syntax\n");
+    BEGIN(zilog);
+  }
 
-	yylex();
+  yylex();
 
-	fclose(input);
-	fclose(p3_output);
+  fclose(input);
+  fclose(p3_output);
 
-	free(p3_text);
+  free(p3_text);
 
-	return 0;
+  return 0;
 }
