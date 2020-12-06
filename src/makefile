@@ -1,11 +1,16 @@
 all:	asmsx
 
+VERSION_STATIC = 1.0.0-beta
+DATE_STATIC = 2020-12-01
+
+VERSION := $(if $(shell git status 2>/dev/null),$(shell git describe --tags --always 2>/dev/null),$(VERSION_STATIC))
+DATE := $(if $(shell git status 2>/dev/null),$(shell git show -s --format=%as HEAD 2>/dev/null),$(DATE_STATIC))
+
 CC=gcc
 CCOSX=o64-clang
 c_files=dura.tab.c lex.yy.c lex.parser1.c lex.parser2.c lex.parser3.c asmsx.c\
 		labels.c
-OPT=-lm -O2 -Os -s -Wall -Wextra
-VERSION=1.0.beta
+OPT=-lm -O2 -Os -s -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
 
 HEADERS= asmsx.h labels.h
 

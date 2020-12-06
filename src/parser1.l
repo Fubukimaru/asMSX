@@ -174,7 +174,9 @@ extern int prompt_error1(int);
 
 %%
 
+#ifndef VERSION
 #define VERSION 
+#endif
 
 int prompt_error1(int c)
 {
