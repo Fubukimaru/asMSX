@@ -236,7 +236,7 @@ int preprocessor1(char *input_name)
 
   /* Open original source file */
   if ((p1_input_file = fopen(p1_name, "r")) == NULL) {
-    fprintf(stderr, "Fatal: cannot open %s", input_name);
+    fprintf(stderr, "Fatal: cannot open %s\n", input_name);
     exit(1);
   }
 

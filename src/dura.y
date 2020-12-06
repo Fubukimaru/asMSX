@@ -179,13 +179,13 @@ labels id_list[MAX_ID];
 %token <val> MNEMO_POP
 %token <val> MNEMO_EX
 %token <val> MNEMO_EXX
-%token <val> MNEMO_LDI 
+%token <val> MNEMO_LDI
 %token <val> MNEMO_LDIR
-%token <val> MNEMO_LDD 
+%token <val> MNEMO_LDD
 %token <val> MNEMO_LDDR
-%token <val> MNEMO_CPI 
+%token <val> MNEMO_CPI
 %token <val> MNEMO_CPIR
-%token <val> MNEMO_CPD 
+%token <val> MNEMO_CPD
 %token <val> MNEMO_CPDR
 %token <val> MNEMO_ADD
 %token <val> MNEMO_ADC
@@ -242,7 +242,7 @@ labels id_list[MAX_ID];
 %token <val> MNEMO_RETI
 %token <val> MNEMO_RETN
 %token <val> MNEMO_RST
-       
+
 %token <val> REGISTER
 %token <val> REGISTER_IX
 %token <val> REGISTER_IY
@@ -296,7 +296,7 @@ line:	pseudo_instruction EOL
 	| PREPRO_FILE TEXT EOL
 	{
 		strncpy(fname_src, $2, PATH_MAX - 1);
-        if (verbose >= 2) 
+        if (verbose >= 2)
         {
             fprintf(stderr, "Prepro file value: %s (size %i) - on pass %u\n",
                     fname_src, PATH_MAX - 1, pass);
@@ -306,7 +306,7 @@ line:	pseudo_instruction EOL
 	| PREPRO_LINE value EOL
 	{
 		lines = $2;
-        if (verbose >= 2) 
+        if (verbose >= 2)
         {
             fprintf(stderr, "Prepro line value: %i - on pass %u\n", lines, pass);
         }
@@ -353,7 +353,7 @@ pseudo_instruction: PSEUDO_ORG value
 		if (conditional[conditional_level])
 			type_megarom(0);
 	}
-	| PSEUDO_MEGAROM value 
+	| PSEUDO_MEGAROM value
 	{
 		if (conditional[conditional_level])
 			type_megarom($2);
@@ -966,7 +966,7 @@ mnemo_load16bit: MNEMO_LD REGISTER_PAIR ',' value_16bits
 			write_byte(0xed);
 			write_byte(0x4b | ($2 << 4));
 		}
-		else 
+		else
 			write_byte(0x2a);
 		write_word($5);
 	}
@@ -1433,7 +1433,7 @@ mnemo_math8bit: MNEMO_ADD REGISTER ',' REGISTER
 	{
 		if ($2 != 7)
 			error_message(4, fname_src, lines);
-		if (zilog) 
+		if (zilog)
 			warning_message(5, fname_src, lines, pass, &warnings);
 		write_byte(0xdd);
 		write_byte(0xb0 | $4);
@@ -3524,12 +3524,12 @@ void relative_jump(int direction)
 void register_label(char *name)
 {
 	int i;
-    if (verbose >= 2) 
+    if (verbose >= 2)
     {
         fprintf(stderr, "Registering label: %s - on pass %u\n", name, pass);
     }
 
-	if (pass == 2) 
+	if (pass == 2)
     {
         i = search_label(id_list, name, 0, total_global);
         if (i >= 0) { // If label found
@@ -3541,7 +3541,7 @@ void register_label(char *name)
     // Find if the label is already registered
     i = search_label(id_list, name, 0, total_global);
     if (i != -1) error_message(14, fname_src, lines); // If label found - Error, redefine, fname_src, linesd!
- 
+
 
 	if (++total_global == MAX_ID)
 		error_message(11, fname_src, lines);
@@ -3560,12 +3560,12 @@ void register_local(char *name)
 
 	if (pass == 2)
 		return;
-    
+
     if (verbose >= 2) {
         fprintf(stderr, "Registering local label: %s - on pass %u\n", name, pass);
     }
 
-    // Search if the local label is defined in our scope 
+    // Search if the local label is defined in our scope
     //  Scope starts on last_global
     i = search_label(id_list, name, last_global, total_global);
 	if (i != -1) error_message(14, fname_src, lines);
@@ -3635,7 +3635,7 @@ void register_variable(char *name, int n)
     //
 
     // Search whether the variable is defined
-    //  If it is defined, assign the new value found  
+    //  If it is defined, assign the new value found
     i = search_label_with_type(id_list, name, 0, total_global, 3);
     if (i != -1)
     {
@@ -3654,22 +3654,22 @@ void register_variable(char *name, int n)
 
 int read_label(char *name)
 {
-    if (verbose >= 2) 
+    if (verbose >= 2)
     {
         fprintf(stderr,"Reading label: %s - on pass %u\n", name, pass);
     }
 
     // Search the label
 	int i;
-    
+
     // Find the label and return its value if found.
     i = search_label(id_list, name, 0, total_global);
-    if (verbose >= 2) 
+    if (verbose >= 2)
     {
         fprintf(stderr, "- Label index in vector: %i\n", i);
     }
     if (i != -1) return id_list[i].value;
-    
+
 
     // If label not found and we're in the first pass, we leave it for the
     // second pass
@@ -3685,7 +3685,7 @@ int read_local(char *name)
 {
 	int i;
 
-	if (pass == 1) 
+	if (pass == 1)
 		return ePC;
     if (verbose >= 2)
     {
@@ -3789,7 +3789,7 @@ void write_sym()
             {
 				if (id_list[i].type == 3)
 					fprintf(f, "%4.4Xh %s\n", id_list[i].value, id_list[i].name);
-            
+
             }
         }
 
@@ -3826,14 +3826,14 @@ void include_binary(char *fname, int skip, int n)
         if (pass == 1)
             printf("\n");
     }
- 
+
 	if (skip)
 		for (i = 0; (!feof(f)) && (i < skip); i++)
 			k = fgetc(f);
- 
+
 	if (skip && feof(f))
 		error_message(29, fname_src, lines);
- 
+
 	if (n)
 	{
 		for (i = 0; (i < n) && (!feof(f));)
@@ -3962,7 +3962,7 @@ void write_bin()
 			parity = 0x20;
 			write_zx_byte(0);
 
-			for (t = 0; t < 10; t++) 
+			for (t = 0; t < 10; t++)
 				if (t < strlen(fname_no_ext))
 					write_zx_byte(fname_no_ext[t]);
 				else
@@ -4011,7 +4011,7 @@ void write_bin()
 		write_zx_byte(3);		/* Filetype (Code) */
 
 
-		for (t = 0; t < 10; t++) 
+		for (t = 0; t < 10; t++)
         {
 			if (t < strlen(fname_no_ext))
 				write_zx_byte(fname_no_ext[t]);
@@ -4045,7 +4045,7 @@ void write_bin()
 					putc(rom_buf[i], fbin);
 		}
 		else if (rom_type != MEGAROM)
-        {   
+        {
 			for (i = start_address; i < start_address + size * 1024; i++)
             {
 				putc(rom_buf[i], fbin);
@@ -4056,7 +4056,7 @@ void write_bin()
 			for (i = 0; i < size * 1024; i++)
             {
 				putc(rom_buf[i], fbin);
-            
+
             }
         }
     }
@@ -4068,7 +4068,7 @@ void finalize()
 	/* Generate the name of file with symbolic information */
 	strncpy(fname_sym, fname_no_ext, PATH_MAX - 1);
 	fname_sym = strcat(fname_sym, ".sym");
- 
+
 	write_bin();
 
 	if (cassette & 3)
@@ -4130,9 +4130,9 @@ void type_megarom(int n)
 
 	if ((pass == 1) && (!start_address))
 		error_message(19, fname_src, lines);
-/* 
+/*
 	if ((pass == 1) && ((!PC) || (!ePC)))
-		error_message(19, fname_src, lines); 
+		error_message(19, fname_src, lines);
 */
 	if ((rom_type) && (rom_type != MEGAROM))
 		error_message(20, fname_src, lines);
@@ -4256,9 +4256,9 @@ int selector(int address)
 void select_page_direct(int n, int address)
 {
 	int sel;
- 
+
 	sel = selector(address);
- 
+
 	if ((pass == 2) && (!usedpage[n]))
 		error_message(39, fname_src, lines);
 
@@ -4293,7 +4293,7 @@ int is_defined_symbol(char *name)
 {
 	int i;
     i = search_label(id_list, name, 0, total_global);
-    return(i != -1); // if not -1, found -> TRUE... 
+    return(i != -1); // if not -1, found -> TRUE...
 }
 
 
@@ -4309,118 +4309,110 @@ yyprint (file, type, value)
 }
 #endif
 
-int main(int argc, char *argv[])
-{
-	FILE *f;
-	size_t t;
-	int fileArg = 1;
+int main(int argc, char *argv[]) {
+  FILE *f;
+  size_t t;
+  int fileArg = argc - 1;
+  int option = 0;
+
+  #if YYDEBUG == 1
+  yydebug=1;
+  #endif
+
+  printf("-------------------------------------------------------------------------------\n");
+  printf(" asMSX v.%s. MSX cross-assembler. asMSX Team. [%s]\n", VERSION, DATE);
+  printf("-------------------------------------------------------------------------------\n\n");
+
+  // External vars init
+  zilog = 0;
+  verbose = 1;
+
+  for (option = 0; option < argc - 1; option++) {
+
+    // Zilog compatibility mode
+    if (strcmp(argv[option], "-z") == 0) {
+      zilog = 1;
+
+    // Silent
+    } else if (strcmp(argv[option], "-s") == 0) {
+      verbose = 0;
+
+    // Very verbose
+    } else if (strcmp(argv[option], "-vv") == 0) {
+      verbose = 2;
 
     #if YYDEBUG == 1
-    yydebug=1;
+    // DEBUG
+    } else if (strcmp(argv[option], "-d") == 0) {
+      yydebug = 1;
     #endif
 
-	printf("-------------------------------------------------------------------------------\n");
-	printf(" asMSX v.%s. MSX cross-assembler. asMSX Team. [%s]\n", VERSION, DATE);
-	printf("-------------------------------------------------------------------------------\n");
+    // Invalid option
+    } else if (strncmp(argv[option], "-", 1) == 0){
+      fileArg = 0;
+    }
+  }
 
-    // TODO: Use an argument parser for this.
+  // If invalid option or not valid arguments, show help
+  if (fileArg == 0) {
+  #if YYDEBUG == 1
+    printf("Syntax: asMSX [-z|-s|-vv|-d] [file.asm]\n");
+  #else
+    printf("Syntax: asMSX [-z|-s|-vv] [file.asm]\n");
+  #endif
 
-    // External vars init
-    zilog = 0;
-    verbose = 1;
-	if (argc > 3 || argc < 2)
-	{
-		printf("Syntax: asMSX [-z] [file.asm]\n");
-		exit(0);
-	}
-	else if (argc == 3)
-	{
-		if (strcmp(argv[1], "-z") == 0)
-		{
-            // Zilog compatibility mode
-			zilog = 1;
-			fileArg = 2;
-		}
-        else if (strcmp(argv[1], "-s") == 0)
-		{
-            // Silent
-			verbose = 0;
-			fileArg = 2;
-		}
-        else if (strcmp(argv[1], "-vv") == 0)
-		{
-            // Very verbose
-			verbose = 2;
-			fileArg = 2;
-		}
-        #if YYDEBUG == 1
-        else if (strcmp(argv[1], "-d") == 0)
-		{
-            // DEBUG
-			yydebug = 1;
-			fileArg = 2;
-		}
-        #endif
-		else
-		{
-            
-            #if YYDEBUG == 1
-			printf("Syntax: asMSX [-z|-d|-v|-vv] [file.asm]\n");
-            #else
-			printf("Syntax: asMSX [-z|-v|-vv] [file.asm]\n");
-            #endif 
+    exit(0);
+  }
 
-			exit(0);
-		}
-	}
+  clock();
 
-	clock();
+  rom_buf = malloc(rom_buf_size);
+  if (!rom_buf) {
+    fprintf(stderr, "Failed to allocate %lu bytes for pointer 'rom_buf' in function '%s'\n",
+                    (unsigned long)rom_buf_size, __func__);
+    exit(1);
+  }
 
-	rom_buf = malloc(rom_buf_size);
-	if (!rom_buf)
-	{
-		fprintf(stderr, "Failed to allocate %lu bytes for pointer 'rom_buf' in function '%s'\n", (unsigned long)rom_buf_size, __func__);
-		exit(1);
-	}
-	memset(rom_buf, 0, rom_buf_size);
+  memset(rom_buf, 0, rom_buf_size);
 
-	fname_msx = malloc(PATH_MAX);
-	fname_msx[0] = 0;
-	register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
+  fname_msx = malloc(PATH_MAX);
+  fname_msx[0] = 0;
+  register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
 
-	fname_asm = malloc(PATH_MAX);		assert(fname_asm != NULL);
-	fname_src = malloc(PATH_MAX);		assert(fname_src != NULL);
-	fname_p2 = malloc(PATH_MAX);		assert(fname_p2 != NULL);
-	fname_bin = malloc(PATH_MAX);		assert(fname_bin != NULL);
-	fname_sym = malloc(PATH_MAX);		assert(fname_sym != NULL);
-	fname_txt = malloc(PATH_MAX);		assert(fname_txt != NULL);
-	fname_no_ext = malloc(PATH_MAX);	assert(fname_no_ext != NULL);
+  fname_asm = malloc(PATH_MAX);    assert(fname_asm != NULL);
+  fname_src = malloc(PATH_MAX);    assert(fname_src != NULL);
+  fname_p2 = malloc(PATH_MAX);     assert(fname_p2  != NULL);
+  fname_bin = malloc(PATH_MAX);    assert(fname_bin != NULL);
+  fname_sym = malloc(PATH_MAX);    assert(fname_sym != NULL);
+  fname_txt = malloc(PATH_MAX);    assert(fname_txt != NULL);
+  fname_no_ext = malloc(PATH_MAX); assert(fname_no_ext != NULL);
 
-	strncpy(fname_no_ext, argv[fileArg], PATH_MAX);
-	strncpy(fname_asm, fname_no_ext, PATH_MAX);
+  strncpy(fname_no_ext, argv[fileArg], PATH_MAX);
+  strncpy(fname_asm, fname_no_ext, PATH_MAX);
 
-	for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
+  for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
 
-	if (t)
-		fname_no_ext[t] = 0;
-	else
-		strcat(fname_asm, ".asm");
+  if (t) {
+    fname_no_ext[t] = 0;
+  } else {
+    strcat(fname_asm, ".asm");
+  }
 
-	/* Generate the name of binary file */
-	strncpy(fname_bin, fname_no_ext, PATH_MAX);
+  /* Generate the name of binary file */
+  strncpy(fname_bin, fname_no_ext, PATH_MAX);
 
-	preprocessor1(fname_asm);
-	preprocessor3(zilog);
-	snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor2());
-	printf("Assembling source file %s\n", fname_asm);
+  preprocessor1(fname_asm);
+  preprocessor3(zilog);
+  snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor2());
+  printf("Assembling source file %s\n", fname_asm);
 
-	conditional[0] = 1;
+  conditional[0] = 1;
 
-	f = fopen(fname_p2, "r");
-	yyin = f;
+  f = fopen(fname_p2, "r");
+  yyin = f;
 
-	yyparse();
+  yyparse();
 
-	remove("~tmppre.?");
-	return 0;
+  remove("~tmppre.?");
+  return 0;
 }
