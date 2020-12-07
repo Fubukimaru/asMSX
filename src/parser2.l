@@ -35,7 +35,7 @@ int prompt_error2(int);
     BEGIN(line);
 }
 
-<line>.?rept[ \t]+        BEGIN(repnum);
+<line>"."?rept[ \t]+        BEGIN(repnum);
 
 <line>.  {
     safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, -1);
@@ -49,7 +49,7 @@ int prompt_error2(int);
     BEGIN(rept);
 }
 
-<rept>.?rept[ \t]+[0-9]+[ \t]*  {
+<rept>"."?rept[ \t]+[0-9]+[ \t]*  {
     p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, -1);
     p2_nested++;
     p2_level++;
