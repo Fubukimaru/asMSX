@@ -3983,7 +3983,8 @@ void write_bin()
 			j += usedpage[i];
 		j >>= 1;
 		if (j < lastpage)
-		fprintf(stderr, "Warning: only %i out of %i megaROM pages are defined\n", lastpage - j, lastpage);
+		fprintf(stderr, "Warning: only %i out of %i megaROM pages are
+            defined\n", lastpage - j, lastpage + 1);
 	}
 
 	printf("Binary file %s saved\n", fname_bin);
