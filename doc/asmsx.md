@@ -378,7 +378,7 @@ of conventional sizes, such as byte and word:
 ### 2.5. Directives
 
 Directives are predefined instructions that help control the code and enable
-additional asMSX features. Remember, you can use them without first point character.
+additional asMSX features. **Remember, you can use them without first point character.**
 
 `.ZILOG` This directive will switch the use of square brackets and parentheses
 from the point it is defined on. Parentheses will be used for "memory content
@@ -685,5 +685,7 @@ using a defined symbol as argument.
 
 This snippet will generate a WAV file only if the label or variable
 tests was previously defined in the source code.
-`IFDEF` only recognize a label if it is defined before `IFDEF`.
-BEWARE! Don't use INCLUDE inside an IFDEF. It doesn't work.
+
+**BEWARE!**
+- **`IFDEF` only recognize a label if it is defined before `IFDEF`.**
+- **Don't use INCLUDE inside an IFDEF of IF. It doesn't work.**
