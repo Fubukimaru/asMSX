@@ -775,6 +775,14 @@ pseudo_instruction: PSEUDO_ORG value
 	{
 		zilog = 1;
 	}
+	| PSEUDO_ZILOG value
+	{
+		if ($2 <= 0) {
+			zilog = 0;
+		} else {
+			zilog = 1;
+		}
+	}
 	| PSEUDO_FILENAME TEXT
 	{
 		strncpy(fname_no_ext, $2, PATH_MAX - 1);
