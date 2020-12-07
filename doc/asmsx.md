@@ -687,5 +687,6 @@ This snippet will generate a WAV file only if the label or variable
 tests was previously defined in the source code.
 
 **BEWARE!**
-- **`IFDEF` only recognize a label if it is defined before `IFDEF`.**
-- **Don't use `INCLUDE` inside an `IFDEF` of `IF`. It doesn't work.**
+
+- **`IFDEF` will only recognize a label if it is defined before `IFDEF`.**
+- **Don't use `INCLUDE` inside an `IFDEF` or an `IF`. It doesn't work.**
