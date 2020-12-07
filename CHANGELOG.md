@@ -1,3 +1,15 @@
+# version 1.0.0: [07/12/2020]
+
+- Updated Readme, Changelog and Documentation (Thanks to @jamque Pull request #71 )
+- When we use reserved keywords as labels, we state it as `reserved word used  as identifier`. Issue #70 
+- MegaROM undefined page message improved.
+- We dont' allow `(whatever character)REPT` anymore. Only `REPT` or `.REPT`.
+- `PSEUDO_DS` now doesn't check if there is a memory overflow in the first pass. This prevents it to crash in presence of undefined labels and report wrong error message. Issue #62 
+- Added `.ZILOG 0` pseudo. Now we can enable and disable zilog standard parsing. Note: this needs more checking between passes. (Thanks to @duhow Pull request #72)
+- Improved argument handling (Thanks to @duhow Issue #60)
+- Windows tester works again (Thanks to @duhow)
+- Makefile improvements (Thanks to @duhow)
+
 # v.1.0 beta: [01/12/2020]
 
 - Finally the NOP bug has been fixed. This is the main reason we go to version 1.0 beta.

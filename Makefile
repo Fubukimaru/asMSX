@@ -1,6 +1,6 @@
 all: asmsx
 
-VERSION_STATIC = 1.0.0-beta
+VERSION_STATIC = 1.0.0
 DATE_STATIC    = 2020-12-01
 
 VERSION := $(if $(shell git status 2>/dev/null),$(shell git describe --tags --always 2>/dev/null),$(VERSION_STATIC))
