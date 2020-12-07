@@ -524,8 +524,14 @@ pseudo_instruction: PSEUDO_ORG value
 			PC += $2;
 			ePC += $2;
             // fprintf(stderr, "PC: %i ePC: %i\n", PC, ePC);
-			if (pass != 1 && PC > 0xffff)
-				error_message(1, fname_src, lines);
+			if (PC > 0xffff) {
+                if (pass == 1) { // Revert in case that tags are not found
+                    PC -= $2;
+                    ePC -= $2;
+                } else {
+    				error_message(1, fname_src, lines);
+                }
+            }
 		}
 	}
 	| PSEUDO_BYTE
