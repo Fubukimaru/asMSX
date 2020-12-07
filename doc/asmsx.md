@@ -94,7 +94,7 @@ asMSX will generate one or more of the following binary files:
 - __filename.com__: an executable file for MSX-DOS;
 - __filename.rom__: a binary ROM or MegaROM image file;
 - __filename.cas__: a loadable tape image file for MSX emulators. `Use BLOAD"CAS:",R` in MSX BASIC;
-- __filename.wav__: a 16 bit 44100Hz (CD quality) stereo audio file.
+- __filename.wav__: a 16 bit 44100Hz (CD quality) mono audio file.
 It can be loaded on real MSX computer via "tape in" port.
 Use `BLOAD"CAS:",R` in MSX BASIC.
 
@@ -378,7 +378,7 @@ of conventional sizes, such as byte and word:
 ### 2.5. Directives
 
 Directives are predefined instructions that help control the code and enable
-additional asMSX features.
+additional asMSX features. **Remember, you can use them without first point character.**
 
 `.ZILOG` This directive will switch the use of square brackets and parentheses
 from the point it is defined on. Parentheses will be used for "memory content
@@ -685,4 +685,8 @@ using a defined symbol as argument.
 
 This snippet will generate a WAV file only if the label or variable
 tests was previously defined in the source code.
-`IFDEF` only recognize a label if it is defined before `IFDEF`.
+
+**BEWARE!**
+
+- **`IFDEF` will only recognize a label if it is defined before `IFDEF`.**
+- **Don't use `INCLUDE` inside an `IFDEF` or an `IF`. It doesn't work.**
