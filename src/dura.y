@@ -281,7 +281,7 @@ start:	/* empty */
 	| start line
 ;
 
-line:	pseudo_instruction EOL
+line: pseudo_instruction EOL
 	| mnemo_load8bit EOL
 	| mnemo_load16bit EOL
 	| mnemo_exchange EOL
@@ -324,6 +324,50 @@ label: IDENTIFICATOR ':'
 		register_local(strtok($1, ":"));
 	}
 ;
+
+reserved_keyword: PSEUDO_CALLDOS
+| PSEUDO_CALLBIOS
+| PSEUDO_MSXDOS
+| PSEUDO_PAGE
+| PSEUDO_BASIC
+| PSEUDO_ROM
+| PSEUDO_MEGAROM
+| PSEUDO_SINCLAIR
+| PSEUDO_BIOS
+| PSEUDO_ORG
+| PSEUDO_START
+| PSEUDO_END
+| PSEUDO_DB
+| PSEUDO_DW
+| PSEUDO_DS
+| PSEUDO_EQU
+| PSEUDO_ASSIGN
+| PSEUDO_INCBIN
+| PSEUDO_SKIP
+| PSEUDO_DEBUG
+| PSEUDO_BREAK
+| PSEUDO_PRINT
+| PSEUDO_PRINTTEXT
+| PSEUDO_PRINTHEX
+| PSEUDO_PRINTFIX
+| PSEUDO_SIZE
+| PSEUDO_BYTE
+| PSEUDO_WORD
+| PSEUDO_RANDOM
+| PSEUDO_PHASE
+| PSEUDO_DEPHASE
+| PSEUDO_SUBPAGE
+| PSEUDO_SELECT
+| PSEUDO_SEARCH
+| PSEUDO_AT
+| PSEUDO_ZILOG
+| PSEUDO_FILENAME
+| PSEUDO_INT
+| PSEUDO_IF
+| PSEUDO_IFDEF
+| PSEUDO_ELSE
+| PSEUDO_ENDIF
+| PSEUDO_CASSETTE;
 
 pseudo_instruction: PSEUDO_ORG value
 	{
@@ -3124,6 +3168,10 @@ value: NUMBER
 	{
 		$$ = (int)((((float)$3 / 256) / ((float)$5 / 256)) * 256);
 	}
+    | reserved_keyword
+    {
+        error_message(16, fname_src, lines);
+    }
 ;
 
 value_real: REAL
