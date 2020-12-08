@@ -8,7 +8,7 @@
 ### 1.1. Description
 
 asMSX is an assembler for the Z80 processor with a number of extensions to make programming for MSX easy.
-It is a cross-assembler that runs on Windows or Linux PC.
+It is a cross-assembler that runs on Windows, Linux and MacOS.
 Compile time on a modern PC is near instant comparing to native MSX assemblers.
 There is no size limit on source file size. Source can be edited in any text editor.
 
@@ -64,7 +64,7 @@ Mathematical expression evaluation is switched to square brackets as separators.
 asMSX is a command-line program, so the easiest way to use it is from command prompt.
 To assemble a file use the following command:
 
-    asmsx [Optional params] filename.asm
+    asmsx [Optional parameters] filename.asm
 
 If the extension is not provided, asMSX will assume ".asm" as default.
 Source code files are expected to be plain 8-bit ASCII text files.
@@ -98,10 +98,18 @@ asMSX will generate one or more of the following binary files:
 It can be loaded on real MSX computer via "tape in" port.
 Use `BLOAD"CAS:",R` in MSX BASIC.
 
-#### 1.5.1 Commandline parameters
-In asMSX there are the following allowed parameters:
 
-- -z: Enables standard Z80 Zilog syntax without having .zilog directive in the code. 
+#### 1.5.1 Command-line parameters
+
+asMSX accepts the following parameters:
+
+- -z: enable standard Z80 Zilog syntax without having .zilog directive in the code.
+- -s: silent mode - suppress messages.
+- -vv: verbose mode - print more troubleshooting messages.
+
+If you build asMSX from source with YYDEBUG=1, there is one more parameter available:
+
+- -d: print bison debug messages
 
 
 ## 2. Assembly language
@@ -185,6 +193,137 @@ Function2:
         ...
 ```
 
+
+#### 2.2.1. Predefined labels
+
+asMSX supports the following predefined labels:
+
+| label  | value |
+|:-------|------:|
+| CHKRAM | 0000h |
+| SYNCHR | 0008h |
+| RDSLT  | 000ch |
+| CHRGTR | 0010h |
+| WRSLT  | 0014h |
+| OUTDO  | 0018h |
+| CALSLT | 001ch |
+| DCOMPR | 0020h |
+| ENASLT | 0024h |
+| GETYPR | 0028h |
+| CALLF  | 0030h |
+| KEYINT | 0038h |
+| INITIO | 003bh |
+| INIFNK | 003eh |
+| DISSCR | 0041h |
+| ENASCR | 0044h |
+| WRTVDP | 0047h |
+| RDVRM  | 004ah |
+| WRTVRM | 004dh |
+| SETRD  | 0050h |
+| SETWRT | 0053h |
+| FILVRM | 0056h |
+| LDIRMV | 0059h |
+| LDIRVM | 005ch |
+| CHGMOD | 005fh |
+| CHGCLR | 0062h |
+| NMI    | 0066h |
+| CLRSPR | 0069h |
+| INITXT | 006ch |
+| INIT32 | 006fh |
+| INIGRP | 0072h |
+| INIMLT | 0075h |
+| SETTXT | 0078h |
+| SETT32 | 007bh |
+| SETGRP | 007eh |
+| SETMLT | 0081h |
+| CALPAT | 0084h |
+| CALATR | 0087h |
+| GSPSIZ | 008ah |
+| GRPPRT | 008dh |
+| GICINI | 0090h |
+| WRTPSG | 0093h |
+| RDPSG  | 0096h |
+| STRTMS | 0099h |
+| CHSNS  | 009ch |
+| CHGET  | 009fh |
+| CHPUT  | 00a2h |
+| LPTOUT | 00a5h |
+| LPTSTT | 00a8h |
+| CNVCHR | 00abh |
+| PINLIN | 00aeh |
+| INLIN  | 00b1h |
+| QINLIN | 00b4h |
+| BREAKX | 00b7h |
+| ISCNTC | 00bah |
+| CKCNTC | 00bdh |
+| BEEP   | 00c0h |
+| CLS    | 00c3h |
+| POSIT  | 00c6h |
+| FNKSB  | 00c9h |
+| ERAFNK | 00cch |
+| DSPFNK | 00cfh |
+| TOTEXT | 00d2h |
+| GTSTCK | 00d5h |
+| GTTRIG | 00d8h |
+| GTPAD  | 00dbh |
+| GTPDL  | 00deh |
+| TAPION | 00e1h |
+| TAPIN  | 00e4h |
+| TAPIOF | 00e7h |
+| TAPOON | 00eah |
+| TAPOUT | 00edh |
+| TAPOOF | 00f0h |
+| STMOTR | 00f3h |
+| LFTQ   | 00f6h |
+| PUTQ   | 00f9h |
+| RIGHTC | 00fch |
+| LEFTC  | 00ffh |
+| UPC    | 0102h |
+| TUPC   | 0105h |
+| DOWNC  | 0108h |
+| TDOWNC | 010bh |
+| SCALXY | 010eh |
+| MAPXYC | 0111h |
+| FETCHC | 0114h |
+| STOREC | 0117h |
+| SETATR | 011ah |
+| READC  | 011dh |
+| SETC   | 0120h |
+| NSETCX | 0123h |
+| GTASPC | 0126h |
+| PNTINI | 0129h |
+| SCANR  | 012ch |
+| SCANL  | 012fh |
+| CHGCAP | 0132h |
+| CHGSND | 0135h |
+| RSLREG | 0138h |
+| WSLREG | 013bh |
+| RDVDP  | 013eh |
+| SNSMAT | 0141h |
+| PHYDIO | 0144h |
+| FORMAT | 0147h |
+| ISFLIO | 014ah |
+| OUTDLP | 014dh |
+| GETVCP | 0150h |
+| GETVC2 | 0153h |
+| KILBUF | 0156h |
+| CALBAS | 0159h |
+| SUBROM | 015ch |
+| EXTROM | 015fh |
+| CHKSLZ | 0162h |
+| CHKNEW | 0165h |
+| EOL    | 0168h |
+| BIGFIL | 016bh |
+| NSETRD | 016eh |
+| NSTWRT | 0171h |
+| NRDVRM | 0174h |
+| NWRVRM | 0177h |
+| RDBTST | 017ah |
+| WRBTST | 017dh |
+| CHGCPU | 0180h |
+| GETCPU | 0183h |
+| PCMPLY | 0186h |
+| PCMREC | 0189h |
 
 
 ### 2.3. Numeric expression
@@ -602,6 +741,10 @@ C99.
 	
 C/C++ and Pascal style multi line comments. All text between the delimiters is
 skipped during assembly.
+
+    -- Comment
+
+Ada-style single line comment.
 
 
 ### 2.7. Conditional assembly
