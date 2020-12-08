@@ -8,7 +8,7 @@
 ### 1.1. Description
 
 asMSX is an assembler for the Z80 processor with a number of extensions to make programming for MSX easy.
-It is a cross-assembler that runs on Windows or Linux PC.
+It is a cross-assembler that runs on Windows, Linux and MacOS.
 Compile time on a modern PC is near instant comparing to native MSX assemblers.
 There is no size limit on source file size. Source can be edited in any text editor.
 
@@ -64,7 +64,7 @@ Mathematical expression evaluation is switched to square brackets as separators.
 asMSX is a command-line program, so the easiest way to use it is from command prompt.
 To assemble a file use the following command:
 
-    asmsx [Optional params] filename.asm
+    asmsx [Optional parameters] filename.asm
 
 If the extension is not provided, asMSX will assume ".asm" as default.
 Source code files are expected to be plain 8-bit ASCII text files.
@@ -98,10 +98,18 @@ asMSX will generate one or more of the following binary files:
 It can be loaded on real MSX computer via "tape in" port.
 Use `BLOAD"CAS:",R` in MSX BASIC.
 
-#### 1.5.1 Commandline parameters
-In asMSX there are the following allowed parameters:
 
-- -z: Enables standard Z80 Zilog syntax without having .zilog directive in the code. 
+#### 1.5.1 Command-line parameters
+
+asMSX accepts the following parameters:
+
+- -z: enable standard Z80 Zilog syntax without having .zilog directive in the code.
+- -s: silent mode - suppress messages.
+- -vv: verbose mode - print more troubleshooting messages.
+
+If you build asMSX from source with YYDEBUG=1, there is one more parameter available:
+
+- -d: print bison debug messages
 
 
 ## 2. Assembly language
@@ -602,6 +610,10 @@ C99.
 	
 C/C++ and Pascal style multi line comments. All text between the delimiters is
 skipped during assembly.
+
+    -- Comment
+
+Ada-style single line comment.
 
 
 ### 2.7. Conditional assembly
