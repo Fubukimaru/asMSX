@@ -21,7 +21,7 @@ The asMSX team is a undefined collective that has worked on this program or has 
 
 - Eduardo Robsy
 - @cjv99 (Thanks for buying and sharing it!)
-- Ivan Nieto
+- @ibannieto
 - @theNestruo
 - @Fubukimaru
 - @oboroc
