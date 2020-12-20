@@ -1,6 +1,7 @@
 /*
   PARSER-2
   (c) Eduardo Robsy Petrus, 2000-2010
+  (c) 2013-2021 asMSX team
 
   Functions:
     1.-Unroll REPT/ENDR macro
