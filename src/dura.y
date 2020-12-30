@@ -3068,6 +3068,7 @@ value: NUMBER
 	| LOCAL_IDENTIFICATOR
 	{
 		$$ = read_local($1);
+
 	}
 	| '-' value %prec NEGATIVE
 	{
@@ -3325,8 +3326,9 @@ value_3bits: value
 
 value_8bits: value
 	{
-		if (($1 > 255) || ($1 < -128))
-			warning_message(2, fname_src, lines, pass, &warnings);
+        if (($1 > 255) || ($1 < -128)) {
+            warning_message(2, fname_src, lines, pass, &warnings);
+        }
 		$$ = $1 & 0xff;
 	}
 ;
@@ -3652,7 +3654,7 @@ void register_symbol(char *name, int n, int _rom_type)
 		return;
 
     if (verbose >= 2) {
-        fprintf(stderr, "Registering symbol: %s - on pass %u\n", name, pass);
+        fprintf(stderr, "Registering symbol: %s equ %d - on pass %u\n", name, n, pass);
     }
 
     // Search if the symbol is defined. Error if found

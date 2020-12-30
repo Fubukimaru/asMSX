@@ -603,13 +603,13 @@ void warning_message(int n, char *fname_src, int lines, int pass,
     sprintf(error_buffer, "undefined error\n");
     break;
   case 1:
-    sprintf(error_buffer, "16-bit overflow. Cropping to fit 16 bits.\n");
+    sprintf(error_buffer, "16-bit overflow. Cropping to fit 16 bits. If it's a label, it may not be defined.\n");
     break;
   case 2:
-    sprintf(error_buffer, "8-bit overflow. Cropping to fit 8 bits.\n");
+    sprintf(error_buffer, "8-bit overflow. Cropping to fit 8 bits. If it's a label, it may not be defined.\n");
     break;
   case 3:
-    sprintf(error_buffer, "3-bit overflow. Cropping to fit 3 bits.\n");
+    sprintf(error_buffer, "3-bit overflow. Cropping to fit 3 bits. If it's a label, it may not be defined.\n");
     break;
   case 4:
     sprintf(error_buffer, "output cannot be converted to CAS\n");
