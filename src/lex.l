@@ -410,11 +410,10 @@ random  return PSEUDO_RANDOM;
 }
 
 \"[^\"\n]+\"   {
-    // TODO: Does strtok return a new array?
-    // Also, I assume that it's called twice so that we get
-    // the second token...?
+    // strtok works on the original string, we need to duplicate it.
+    // Related to incbin NOP bug
     yylval.txt = strtok(yytext, "\"");
-    yylval.txt = strtok(yytext, "\"");
+    yylval.txt = strdup(strtok(yytext, "\""));
     return TEXT;
 }
 
