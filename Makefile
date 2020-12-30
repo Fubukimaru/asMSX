@@ -60,7 +60,11 @@ else
 endif
 
 src/lex.%.c: src/%.l
+ifeq ($(MAKECMDGOALS),asmsx-debug)
+	flex -d -o $@ -i -P$(notdir $(basename $<)) $<
+else
 	flex -o $@ -i -P$(notdir $(basename $<)) $<
+endif
 
 src/%.o: src/%.c
 	$(CC) -c $< -o $@ $(OPT)
