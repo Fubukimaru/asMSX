@@ -51,16 +51,13 @@ extern int prompt_error1(int);
 
 <inclusion>[ \t]*  /* strip spaces and tabs */
 
-<inclusion>[^ \t\n]+  {
+<inclusion>[^ \t\n]+[ \t]*\n?  {
     // 0.18.4 Hotfix Unterminated string (Spaces at the end of the the include)
     // - Bad fix. Fix with flex grammar properly
+    int i;
     if (p1_tmpstr == NULL) {
       p1_tmpstr = strtok(yytext, "\"");
     }
-}
-
-<inclusion>[ \t]*\n  {
-    int i;
 
     if (p1_tmpstr == NULL) {
       prompt_error1(5);
