@@ -114,10 +114,10 @@ int preprocessor2() {
   p2_text = malloc(P2_TEXT_SIZE);
   p2_buffer = malloc(P2_BUFF_SIZE);
   p2_text[0] = 0;
-  printf("Expanding system macros\n");
+  printf("Expanding REPT\n");
 
   do {
-    snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 1);
+    snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 2);
 
     if ((input = fopen(filename, "r")) == NULL) {
       fprintf(stderr, "Fatal: cannot process file %s\n", filename);
@@ -128,7 +128,7 @@ int preprocessor2() {
 
     loop++;
 
-    snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 1);
+    snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 2);
 
     p2_output = fopen(filename, "w");
     p2_level = 0;
@@ -140,5 +140,5 @@ int preprocessor2() {
     fclose(p2_output);
   } while (p2_level);
 
-  return loop + 1;
+  return loop + 2;
 }

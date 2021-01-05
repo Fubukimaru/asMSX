@@ -31,6 +31,7 @@ extern int yylex(void);
 int preprocessor1(char *);	/* defined in parser1.l */
 int preprocessor2();		/* defined in parser2.l */
 int preprocessor3(int);		/* defined in parser3.l */
+int preprocessor4();		/* defined in parser4.l */
 
 /* forward function declarations to address GCC -Wimplicit-function-declaration warnings */
 void yyerror(char *);
@@ -4465,9 +4466,10 @@ int main(int argc, char *argv[]) {
   /* Generate the name of binary file */
   strncpy(fname_bin, fname_no_ext, PATH_MAX);
 
-  preprocessor1(fname_asm);
-  preprocessor3(zilog);
-  snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor2());
+  preprocessor1(fname_asm); // INCLUDES & spaces
+  preprocessor3(zilog);     // Zilog
+  preprocessor4();          //Macros
+  snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor2()); // REPT
   printf("Assembling source file %s\n", fname_asm);
 
   conditional[0] = 1;
