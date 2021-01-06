@@ -68,6 +68,7 @@ void register_macro_parameters();
 
     macro_list[last_macro].n_params = 0;
     macro_list[last_macro].code = malloc(MACRO_CODE_SIZE);
+    macro_list[last_macro].code[0] = '\0';
 
     p4_tmpstr = strtok(NULL, " ,\t"); // skip "macro"
     p4_tmpstr = strtok(NULL, " ,\t"); // skip "macro"
@@ -103,6 +104,7 @@ void register_macro_parameters();
 
     macro_list[last_macro].n_params = 0;
     macro_list[last_macro].code = malloc(MACRO_CODE_SIZE);
+    macro_list[last_macro].code[0] = '\0';
 
     p4_tmpstr = strtok(NULL, " \t,"); // point to first param
     register_macro_parameters(); 
