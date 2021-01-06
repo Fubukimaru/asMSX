@@ -167,6 +167,7 @@
     <ClCompile Include="lex.parser1.c" />
     <ClCompile Include="lex.parser2.c" />
     <ClCompile Include="lex.parser3.c" />
+    <ClCompile Include="lex.parser4.c" />
     <ClCompile Include="lex.yy.c">
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Level3</WarningLevel>
@@ -256,6 +257,21 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing GNU Flex processing on parser3.l</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lex.parser3.c</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lex.parser3.c</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\src\parser4.l">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">win_flex.exe --wincompat -i -Pparser4 -olex.parser4.c $(ProjectDir)..\..\..\src\parser4.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">win_flex.exe --wincompat -i -Pparser4 -olex.parser4.c $(ProjectDir)..\..\..\src\parser4.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Performing GNU Flex processing on parser4.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing GNU Flex processing on parser4.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lex.parser4.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lex.parser4.c</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">win_flex.exe --wincompat -i -Pparser4 -olex.parser4.c $(ProjectDir)..\..\..\src\parser4.l</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">win_flex.exe --wincompat -i -Pparser4 -olex.parser4.c $(ProjectDir)..\..\..\src\parser4.l</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Performing GNU Flex processing on parser4.l</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Performing GNU Flex processing on parser4.l</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lex.parser4.c</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lex.parser4.c</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
