@@ -134,7 +134,8 @@ char* add_lines_to_macro(char *code);
 
             if (verbose >=2) {
                 fprintf(stderr, "With params:\n");
-                fprintf(stderr, "   %i -> %s\n", param_count, param);
+                fprintf(stderr, "   %s <- %s\n", 
+                    macro_list[macro_id].params[param_count], param);
             }
             for (param_count=1; param_count < macro_param_num; ++param_count) {
                 p4_tmpstr = strtok(NULL, " ,");
@@ -147,7 +148,8 @@ char* add_lines_to_macro(char *code);
                 param[0] = '\0';
                 strncat(param, p4_tmpstr, strlen(p4_tmpstr));
                 if (verbose >=2) {
-                    fprintf(stderr, "   %i -> %s\n", param_count, param);
+                    fprintf(stderr, "   %s <- %s\n", 
+                        macro_list[macro_id].params[param_count], param);
                 }
 
                 // Substitute param
