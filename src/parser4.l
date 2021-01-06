@@ -41,7 +41,8 @@ char* add_lines_to_macro(char *code);
 }
 
 
-<line>[a-z_][a-z0-9_]*:[ \t]+"."?macro[ \t]*((#[a-z_][a-z0-9_]*)(,[ \t]*(#[a-z_][a-z0-9_]*))*)? {
+<line>[a-z_][a-z0-9_]*:[ \t]+"."?macro[ \t]*(((#|@)[a-z_][a-z0-9_]*)(,[ \t]*((#|@)[a-z_][a-z0-9_]*))*)? {
+    // Cromenco (Rodnay book) and Compass syntax
     // Macro reg - Fubu: I'm sorry for this code. I'll fix it... eventually.
     if (last_macro > MAX_MACROS) {
         prompt_error4(3);
@@ -68,10 +69,10 @@ char* add_lines_to_macro(char *code);
 
 
     // Get params
-    p4_tmpstr = strtok(NULL, " #,"); // skip "macro"
-    p4_tmpstr = strtok(NULL, " #,"); // skip "macro"
+    p4_tmpstr = strtok(NULL, " ,"); // skip "macro"
+    p4_tmpstr = strtok(NULL, " ,"); // skip "macro"
     if (verbose >=2) {
-        fprintf(stderr, "With params: %s\n", p4_tmpstr);
+        fprintf(stderr, "With params:\n");
     }
     while (p4_tmpstr != NULL) { // Do we have param?
         int curr_param = macro_list[last_macro].n_params;
@@ -80,17 +81,17 @@ char* add_lines_to_macro(char *code);
         }
         
         macro_list[last_macro].params[curr_param] = malloc(strlen(p4_tmpstr)+1);
-        macro_list[last_macro].params[curr_param][0] = '#';
-        macro_list[last_macro].params[curr_param][1] = '\0';
+        //macro_list[last_macro].params[curr_param][0] = '#';
+        macro_list[last_macro].params[curr_param][0] = '\0';
         strncat(macro_list[last_macro].params[curr_param], p4_tmpstr, 
                 strlen(p4_tmpstr));
         if (verbose >=2) {
-            fprintf(stderr, "- %s\n",
+            fprintf(stderr, "\t%s\n",
                     macro_list[last_macro].params[curr_param]);
         }
     
         if (p4_tmpstr != NULL) {  // If there is something, prepare for next
-            p4_tmpstr = strtok(NULL, " #,");
+            p4_tmpstr = strtok(NULL, " ,");
         }
         ++macro_list[last_macro].n_params;
     }
@@ -136,7 +137,7 @@ char* add_lines_to_macro(char *code);
 
             if (verbose >=2) {
                 fprintf(stderr, "With params:\n");
-                fprintf(stderr, "   %s <- %s\n", 
+                fprintf(stderr, "\t%s <- %s\n", 
                     macro_list[macro_id].params[param_count], param);
             }
             for (param_count=1; param_count < macro_param_num; ++param_count) {
@@ -182,7 +183,7 @@ char* add_lines_to_macro(char *code);
 }
 
 
-<macro_code>(endm|endmacro)\n?  {
+<macro_code>"."?(endm|endmacro)\n?  {
     //FINISH macro reg
     // Remove last \n
     macro_list[last_macro].code[strlen(macro_list[last_macro].code)-1] = '\0';
