@@ -52,6 +52,9 @@ char* add_lines_to_macro(char *code);
 
     // Get name
     p4_tmpstr = strtok(yytext, ":");
+    if (get_macro_id(p4_tmpstr) >= 0) { // Macro redefinition error
+        prompt_error4(6);
+    }
     macro_list[last_macro].name = malloc(strlen(p4_tmpstr)+1);
     macro_list[last_macro].name[0] = '\0';
     strncat(macro_list[last_macro].name, yytext, strlen(p4_tmpstr));
@@ -64,8 +67,7 @@ char* add_lines_to_macro(char *code);
     macro_list[last_macro].code = malloc(MACRO_CODE_SIZE);
 
 
-    // AAAAA PARAMU!
-    // Get param
+    // Get params
     p4_tmpstr = strtok(NULL, " #,"); // skip "macro"
     p4_tmpstr = strtok(NULL, " #,"); // skip "macro"
     if (verbose >=2) {
@@ -260,6 +262,9 @@ int prompt_error4(int c) {
       break;
     case 5:
       fprintf(stderr, "Wrong number of parameters for the macro. Given more than required.\n");
+      break;
+    case 6:
+      fprintf(stderr, "Macro redefinition.\n");
       break;
     default:
       fprintf(stderr, "Unknown error in prompt_error4()\n");
