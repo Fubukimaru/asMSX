@@ -25,6 +25,7 @@ int prompt_error4(int);
 int get_macro_id(char*);
 char* resolve_param_code(char *code, char *param_name, char *param); 
 char* add_lines_to_macro(char *code);
+void register_macro_parameters();
 %}
 
 %option noinput nounput noyywrap
@@ -58,47 +59,58 @@ char* add_lines_to_macro(char *code);
     }
     macro_list[last_macro].name = malloc(strlen(p4_tmpstr)+1);
     macro_list[last_macro].name[0] = '\0';
-    strncat(macro_list[last_macro].name, yytext, strlen(p4_tmpstr));
+    strncat(macro_list[last_macro].name, p4_tmpstr, strlen(p4_tmpstr));
 
     if (verbose >=2) {
-        fprintf(stderr, "Registering macro: %s\n", macro_list[last_macro].name);
+        fprintf(stderr, "Registering macro [line %i]: %s\n", p4_lines,
+            macro_list[last_macro].name);
     }
 
     macro_list[last_macro].n_params = 0;
     macro_list[last_macro].code = malloc(MACRO_CODE_SIZE);
 
-
-    // Get params
-    p4_tmpstr = strtok(NULL, " ,"); // skip "macro"
-    p4_tmpstr = strtok(NULL, " ,"); // skip "macro"
-    if (verbose >=2) {
-        fprintf(stderr, "With params:\n");
-    }
-    while (p4_tmpstr != NULL) { // Do we have param?
-        int curr_param = macro_list[last_macro].n_params;
-        if (curr_param >= MACRO_MAX_PARAM) {
-            prompt_error4(2);
-        }
-        
-        macro_list[last_macro].params[curr_param] = malloc(strlen(p4_tmpstr)+1);
-        //macro_list[last_macro].params[curr_param][0] = '#';
-        macro_list[last_macro].params[curr_param][0] = '\0';
-        strncat(macro_list[last_macro].params[curr_param], p4_tmpstr, 
-                strlen(p4_tmpstr));
-        if (verbose >=2) {
-            fprintf(stderr, "\t%s\n",
-                    macro_list[last_macro].params[curr_param]);
-        }
+    p4_tmpstr = strtok(NULL, " ,\t"); // skip "macro"
+    p4_tmpstr = strtok(NULL, " ,\t"); // skip "macro"
+    register_macro_parameters(); 
     
-        if (p4_tmpstr != NULL) {  // If there is something, prepare for next
-            p4_tmpstr = strtok(NULL, " ,");
-        }
-        ++macro_list[last_macro].n_params;
-    }
-
     // Finished parsing params - Parsing code
     BEGIN(macro_code); 
 }
+
+<line>"."?macro[ \t]+[a-z_][a-z0-9_]*[ \t]*(((#|@)[a-z_][a-z0-9_]*)(,[ \t]*((#|@)[a-z_][a-z0-9_]*))*)? {
+    // Sjasm syntax
+    if (last_macro > MAX_MACROS) {
+        prompt_error4(3);
+    }
+
+    // Remove previous #line as the macro line is not passed to the next file
+    p4_text[0] = '\0';
+
+    // Get name
+    p4_tmpstr = strtok(yytext, " \t,"); 
+    p4_tmpstr = strtok(NULL, " \t,"); // Skip Macro
+    if (get_macro_id(p4_tmpstr) >= 0) { // Macro redefinition error
+        prompt_error4(6);
+    }
+    macro_list[last_macro].name = malloc(strlen(p4_tmpstr)+1);
+    macro_list[last_macro].name[0] = '\0';
+    strncat(macro_list[last_macro].name, p4_tmpstr, strlen(p4_tmpstr));
+
+    if (verbose >=2) {
+        fprintf(stderr, "Registering macro [line %i]: %s\n", p4_lines,
+            macro_list[last_macro].name);
+    }
+
+    macro_list[last_macro].n_params = 0;
+    macro_list[last_macro].code = malloc(MACRO_CODE_SIZE);
+
+    p4_tmpstr = strtok(NULL, " \t,"); // point to first param
+    register_macro_parameters(); 
+    
+    // Finished parsing params - Parsing code
+    BEGIN(macro_code); 
+}
+
 
 
 
@@ -151,7 +163,7 @@ char* add_lines_to_macro(char *code);
                 param[0] = '\0';
                 strncat(param, p4_tmpstr, strlen(p4_tmpstr));
                 if (verbose >=2) {
-                    fprintf(stderr, "   %s <- %s\n", 
+                    fprintf(stderr, "\t%s <- %s\n", 
                         macro_list[macro_id].params[param_count], param);
                 }
 
@@ -244,6 +256,33 @@ char* add_lines_to_macro(char *code) {
     return clean_code;
 }
 
+void register_macro_parameters() {
+    // Get params - We assume that strtok has already been used to process the
+    // line and we have there the first parameter.
+    if (verbose >=2) {
+        fprintf(stderr, "With params:\n");
+    }
+    while (p4_tmpstr != NULL) { // Do we have param?
+        int curr_param = macro_list[last_macro].n_params;
+        if (curr_param >= MACRO_MAX_PARAM) {
+            prompt_error4(2);
+        }
+        
+        macro_list[last_macro].params[curr_param] = malloc(strlen(p4_tmpstr)+1);
+        macro_list[last_macro].params[curr_param][0] = '\0';
+        strncat(macro_list[last_macro].params[curr_param], p4_tmpstr, 
+                strlen(p4_tmpstr));
+        if (verbose >=2) {
+            fprintf(stderr, "\t%s\n",
+                    macro_list[last_macro].params[curr_param]);
+        }
+    
+        if (p4_tmpstr != NULL) {  // If there is something, prepare for next
+            p4_tmpstr = strtok(NULL, " ,");
+        }
+        ++macro_list[last_macro].n_params;
+    }
+}
 
 
 int prompt_error4(int c) {
