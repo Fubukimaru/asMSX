@@ -127,6 +127,7 @@ void register_macro_parameters();
     instr[0] = '\0';
     strncat(instr, p4_tmpstr, strlen(p4_tmpstr));
     macro_id = get_macro_id(instr);
+    free(instr);
     if (macro_id != -1) { // Macro found
         if (verbose >=2) {
             fprintf(stderr, "Found macro: %s\n", macro_list[macro_id].name);
@@ -187,7 +188,6 @@ void register_macro_parameters();
         macro_src = add_lines_to_macro(macro_src);
         safe_strcat(p4_text, macro_src, P4_TEXT_SIZE, fname_src, -1);
         // Free previous code
-        free(macro_src_tmp); 
         free(macro_src); 
     } else {
         safe_strcat(p4_text, yytext, P4_TEXT_SIZE, fname_src, -1);
