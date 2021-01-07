@@ -1,0 +1,8 @@
+* text=auto
+
+*.c text
+*.h text
+*.sln text eol=crlf
+
+# ignore folder for stats
+code/* linguist-vendored
