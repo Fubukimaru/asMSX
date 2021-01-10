@@ -4362,18 +4362,6 @@ int is_defined_symbol(char *name)
 }
 
 
-#if YYDEBUG == 1
-#define YYPRINT(file, type, value)   yyprint (file, type, value)
-static void
-yyprint (file, type, value)
-     FILE *file;
-     int type;
-     YYSTYPE value;
-{
-    fprintf (file, " %u %s", type, value);
-}
-#endif
-
 int main(int argc, char *argv[]) {
   FILE *f;
   size_t t;
