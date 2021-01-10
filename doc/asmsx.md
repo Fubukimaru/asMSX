@@ -25,7 +25,7 @@ There is no size limit on source file size. Source can be edited in any text edi
 - supports multiple files through inclusion, nesting is allowed;
 - supports complete or partial direct inclusion of binary files;
 - supports local and global labels;
-- supports official MSX BIOS subroutines using documented names;
+- supports official MSX BIOS subroutines and system variables using documented names;
 - generates binary files loadable from MSX BASIC;
 - generates ROM image files;
 - supports four MegaROM types: Konami, Konami SCC, ASCII8 and ASCII16;
@@ -549,7 +549,12 @@ arithmetic operations with variables.
 
 `.BIOS` Predefined call address for common BIOS routines, including those
 specified in the MSX, MSX2, MSX2+ and Turbo-R standards. The usual names are
-used in upper case.
+used in upper case. Can be found in asMSX code at the function `msx_bios()` in
+`dura.y`.
+
+`.BIOSVARS` Predefined system variables. List can be found in
+[Grauw's listing](http://map.grauw.nl/resources/msxsystemvars.php) or in asMSX
+code at the function `msx_bios_vars()` in `dura.y`.
 
 `.ROM` Indicates that a ROM header should be generated. It is important to use
 .PAGE directive first to define start address. .START directive can be used to
