@@ -305,6 +305,7 @@ m {
 "."?msxdos/[ \t\n]+     return PSEUDO_MSXDOS;
 "."?sinclair/[ \t\n]+   return PSEUDO_SINCLAIR;
 "."?bios/[ \t\n]+       return PSEUDO_BIOS;
+"."?biosvars/[ \t\n]+   return PSEUDO_BIOSVARS;
 "."?org/[ \t\n]+        return PSEUDO_ORG;
 "."?start/[ \t\n]+      return PSEUDO_START;
 "."?byte/[ \t\n]+       return PSEUDO_BYTE;

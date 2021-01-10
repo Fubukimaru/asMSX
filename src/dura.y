@@ -43,6 +43,7 @@ void type_basic();
 void type_msxdos();
 void type_sinclair();
 void msx_bios();
+void msx_bios_vars();
 void locate_32k();
 void create_subpage(int, int);
 void select_page_direct(int, int);
@@ -70,7 +71,7 @@ int subpage, pagesize, lastpage, mapper, pageinit;
 int usedpage[256];
 int start_address = 0xffff, end_address = 0x0000;
 int run_address = 0, warnings = 0, lines, parity;
-int pass = 1, bios = 0, rom_type = 0;
+int pass = 1, bios = 0, biosvars = 0, rom_type = 0;
 int conditional[16];
 int conditional_level = 0, total_global = 0, last_global = 0;
 int maxpage[4] = {32, 64, 256, 256};
@@ -119,6 +120,7 @@ labels id_list[MAX_ID];
 %token <val> PSEUDO_MEGAROM
 %token <val> PSEUDO_SINCLAIR
 %token <val> PSEUDO_BIOS
+%token <val> PSEUDO_BIOSVARS
 %token <val> PSEUDO_ORG
 %token <val> PSEUDO_START
 %token <val> PSEUDO_END
@@ -335,6 +337,7 @@ reserved_keyword: PSEUDO_CALLDOS
 | PSEUDO_MEGAROM
 | PSEUDO_SINCLAIR
 | PSEUDO_BIOS
+| PSEUDO_BIOSVARS
 | PSEUDO_ORG
 | PSEUDO_START
 | PSEUDO_END
@@ -424,6 +427,14 @@ pseudo_instruction: PSEUDO_ORG value
 		{
 			if (!bios)
 				msx_bios();
+		}
+	}
+	| PSEUDO_BIOSVARS
+	{
+		if (conditional[conditional_level])
+		{
+			if (!biosvars)
+				msx_bios_vars();
 		}
 	}
 	| PSEUDO_PAGE value
@@ -3510,6 +3521,158 @@ void msx_bios()
 	register_symbol("GETCPU", 0x0183, 0);
 	register_symbol("PCMPLY", 0x0186, 0);
 	register_symbol("PCMREC", 0x0189, 0);
+}
+
+
+void msx_bios_vars()
+{
+	biosvars = 1;
+	/* BIOS variables */
+    register_symbol("CGTABL", 0x0004, 0);
+    register_symbol("VDP_DR", 0x0006, 0);
+    register_symbol("VDP_DW", 0x0007, 0);
+    register_symbol("MSXID1", 0x002b, 0); /* not standard name */
+    register_symbol("MSXID2", 0x002c, 0); /* not standard name */
+    register_symbol("MSXID3", 0x002d, 0); /* not standard name */
+    /* MSX System Variables located in RAM */
+    register_symbol("RDPRIM", 0xf380, 0);
+    register_symbol("WRPRIM", 0xf385, 0);
+    register_symbol("CLPRIM", 0xf38c, 0);
+    register_symbol("LINL40", 0xf3ae, 0);
+    register_symbol("LINL32", 0xf3af, 0);
+    register_symbol("LINLEN", 0xf3b0, 0);
+    register_symbol("CRTCNT", 0xf3b1, 0);
+    register_symbol("CLMLST", 0xf3b2, 0);
+    register_symbol("TXTNAM", 0xf3b3, 0);
+    register_symbol("TXTCOL", 0xf3b5, 0);
+    register_symbol("TXTCGP", 0xf3b7, 0);
+    register_symbol("TXTATR", 0xf3b9, 0);
+    register_symbol("TXTPAT", 0xf3bb, 0);
+    register_symbol("T32NAM", 0xf3bd, 0);
+    register_symbol("T32COL", 0xf3bf, 0);
+    register_symbol("T32CGP", 0xf3c1, 0);
+    register_symbol("T32ATR", 0xf3c3, 0);
+    register_symbol("T32PAT", 0xf3c5, 0);
+    register_symbol("GRPNAM", 0xf3c7, 0);
+    register_symbol("GRPCOL", 0xf3c9, 0);
+    register_symbol("GRPCGP", 0xf3cb, 0);
+    register_symbol("GRPATR", 0xf3cd, 0);
+    register_symbol("GRPPAT", 0xf3cf, 0);
+    register_symbol("MLTNAM", 0xf3d1, 0);
+    register_symbol("MLTCOL", 0xf3d3, 0);
+    register_symbol("MLTCGP", 0xf3d5, 0);
+    register_symbol("MLTATR", 0xf3d7, 0);
+    register_symbol("MLTPAT", 0xf3d9, 0);
+    register_symbol("CLIKSW", 0xf3db, 0);
+    register_symbol("CSRY", 0xf3dc, 0);
+    register_symbol("CSRX", 0xf3dd, 0);
+    register_symbol("CNSDFG", 0xf3de, 0);
+    register_symbol("RG0SAV", 0xf3df, 0);
+    register_symbol("RG1SAV", 0xf3e0, 0);
+    register_symbol("RG2SAV", 0xf3e1, 0);
+    register_symbol("RG3SAV", 0xf3e2, 0);
+    register_symbol("RG4SAV", 0xf3e3, 0);
+    register_symbol("RG5SAV", 0xf3e4, 0);
+    register_symbol("RG6SAV", 0xf3e5, 0);
+    register_symbol("RG7SAV", 0xf3e6, 0);
+    register_symbol("STATFL", 0xf3e7, 0);
+    register_symbol("TRGFLG", 0xf3e8, 0);
+    register_symbol("FORCLR", 0xf3e9, 0);
+    register_symbol("BAKCLR", 0xf3ea, 0);
+    register_symbol("BDRCLR", 0xf3eb, 0);
+    register_symbol("MAXUPD", 0xf3ec, 0);
+    register_symbol("MINUPD", 0xf3ef, 0);
+    register_symbol("ATRBYT", 0xf3f2, 0);
+    register_symbol("QUEUES", 0xf3f3, 0);
+    register_symbol("FRCNEW", 0xf3f5, 0);
+    register_symbol("SCNCNT", 0xf3f6, 0);
+    register_symbol("REPCNT", 0xf3f7, 0);
+    register_symbol("PUTPNT", 0xf3f8, 0);
+    register_symbol("GETPNT", 0xf3fa, 0);
+    register_symbol("CS120", 0xf3fc, 0);
+    register_symbol("CS240", 0xf401, 0);
+    register_symbol("LOW", 0xf406, 0);
+    register_symbol("HIGH", 0xf408, 0);
+    register_symbol("HEADER", 0xf40a, 0);
+    register_symbol("ASPCT1", 0xf40b, 0);
+    register_symbol("ASPCT2", 0xf40d, 0);
+    register_symbol("ENDPRG", 0xf40f, 0);
+    register_symbol("ERRFLG", 0xf414, 0);
+    register_symbol("LPTPOS", 0xf415, 0);
+    register_symbol("PRTFLG", 0xf416, 0);
+    register_symbol("NTMSXP", 0xf417, 0);
+    register_symbol("RAWPRT", 0xf418, 0);
+    register_symbol("VLZADR", 0xf419, 0);
+    register_symbol("VLZDAT", 0xf41b, 0);
+    register_symbol("CURLIN", 0xf41c, 0);
+    register_symbol("EXBRSA", 0xfaf8, 0);
+    register_symbol("PRSCNT", 0xfb35, 0);
+    register_symbol("SAVSP", 0xfb36, 0);
+    register_symbol("VOICEN", 0xfb38, 0);
+    register_symbol("SAVVOL", 0xfb39, 0);
+    register_symbol("MCLLEN", 0xfb3b, 0);
+    register_symbol("MCLPTR", 0xfb3c, 0);
+    register_symbol("QUEUEN", 0xfb3e, 0);
+    register_symbol("MUSICF", 0xfb3f, 0);
+    register_symbol("PLYCNT", 0xfb40, 0);
+    register_symbol("VCBA", 0xfb41, 0);
+    register_symbol("VCBB", 0xfb66, 0);
+    register_symbol("VCBC", 0xfb8b, 0);
+    register_symbol("ENSTOP", 0xfbb0, 0);
+    register_symbol("BASROM", 0xfbb1, 0);
+    register_symbol("LINTTB", 0xfbb2, 0);
+    register_symbol("FSTPOS", 0xfbca, 0);
+    register_symbol("CODSAV", 0xfbcc, 0);
+    register_symbol("FNKSWI", 0xfbcd, 0);
+    register_symbol("FNKFLG", 0xfbce, 0);
+    register_symbol("ONGSBF", 0xfbd8, 0);
+    register_symbol("CLIKFL", 0xfbd9, 0);
+    register_symbol("OLDKEY", 0xfbda, 0);
+    register_symbol("NEWKEY", 0xfbe5, 0);
+    register_symbol("KEYBUF", 0xfbf0, 0);
+    register_symbol("BUFEND", 0xfc18, 0);
+    register_symbol("LINWRK", 0xfc18, 0);
+    register_symbol("PATWRK", 0xfc40, 0);
+    register_symbol("BOTTOM", 0xfc48, 0);
+    register_symbol("HIMEM ", 0xfc4a, 0);
+    register_symbol("TRPTBL", 0xfc4c, 0);
+    register_symbol("RTYCNT", 0xfc9a, 0);
+    register_symbol("INTFLG", 0xfc9b, 0);
+    register_symbol("PADY", 0xfc9c, 0);
+    register_symbol("PADX", 0xfc9d, 0);
+    register_symbol("JIFFY", 0xfc9e, 0);
+    register_symbol("INTVAL", 0xfca0, 0);
+    register_symbol("INTCNT", 0xfca2, 0);
+    register_symbol("LOWLIM", 0xfca4, 0);
+    register_symbol("WINWID", 0xfca5, 0);
+    register_symbol("GRPHED", 0xfca6, 0);
+    register_symbol("ESCCNT", 0xfca7, 0);
+    register_symbol("INSFLG", 0xfca8, 0);
+    register_symbol("CSRSW", 0xfca9, 0);
+    register_symbol("CSTYLE", 0xfcaa, 0);
+    register_symbol("CAPST", 0xfcab, 0);
+    register_symbol("KANAST", 0xfcac, 0);
+    register_symbol("KANAMD", 0xfcad, 0);
+    register_symbol("FLBMEM", 0xfcae, 0);
+    register_symbol("SCRMOD", 0xfcaf, 0);
+    register_symbol("OLDSCR", 0xfcb0, 0);
+    register_symbol("CASPRV", 0xfcb1, 0);
+    register_symbol("BRDATR", 0xfcb2, 0);
+    register_symbol("GXPOS", 0xfcb3, 0);
+    register_symbol("GYPOS", 0xfcb5, 0);
+    register_symbol("GRPACX", 0xfcb7, 0);
+    register_symbol("GRPACY", 0xfcb9, 0);
+    register_symbol("DRWFLG", 0xfcbb, 0);
+    register_symbol("DRWSCL", 0xfcbc, 0);
+    register_symbol("DRWANG", 0xfcbd, 0);
+    register_symbol("RUNBNF", 0xfcbe, 0);
+    register_symbol("SAVENT", 0xfcbf, 0);
+    register_symbol("EXPTBL", 0xfcc1, 0);
+    register_symbol("SLTTBL", 0xfcc5, 0);
+    register_symbol("SLTATR", 0xfcc9, 0);
+    register_symbol("SLTWRK", 0xfd09, 0);
+    register_symbol("PROCNM", 0xfd89, 0);
+    register_symbol("DEVICE", 0xfd99, 0);
 }
 
 
