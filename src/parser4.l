@@ -16,7 +16,7 @@
 macro_type macro_list[MAX_MACROS];
 
 static FILE *p4_output;
-static char *p4_text, *p4_tmpstr;
+static char *p4_text, *p4_tmpstr, *p4_name;
 static int p4_lines;
 
 int last_macro=0;
@@ -35,8 +35,20 @@ void register_macro_parameters();
 
 %%
 
+<INITIAL>"#"file[ \t]*\"[a-z_][a-z0-9_]*"."[a-z_][a-z0-9_]*\"\n {
+    // Save original text
+    safe_strcat(p4_text, yytext, P4_TEXT_SIZE, p4_name, p4_lines);
+    // Save filename
+    p4_tmpstr = strtok(yytext, "\"");
+    p4_tmpstr = strtok(NULL, "\"");
+    // # file statements
+    p4_name[0] = '\0';
+    safe_strcat(p4_name, p4_tmpstr, PATH_MAX, p4_name, p4_lines);
+}
+
+
 <INITIAL>"#"line[ \t]*[0-9]+\n  {
-    safe_strcat(p4_text, yytext, P4_TEXT_SIZE, fname_src, -1);
+    safe_strcat(p4_text, yytext, P4_TEXT_SIZE, p4_name, p4_lines);
     p4_lines = atoi(&yytext[5]);
     BEGIN(line);
 }
@@ -186,11 +198,11 @@ void register_macro_parameters();
 
         macro_src_tmp = macro_src;
         macro_src = add_lines_to_macro(macro_src);
-        safe_strcat(p4_text, macro_src, P4_TEXT_SIZE, fname_src, -1);
+        safe_strcat(p4_text, macro_src, P4_TEXT_SIZE, p4_name, p4_lines);
         // Free previous code
         free(macro_src); 
     } else {
-        safe_strcat(p4_text, yytext, P4_TEXT_SIZE, fname_src, -1);
+        safe_strcat(p4_text, yytext, P4_TEXT_SIZE, p4_name, p4_lines);
     }
     free(yytext_copy);
     BEGIN(INITIAL);
@@ -211,7 +223,7 @@ void register_macro_parameters();
 
 <macro_code>.+\n  {
     safe_strcat(macro_list[last_macro].code, yytext, MACRO_CODE_SIZE,
-                fname_src, p4_lines);
+                p4_name, p4_lines);
 }
 
 <macro_code>\n  {
@@ -221,7 +233,7 @@ void register_macro_parameters();
 
 
 <macro_code><<EOF>> {
-    error_message(1, fname_src, p4_lines);
+    error_message(1, p4_name, p4_lines);
 }
 
 <INITIAL>\n  {
@@ -229,7 +241,7 @@ void register_macro_parameters();
     p4_text[0] = 0;
 }
 
-<INITIAL>.   safe_strcat(p4_text, yytext, P4_TEXT_SIZE, fname_src, -1);
+<INITIAL>.   safe_strcat(p4_text, yytext, P4_TEXT_SIZE, p4_name, p4_lines);
 
 %%
 
@@ -288,7 +300,7 @@ void register_macro_parameters() {
 
 
 int prompt_error4(int c) {
-  fprintf(stderr, ", line %d: ", p4_lines);
+  fprintf(stderr, "%s, line %d: ", p4_name, p4_lines);
   switch (c) {
     case 1:
       fprintf(stderr, "MACRO without ENDM or ENDMACRO\n");
@@ -321,7 +333,9 @@ int preprocessor4() {
   printf("Expanding Macros\n");
 
   p4_text = malloc(P4_TEXT_SIZE);
-  p4_text[0] = 0;
+  p4_text[0] = '\0';
+  p4_name = malloc(PATH_MAX);
+  p4_name[0] = '\0';
 
   if ((input = fopen(tmp0, "r")) == NULL) {
     fprintf(stderr, "Fatal: cannot process file %s", tmp0);

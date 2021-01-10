@@ -15,7 +15,7 @@
 #define P2_BUFF_SIZE 0x4000
 
 static FILE *p2_output;
-static char *p2_text, *p2_buffer;
+static char *p2_text, *p2_buffer, *p2_name, *p2_strtmp;
 static int p2_number, p2_lines, p2_level, p2_nested=0;
 
 int prompt_error2(int);
@@ -30,8 +30,19 @@ int prompt_error2(int);
 
 %%
 
+<INITIAL>"#"file[ \t]*\"[a-z_][a-z0-9_]*"."[a-z_][a-z0-9_]*\"\n {
+    // Save original text
+    safe_strcat(p2_text, yytext, P2_TEXT_SIZE, p2_name, p2_lines);
+    // Save filename
+    p2_strtmp = strtok(yytext, "\"");
+    p2_strtmp = strtok(NULL, "\"");
+    // # file statements
+    p2_name[0] = '\0';
+    safe_strcat(p2_name, p2_strtmp, PATH_MAX, p2_name, p2_lines);
+}
+
 <INITIAL>"#"line[ \t]*[0-9]+\n  {
-    safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, -1);
+    safe_strcat(p2_text, yytext, P2_TEXT_SIZE, p2_name, p2_lines);
     p2_lines = atoi(&yytext[5]);
     BEGIN(line);
 }
@@ -39,7 +50,7 @@ int prompt_error2(int);
 <line>"."?rept[ \t]+        BEGIN(repnum);
 
 <line>.  {
-    safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, -1);
+    safe_strcat(p2_text, yytext, P2_TEXT_SIZE, p2_name, p2_lines);
     BEGIN(INITIAL);
 }
 
@@ -51,7 +62,7 @@ int prompt_error2(int);
 }
 
 <rept>"."?rept[ \t]+[0-9]+[ \t]*  {
-    p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, -1);
+    p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, p2_name, p2_lines);
     p2_nested++;
     p2_level++;
 }
@@ -59,7 +70,7 @@ int prompt_error2(int);
 <rept>"#"line[ \t]*[0-9]+\n[ \t]*.?endr[ \t]*\n  {
     if (p2_nested) {
       p2_nested--;
-      p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, -1);
+      p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, p2_name, p2_lines);
     } else {
       int i;
 
@@ -72,11 +83,11 @@ int prompt_error2(int);
     }
 }
 
-<rept>.      p2_buffer = safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, -1);
+<rept>.      p2_buffer = safe_strcat(p2_text, yytext, P2_TEXT_SIZE, p2_name, p2_lines);
 
-<rept>\n     p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, fname_src, -1);
+<rept>\n     p2_buffer = safe_strcat(p2_buffer, yytext, P2_BUFF_SIZE, p2_name, p2_lines);
 
-<rept><<EOF>>    error_message(2, fname_src, -1);
+<rept><<EOF>>    error_message(2, p2_name, p2_lines);
 
 <repnum>.    prompt_error2(1);
 
@@ -85,12 +96,12 @@ int prompt_error2(int);
     p2_text[0] = 0;
 }
 
-<INITIAL>.   safe_strcat(p2_text, yytext, P2_TEXT_SIZE, fname_src, -1);
+<INITIAL>.   safe_strcat(p2_text, yytext, P2_TEXT_SIZE, p2_name, p2_lines);
 
 %%
 
 int prompt_error2(int c) {
-  fprintf(stderr, ", line %d: ", p2_lines);
+  fprintf(stderr, "%s, line %d: ", p2_name, p2_lines);
   switch (c) {
     case 1:
       fprintf(stderr, "number expected in REPT\n");
@@ -111,9 +122,11 @@ int preprocessor2() {
   int loop = 0;
 
   filename = malloc(PATH_MAX);
+  p2_name = malloc(PATH_MAX);
   p2_text = malloc(P2_TEXT_SIZE);
   p2_buffer = malloc(P2_BUFF_SIZE);
-  p2_text[0] = 0;
+  p2_text[0] = '\0';
+  p2_name[0] = '\0';
   printf("Expanding REPT\n");
 
   do {
