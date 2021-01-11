@@ -37,7 +37,8 @@ void register_macro_parameters();
 
 <INITIAL>"#"file[ \t]*\"[a-z_][a-z0-9_]*"."[a-z_][a-z0-9_]*\"\n {
     // Save original text
-    safe_strcat(p4_text, yytext, P4_TEXT_SIZE, p4_name, p4_lines);
+    fprintf(p4_output, "%s", yytext);
+
     // Save filename
     p4_tmpstr = strtok(yytext, "\"");
     p4_tmpstr = strtok(NULL, "\"");

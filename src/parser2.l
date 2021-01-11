@@ -32,7 +32,8 @@ int prompt_error2(int);
 
 <INITIAL>"#"file[ \t]*\"[a-z_][a-z0-9_]*"."[a-z_][a-z0-9_]*\"\n {
     // Save original text
-    safe_strcat(p2_text, yytext, P2_TEXT_SIZE, p2_name, p2_lines);
+    fprintf(p2_output, "%s", yytext);
+
     // Save filename
     p2_strtmp = strtok(yytext, "\"");
     p2_strtmp = strtok(NULL, "\"");
