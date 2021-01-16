@@ -21,11 +21,12 @@ static int p4_lines;
 
 int last_macro=0;
 
-int prompt_error4(int);
+int prompt_error4(int, char*, char*);
 int get_macro_id(char*);
-char* resolve_param_code(char *code, char *param_name, char *param); 
+char* resolve_param_code(char *code, char *macro_name, char *param_name, char *param); 
 char* add_lines_to_macro(char *code);
 void register_macro_parameters();
+void check_macro_correct();
 %}
 
 %option noinput nounput noyywrap
@@ -59,7 +60,7 @@ void register_macro_parameters();
     // Cromenco (Rodnay book) and Compass syntax
     // Macro reg - Fubu: I'm sorry for this code. I'll fix it... eventually.
     if (last_macro > MAX_MACROS) {
-        prompt_error4(3);
+        prompt_error4(3, NULL, NULL);
     }
 
     // Remove previous #line as the macro line is not passed to the next file
@@ -68,7 +69,7 @@ void register_macro_parameters();
     // Get name
     p4_tmpstr = strtok(yytext, ":");
     if (get_macro_id(p4_tmpstr) >= 0) { // Macro redefinition error
-        prompt_error4(6);
+        prompt_error4(6, NULL, NULL);
     }
     macro_list[last_macro].name = malloc(strlen(p4_tmpstr)+1);
     macro_list[last_macro].name[0] = '\0';
@@ -94,7 +95,7 @@ void register_macro_parameters();
 <line>"."?macro[ \t]+[a-z_][a-z0-9_]*[ \t]*(((#|@)[a-z_][a-z0-9_]*)(,[ \t]*((#|@)[a-z_][a-z0-9_]*))*)? {
     // Sjasm syntax
     if (last_macro > MAX_MACROS) {
-        prompt_error4(3);
+        prompt_error4(3, NULL, NULL);
     }
 
     // Remove previous #line as the macro line is not passed to the next file
@@ -104,7 +105,7 @@ void register_macro_parameters();
     p4_tmpstr = strtok(yytext, " \t,"); 
     p4_tmpstr = strtok(NULL, " \t,"); // Skip Macro
     if (get_macro_id(p4_tmpstr) >= 0) { // Macro redefinition error
-        prompt_error4(6);
+        prompt_error4(6, NULL, NULL);
     }
     macro_list[last_macro].name = malloc(strlen(p4_tmpstr)+1);
     macro_list[last_macro].name[0] = '\0';
@@ -151,7 +152,7 @@ void register_macro_parameters();
         p4_tmpstr = strtok(NULL, " ,");
         if(p4_tmpstr != NULL) {
             if (macro_param_num == 0) {
-                prompt_error4(4); // Found param when no param required
+                prompt_error4(4, NULL, NULL); // Found param when no param required
             }
             // First param
             param = malloc(strlen(p4_tmpstr)+1);
@@ -161,6 +162,7 @@ void register_macro_parameters();
             // Substitute param
             macro_src_tmp = macro_src;
             macro_src = resolve_param_code(macro_src, 
+                macro_list[macro_id].name,
                 macro_list[macro_id].params[param_count], param);
 
             if (verbose >=2) {
@@ -171,7 +173,7 @@ void register_macro_parameters();
             for (param_count=1; param_count < macro_param_num; ++param_count) {
                 p4_tmpstr = strtok(NULL, " ,");
                 if (p4_tmpstr == NULL) {
-                    prompt_error4(4); // Less params than needed
+                    prompt_error4(4, NULL, NULL); // Less params than needed
                 }
                 
                 free(param); //TODO: Maaaaybe we can just reserve the memory once
@@ -186,6 +188,7 @@ void register_macro_parameters();
                 // Substitute param
                 macro_src_tmp = macro_src;
                 macro_src = resolve_param_code(macro_src, 
+                    macro_list[macro_id].name,
                     macro_list[macro_id].params[param_count], param);
 
                 free(macro_src_tmp); // Free previous code
@@ -193,7 +196,7 @@ void register_macro_parameters();
         }
         p4_tmpstr = strtok(NULL, " ,"); // Go to next token
         if (p4_tmpstr != NULL) {
-            prompt_error4(5); // More params than needed
+            prompt_error4(5, NULL, NULL); // More params than needed
         }
    
 
@@ -214,6 +217,7 @@ void register_macro_parameters();
     //FINISH macro reg
     // Remove last \n
     macro_list[last_macro].code[strlen(macro_list[last_macro].code)-1] = '\0';
+    check_macro_correct();
     ++last_macro;
     BEGIN(INITIAL);
 }
@@ -256,18 +260,24 @@ int get_macro_id(char *instr) {
 }
 
 
-char* resolve_param_code(char *code, char *param_name, char *param) {
+char* resolve_param_code(char *code, char *macro_name, char *param_name, char *param) {
     char *code_clean;
-    code_clean = replaceWord(code, param_name, param);
+    int count;
+    code_clean = replaceWord(code, param_name, param, &count);
+    if (count == 0) {
+        //TODO: prompt_warning4!!!!
+        fprintf(stderr, "WARNING: PARAM %s from macro %s UNUSED\n", param_name, macro_name);
+    }
     return code_clean;
 }
 
 char* add_lines_to_macro(char *code) {
     char cur_line[20];
     char *clean_code;
+    int count;
     // Adding lines for the next parser (It's a very picky one)
     sprintf(cur_line, "\n#line %i\n", p4_lines);
-    clean_code = replaceWord(code, "\n", cur_line);
+    clean_code = replaceWord(code, "\n", cur_line, &count);
     return clean_code;
 }
 
@@ -280,7 +290,7 @@ void register_macro_parameters() {
     while (p4_tmpstr != NULL) { // Do we have param?
         int curr_param = macro_list[last_macro].n_params;
         if (curr_param >= MACRO_MAX_PARAM) {
-            prompt_error4(2);
+            prompt_error4(2, NULL, NULL);
         }
         
         macro_list[last_macro].params[curr_param] = malloc(strlen(p4_tmpstr)+1);
@@ -300,7 +310,40 @@ void register_macro_parameters() {
 }
 
 
-int prompt_error4(int c) {
+void check_macro_correct() {
+    // Check if the macro is correct
+    char *macro_src, *param;
+    unsigned int i = 0, j = 0, macro_len = 0;
+
+    param = malloc(80);
+    macro_src = macro_list[last_macro].code; 
+    
+    // try to substitute params if any
+    for (i = 0; i < macro_list[last_macro].n_params; ++i) {
+        macro_src = resolve_param_code(macro_src, 
+            macro_list[last_macro].code,
+            macro_list[last_macro].params[i], "param");
+        // TODO: Do we need to free the code here after each substitution?
+    }
+    macro_len = strlen(macro_src);
+    // Check if there are still parameters without substitution
+    for (i = 0; i < macro_len; ++i) {
+        if (macro_src[i] == '@' || macro_src[i] == '#') {
+            while (macro_src[i] != ' ' && macro_src[i] != '\n') {
+                param[j] = macro_src[i];
+                ++i;
+                ++j;    
+                if (i > strlen(macro_src)) { // UNFINISHED macro
+                    prompt_error4(1, param, macro_list[last_macro].name);
+                }
+            }
+            prompt_error4(7, param, macro_list[last_macro].name);
+        }
+    } 
+}
+
+
+int prompt_error4(int c, char *str1, char *str2) {
   fprintf(stderr, "%s, line %d: ", p4_name, p4_lines);
   switch (c) {
     case 1:
@@ -320,6 +363,10 @@ int prompt_error4(int c) {
       break;
     case 6:
       fprintf(stderr, "Macro redefinition.\n");
+      break;
+    case 7:
+      fprintf(stderr, "Parameter %s in macro %s used but undefined.\n", str1,
+str2);
       break;
     default:
       fprintf(stderr, "Unknown error in prompt_error4()\n");

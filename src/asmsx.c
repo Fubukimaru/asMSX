@@ -649,7 +649,7 @@ char *safe_strcat(char *dest, char *orig, unsigned int max_size,
   
 // Function to replace a string with another 
 // string 
-char* replaceWord(const char* s, const char* oldW, const char* newW) { 
+char* replaceWord(const char* s, const char* oldW, const char* newW, int *num_subs) { 
     char* result; 
     int i, cnt = 0; 
     int newWlen = strlen(newW); 
@@ -665,6 +665,8 @@ char* replaceWord(const char* s, const char* oldW, const char* newW) {
             i += oldWlen - 1; 
         } 
     } 
+
+    (*num_subs) = cnt;
   
     // Making new string of enough length 
     result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1); 

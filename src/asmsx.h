@@ -53,4 +53,4 @@ int d_rand(void);
 extern char* safe_strcat(char* dest, char* orig, unsigned int max_size, char* fname_src, int lines);
 extern void error_message(int n, char* fname_src, int lines);
 extern void warning_message(int n, char* fname_src, int lines, int pass, int* warnings);
-extern char* replaceWord(const char* s, const char* oldW, const char* newW); 
+extern char* replaceWord(const char* s, const char* oldW, const char* newW, int* count); 
