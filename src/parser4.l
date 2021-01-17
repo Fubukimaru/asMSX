@@ -22,6 +22,7 @@ static int p4_lines;
 int last_macro=0;
 
 int prompt_error4(int, char*, char*);
+void prompt_warning4(int, char*, char*);
 int get_macro_id(char*);
 char* resolve_param_code(char *code, char *macro_name, char *param_name, char *param); 
 char* add_lines_to_macro(char *code);
@@ -265,8 +266,7 @@ char* resolve_param_code(char *code, char *macro_name, char *param_name, char *p
     int count;
     code_clean = replaceWord(code, param_name, param, &count);
     if (count == 0) {
-        //TODO: prompt_warning4!!!!
-        fprintf(stderr, "WARNING: PARAM %s from macro %s UNUSED\n", param_name, macro_name);
+        prompt_warning4(1, param_name, macro_name);
     }
     return code_clean;
 }
@@ -321,23 +321,29 @@ void check_macro_correct() {
     // try to substitute params if any
     for (i = 0; i < macro_list[last_macro].n_params; ++i) {
         macro_src = resolve_param_code(macro_src, 
-            macro_list[last_macro].code,
+            macro_list[last_macro].name,
             macro_list[last_macro].params[i], "param");
         // TODO: Do we need to free the code here after each substitution?
     }
     macro_len = strlen(macro_src);
     // Check if there are still parameters without substitution
     for (i = 0; i < macro_len; ++i) {
-        if (macro_src[i] == '@' || macro_src[i] == '#') {
-            while (macro_src[i] != ' ' && macro_src[i] != '\n') {
-                param[j] = macro_src[i];
-                ++i;
-                ++j;    
-                if (i > strlen(macro_src)) { // UNFINISHED macro
-                    prompt_error4(1, param, macro_list[last_macro].name);
+        // TODO: what if we have @@?
+        if ((macro_src[i] == '@' || macro_src[i] == '#')) {
+            if (macro_src[i+1] == '@') { // IF @@ Label
+                i += 2; //skip both @@
+            } else {
+                // Detected macro parameter
+                while (macro_src[i] != ' ' && macro_src[i] != '\n') {
+                    param[j] = macro_src[i];
+                    ++i;
+                    ++j;    
+                    if (i > strlen(macro_src)) { // UNFINISHED macro
+                        prompt_error4(1, param, macro_list[last_macro].name);
+                    }
                 }
+                prompt_error4(7, param, macro_list[last_macro].name);
             }
-            prompt_error4(7, param, macro_list[last_macro].name);
         }
     } 
 }
@@ -373,6 +379,19 @@ str2);
   }
   fclose(p4_output);
   exit(c);
+}
+
+void prompt_warning4(int c, char *str1, char *str2) {
+  switch (c) {
+    case 1:
+      sprintf(error_buffer, "Parameter %s of macro %s unused.\n", str1, str2);
+      break;
+    default:
+      sprintf(error_buffer, "unexpected warning %d\n", c);
+  }
+  fprintf(stderr, "%s, line %d: Warning: %s", p4_name, p4_lines,
+          error_buffer);
+  //warnings++;
 }
 
 int preprocessor4() {
