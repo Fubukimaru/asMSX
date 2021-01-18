@@ -677,7 +677,7 @@ pseudo_instruction: PSEUDO_ORG value
 				if (fmsg == NULL)
 					create_txt();
 				if (fmsg)
-					fprintf(fmsg, "%d\n", (short int)$2 & 0xffff);
+					fprintf(fmsg, "%d\n", $2);
 			}
 		}
 	}
