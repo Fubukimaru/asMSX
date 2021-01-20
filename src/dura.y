@@ -703,7 +703,7 @@ pseudo_instruction: PSEUDO_ORG value
 				if (fmsg == NULL)
 					create_txt();
 				if (fmsg)
-					fprintf(fmsg, "$%4.4x\n", (short int)$2 & 0xffff);
+					fprintf(fmsg, "$%x\n", $2);
 			}
 		}
 	}
@@ -716,7 +716,7 @@ pseudo_instruction: PSEUDO_ORG value
 				if (fmsg == NULL)
 					create_txt();
 				if (fmsg)
-					fprintf(fmsg, "%.4f\n", ((float)($2 & 0xffff)) / 256);
+					fprintf(fmsg, "%.4f\n", ((float)($2 / 256));
 			}
 		}
 	}
