@@ -30,6 +30,11 @@ jobs:
         choco install winflexbison
     - name: make
       run: msbuild build/vs2019/asmsx.sln
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: asmsx-win-x86_64
+        path: build/vs2019/Debug/asmsx.exe
 
   linux:
     runs-on: ubuntu-latest
@@ -40,8 +45,7 @@ jobs:
         sudo apt update
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
     - name: make
-      run: |
-        make
+      run: make
     - name: prepare for test
       run: |
         cd /usr/src/gtest
@@ -49,8 +53,16 @@ jobs:
         sudo make
         sudo make install
     - name: test
+      run: make test
+    - name: cleanup and build again
       run: |
-        make test
+        make clean
+        make
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: asmsx-linux-x86_64
+        path: asmsx
 
   osx:
     runs-on: macos-10.15
@@ -59,8 +71,10 @@ jobs:
     - name: install deps
       run: brew install flex bison
     - name: make
-      run: |
-        ls -l
-        make
-        ls -l
+      run: make
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: asmsx-osx
+        path: asmsx
 
