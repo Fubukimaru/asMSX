@@ -64,6 +64,28 @@ jobs:
         name: asmsx-linux-x86_64
         path: asmsx
 
+  linux-armhf:
+    needs: linux
+    runs-on: ubuntu-latest
+    env:
+      GCC_VERSION: "10.2-2020.11"
+      BUILD_TARGET: arm-none-linux-gnueabihf
+    steps:
+    - uses: actions/checkout@v2
+    - name: install deps
+      run: |
+        sudo apt update
+        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
+        wget https://developer.arm.com/-/media/Files/downloads/gnu-a/${{ env.GCC_VERSION }}/binrel/gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}.tar.xz
+        tar xvf gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}.tar.xz
+    - name: make
+      run: make CC=gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}/bin/${{ env.BUILD_TARGET }}-gcc
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: asmsx-${{ env.BUILD_TARGET }}
+        path: asmsx
+
   osx:
     runs-on: macos-10.15
     steps:
