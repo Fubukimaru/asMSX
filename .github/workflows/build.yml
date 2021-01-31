@@ -70,7 +70,7 @@ jobs:
     env:
       GCC_VERSION: "10.2-2020.11"
       BUILD_TARGET: arm-none-linux-gnueabihf
-      GCC_NAME: "gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}"
+      GCC_NAME: "gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf"
     steps:
     - uses: actions/checkout@v2
     - name: install deps
