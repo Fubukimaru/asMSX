@@ -70,16 +70,17 @@ jobs:
     env:
       GCC_VERSION: "10.2-2020.11"
       BUILD_TARGET: arm-none-linux-gnueabihf
+      GCC_NAME: "gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}"
     steps:
     - uses: actions/checkout@v2
     - name: install deps
       run: |
         sudo apt update
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
-        wget https://developer.arm.com/-/media/Files/downloads/gnu-a/${{ env.GCC_VERSION }}/binrel/gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}.tar.xz
-        tar xvf gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}.tar.xz
+        wget https://developer.arm.com/-/media/Files/downloads/gnu-a/${{ env.GCC_VERSION }}/binrel/${{ env.GCC_NAME }}.tar.xz
+        tar xvf ${{ env.GCC_NAME }}.tar.xz
     - name: make
-      run: make CC=gcc-arm-${{ env.GCC_VERSION }}-x86_64-${{ env.BUILD_TARGET }}/bin/${{ env.BUILD_TARGET }}-gcc
+      run: make CC=${{ env.GCC_NAME }}/bin/${{ env.BUILD_TARGET }}-gcc LDFLAGS="-static"
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
