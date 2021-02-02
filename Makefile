@@ -12,8 +12,8 @@ CC_WIN = i686-w64-mingw32-gcc
 
 # Default compiler
 CC = $(CC_LIN)
-OPT = -lm -O2 -Os -s -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
-OPT_DEBUG = -lm -Os  -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
+OPT = -lm -Os -s -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
+OPT_DEBUG = -lm -Os -ggdb -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
 
 BUILD_FILES = src/dura.tab.c \
               src/dura.tab.h \
@@ -75,10 +75,10 @@ src/%.o: src/%.c
 asmsx.osx: CC := $(CC_OSX)
 asmsx.exe: CC := $(CC_WIN)
 asmsx asmsx.osx asmsx.exe: $(ALL_FILES) $(HEADERS)
-	$(CC) $(ALL_FILES) -o$@ $(OPT)
+	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(OPT)
 
 asmsx-debug: $(ALL_FILES) $(HEADERS) src/dura.y src/lex.l
-	$(CC) -ggdb $(ALL_FILES) -o$@ $(OPT_DEBUG)
+	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(OPT_DEBUG)
 
 release: asmsx asmsx.exe asmsx.osx
 	zip asmsx_$(VERSION)_linux64.zip asmsx
