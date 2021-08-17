@@ -9,6 +9,7 @@ DATE    := $(if $(shell git status 2>/dev/null),$(shell git show -s --format=%as
 CC_LIN = gcc
 CC_OSX = o64-clang
 CC_WIN = i686-w64-mingw32-gcc
+CC_ARM = arm-linux-gnueabi-gcc -march=armv6
 
 # Default compiler
 CC = $(CC_LIN)
@@ -74,16 +75,18 @@ src/%.o: src/%.c
 
 asmsx.osx: CC := $(CC_OSX)
 asmsx.exe: CC := $(CC_WIN)
-asmsx asmsx.osx asmsx.exe: $(ALL_FILES) $(HEADERS)
+asmsx.arm: CC := $(CC_ARM)
+asmsx asmsx.osx asmsx.exe asmsx.arm: $(ALL_FILES) $(HEADERS)
 	$(CC) $(ALL_FILES) -o$@ $(OPT)
 
 asmsx-debug: $(ALL_FILES) $(HEADERS) src/dura.y src/lex.l
 	$(CC) -ggdb $(ALL_FILES) -o$@ $(OPT_DEBUG)
 
-release: asmsx asmsx.exe asmsx.osx
+release: asmsx asmsx.exe asmsx.osx asmsx.arm
 	zip asmsx_$(VERSION)_linux64.zip asmsx
 	zip asmsx_$(VERSION)_win32.zip asmsx.exe
 	zip asmsx_$(VERSION)_macOS64.zip asmsx.osx
+	zip asmsx_$(VERSION)_armv6.zip asmsx.arm
 
 clean:
 	rm -f src/*.o $(BUILD_FILES) asmsx asmsx-debug test *.exe ~* *.osx asmsx_*.zip

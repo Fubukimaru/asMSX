@@ -1,3 +1,14 @@
+# version 1.0.1: [17/08/2021]
+
+- Implemented the first version of the macro system
+- Improved error messaging
+- #3  - Added new .BIOSVAR as Bios Variables were missing
+- #86 - Build: Add OSX, Linux armhf and upload artifacts , thanks to @duhow!
+- #79 - Add gitattributes and edit Github Actions workflow run , thanks to @duhow!
+- #78 - Fix Windows build , thanks to @duhow!
+- #74 - Update documentation , thanks to @oboroc!
+- #73 - Add Github Actions Release Drafter , thanks to @duhow!
+
 # version 1.0.0: [07/12/2020]
 
 - Updated Readme, Changelog and Documentation (Thanks to @jamque Pull request #71 )
