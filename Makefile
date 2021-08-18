@@ -11,10 +11,15 @@ CC_OSX = o64-clang
 CC_WIN = i686-w64-mingw32-gcc
 CC_ARM = arm-linux-gnueabi-gcc -march=armv6
 
+prefix = /usr/local
+DESTDIR ?= $(prefix)
+
 # Default compiler
 CC = $(CC_LIN)
-OPT = -lm -Os -s -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
-OPT_DEBUG = -lm -Os -ggdb -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
+
+CFLAGS ?= -Os -s
+LIBS = -lm
+OPTS = -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
 
 BUILD_FILES = src/dura.tab.c \
               src/dura.tab.h \
@@ -30,28 +35,28 @@ ALL_FILES := $(filter-out src/%.h,$(BUILD_FILES)) $(C_FILES)
 
 HEADERS = src/asmsx.h src/labels.h
 
-ifeq ($(OS),Windows_NT) 
+ifeq ($(OS),Windows_NT)
 	detected_OS := Windows
 else
 	detected_OS := $(shell sh -c 'uname 2>/dev/null || echo Linux')
 endif
 ifeq ($(detected_OS),Windows)
-	OPT +=  -DWIN32
+	OPTS +=  -DWIN32
 endif
 ifeq ($(detected_OS),Darwin)
-	OPT +=  -DOSX
+	OPTS +=  -DOSX
 endif
 ifeq ($(detected_OS),Linux)
-	OPT +=  -DLINUX
+	OPTS +=  -DLINUX
 endif
 
 # Compile files rules
 
 src/%.tab.c src/%.tab.h: src/%.y
 ifeq ($(MAKECMDGOALS),asmsx-debug)
-	bison --graph -t -o $@ -d $< 
+	bison --graph -t -o $@ -d $<
 else
-	bison -o $@ -d $< 
+	bison -o $@ -d $<
 endif
 
 src/lex.yy.c: src/lex.l
@@ -69,18 +74,20 @@ else
 endif
 
 src/%.o: src/%.c
-	$(CC) -c $< -o $@ $(OPT)
+	$(CC) -c $< -o $@ $(CFLAGS) $(LIBS) $(OPTS)
 
 # Main target builds
 
+debug: asmsx-debug
 asmsx.osx: CC := $(CC_OSX)
 asmsx.exe: CC := $(CC_WIN)
 asmsx.arm: CC := $(CC_ARM)
+asmsx-debug: CFLAGS := -Og -ggdb
 asmsx asmsx.osx asmsx.exe asmsx.arm: $(ALL_FILES) $(HEADERS)
-	$(CC) $(ALL_FILES) -o$@ $(OPT)
+	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
 
 asmsx-debug: $(ALL_FILES) $(HEADERS) src/dura.y src/lex.l
-	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(OPT_DEBUG)
+	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
 
 release: asmsx asmsx.exe asmsx.osx asmsx.arm
 	zip asmsx_$(VERSION)_linux64.zip asmsx
@@ -89,17 +96,19 @@ release: asmsx asmsx.exe asmsx.osx asmsx.arm
 	zip asmsx_$(VERSION)_armv6.zip asmsx.arm
 
 clean:
-	rm -f src/*.o $(BUILD_FILES) asmsx asmsx-debug test *.exe ~* *.osx asmsx_*.zip
+	rm -vf src/*.o $(BUILD_FILES) asmsx asmsx-debug test *.exe ~* *.osx asmsx_*.zip
 
+test: LIBS += -lgtest -lgtest_main -lpthread -lstdc++
+test: LDFLAGS += -L$(prefix)/lib
 test:	asmsx src/test.cpp $(C_FILES:.c=.o) $(HEADERS)
 	./code/test.sh
 	@echo "Building gtest"
-	gcc -o test $(C_FILES:.c=.o) src/test.cpp -L/usr/local/lib -lgtest -lgtest_main -lpthread -lstdc++ $(OPT)
+	gcc -o test $(C_FILES:.c=.o) src/test.cpp $(LDFLAGS) $(LIBS) $(OPTS)
 	./test
 
 install: asmsx
-	cp $< /usr/local/bin
+	@install -v $< $(DESTDIR)/bin
 
 install-debug: asmsx-debug
-	cp $< /usr/local/bin
+	@install -v $< $(DESTDIR)/bin
 
