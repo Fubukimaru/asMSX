@@ -6,17 +6,10 @@ DATE_STATIC    = 2020-12-01
 VERSION := $(if $(shell git status 2>/dev/null),$(shell git describe --tags --always 2>/dev/null),$(VERSION_STATIC))
 DATE    := $(if $(shell git status 2>/dev/null),$(shell git show -s --format=%as HEAD 2>/dev/null),$(DATE_STATIC))
 
-CC_LIN = gcc
-CC_OSX = o64-clang
-CC_WIN = i686-w64-mingw32-gcc
-CC_ARM = arm-linux-gnueabi-gcc -march=armv6
-
 prefix = /usr/local
 DESTDIR ?= $(prefix)
 
-# Default compiler
-CC = $(CC_LIN)
-
+CC := gcc
 CFLAGS ?= -Os -s
 LIBS = -lm
 OPTS = -Wall -Wextra -DVERSION=\"$(VERSION)\" -DDATE=\"$(DATE)\"
@@ -74,20 +67,21 @@ else
 endif
 
 src/%.o: src/%.c
-	$(CC) -c $< -o $@ $(CFLAGS) $(LIBS) $(OPTS)
+	$(CROSS_COMPILE)$(CC) -c $< -o $@ $(CFLAGS) $(LIBS) $(OPTS)
 
 # Main target builds
 
 debug: asmsx-debug
-asmsx.osx: CC := $(CC_OSX)
-asmsx.exe: CC := $(CC_WIN)
-asmsx.arm: CC := $(CC_ARM)
+asmsx.osx: CC := o64-clang
+asmsx.exe: CROSS_COMPILE := i686-w64-mingw32-
+asmsx.arm: CROSS_COMPILE := arm-linux-gnueabi-
+asmsx.arm: CFLAGS += -march=armv6
 asmsx-debug: CFLAGS := -Og -ggdb
 asmsx asmsx.osx asmsx.exe asmsx.arm: $(ALL_FILES) $(HEADERS)
-	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
+	$(CROSS_COMPILE)$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
 
 asmsx-debug: $(ALL_FILES) $(HEADERS) src/dura.y src/lex.l
-	$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
+	$(CROSS_COMPILE)$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
 
 release: asmsx asmsx.exe asmsx.osx asmsx.arm
 	zip asmsx_$(VERSION)_linux64.zip asmsx
@@ -103,7 +97,7 @@ test: LDFLAGS += -L$(prefix)/lib
 test:	asmsx src/test.cpp $(C_FILES:.c=.o) $(HEADERS)
 	./code/test.sh
 	@echo "Building gtest"
-	gcc -o test $(C_FILES:.c=.o) src/test.cpp $(LDFLAGS) $(LIBS) $(OPTS)
+	$(CROSS_COMPILE)$(CC) -o test $(C_FILES:.c=.o) src/test.cpp $(LDFLAGS) $(LIBS) $(OPTS)
 	./test
 
 install: asmsx
