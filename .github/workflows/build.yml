@@ -19,6 +19,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Setup NuGet.exe for use with actions
@@ -40,6 +42,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: install deps
       run: |
         sudo apt update
@@ -67,6 +71,8 @@ jobs:
       GCC_NAME: "gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf"
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: install deps
       run: |
         sudo apt update
@@ -85,6 +91,8 @@ jobs:
     runs-on: macos-10.15
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: install deps
       run: brew install flex bison
     - name: make
