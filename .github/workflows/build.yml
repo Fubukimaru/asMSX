@@ -46,12 +46,6 @@ jobs:
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
     - name: make
       run: make
-    - name: prepare for test
-      run: |
-        cd /usr/src/gtest
-        sudo cmake CMakeLists.txt
-        sudo make
-        sudo make install
     - name: test
       run: make test
     - name: cleanup and build again
