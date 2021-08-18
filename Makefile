@@ -46,25 +46,13 @@ endif
 # Compile files rules
 
 src/%.tab.c src/%.tab.h: src/%.y
-ifeq ($(MAKECMDGOALS),asmsx-debug)
-	bison --graph -t -o $@ -d $<
-else
-	bison -o $@ -d $<
-endif
+	bison $(BISON_FLAGS) -o $@ -d $<
 
 src/lex.yy.c: src/lex.l
-ifeq ($(MAKECMDGOALS),asmsx-debug)
-	flex -d -o $@ -i $<
-else
-	flex -o $@ -i $<
-endif
+	flex $(FLEX_FLAGS) -o $@ -i $<
 
 src/lex.%.c: src/%.l
-ifeq ($(MAKECMDGOALS),asmsx-debug)
-	flex -d -o $@ -i -P$(notdir $(basename $<)) $<
-else
-	flex -o $@ -i -P$(notdir $(basename $<)) $<
-endif
+	flex $(FLEX_FLAGS) -o $@ -i -P$(notdir $(basename $<)) $<
 
 src/%.o: src/%.c
 	$(CROSS_COMPILE)$(CC) -c $< -o $@ $(CFLAGS) $(LIBS) $(OPTS)
@@ -77,6 +65,8 @@ asmsx.exe: CROSS_COMPILE := i686-w64-mingw32-
 asmsx.arm: CROSS_COMPILE := arm-linux-gnueabi-
 asmsx.arm: CFLAGS += -march=armv6
 asmsx-debug: CFLAGS := -Og -ggdb
+asmsx-debug: FLEX_FLAGS += -d
+asmsx-debug: BISON_FLAGS += --graph -t
 asmsx asmsx.osx asmsx.exe asmsx.arm: $(ALL_FILES) $(HEADERS)
 	$(CROSS_COMPILE)$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
 
