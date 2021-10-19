@@ -804,6 +804,7 @@ pseudo_instruction: PSEUDO_ORG value
 	| PSEUDO_FILENAME TEXT
 	{
 		strncpy(fname_no_ext, $2, PATH_MAX - 1);
+		strncpy(fname_bin, fname_no_ext, PATH_MAX);
 	}
 ;
 
