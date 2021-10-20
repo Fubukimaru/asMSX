@@ -4139,7 +4139,6 @@ void write_bin()
 	{
 		fname_bin = strcat(fname_bin, ".rom");
 		PC = start_address + 2;
-		write_word(run_address);
 		if (!size)
 		size = 8 * ((end_address - start_address + 8191) / 8192);
 	}
@@ -4343,8 +4342,9 @@ void type_rom()
 	rom_type = ROM;
 	write_byte(65);
 	write_byte(66);
-	PC += 14;
-	ePC += 14;
+	write_word(run_address);
+	PC += 12; // 16 padding -2 AB -2 WORD run_address
+	ePC += 12;
 	if (!run_address)
 		run_address = ePC;
 }
