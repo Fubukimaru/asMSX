@@ -16,27 +16,32 @@ on:
 
 jobs:
   windows:
-    runs-on: windows-latest
+    name: windows ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: i686
+            bits: "32"
+          - target: x86-64
+            bits: "64"
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-    - name: Setup NuGet.exe for use with actions
-      uses: NuGet/setup-nuget@v1.0.5
     - name: install deps
       run: |
-        nuget restore build/vs2019/asmsx.sln
-        nuget install build/vs2019/asmsx-gtest/packages.config -OutputDirectory build/vs2019/asmsx-gtest/packages
-        choco install winflexbison
+        sudo apt update
+        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
+        sudo apt install -y gcc-mingw-w64-${{ matrix.target }} g++-mingw-w64-${{ matrix.target }}
     - name: make
-      run: msbuild build/vs2019/asmsx.sln
+      run: make asmsx${{ matrix.bits }}.exe
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: asmsx-win-x86_64
-        path: build/vs2019/Debug/asmsx.exe
+        name: asmsx-win-${{ matrix.target }}
+        path: asmsx*.exe
 
   linux:
     runs-on: ubuntu-latest
