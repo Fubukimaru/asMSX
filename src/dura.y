@@ -4537,7 +4537,7 @@ int main(int argc, char *argv[]) {
   #endif
 
   printf("-------------------------------------------------------------------------------\n");
-  printf(" asMSX v.%s. MSX cross-assembler. asMSX Team. [%s]\n", VERSION, DATE);
+  printf(" asMSX v%s MSX cross-assembler. asMSX Team. [%s]\n", VERSION, DATE);
   printf("-------------------------------------------------------------------------------\n\n");
 
   // External vars init
