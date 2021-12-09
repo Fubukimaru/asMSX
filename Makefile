@@ -61,7 +61,9 @@ src/%.o: src/%.c
 
 debug: asmsx-debug
 asmsx.osx: CC := o64-clang
-asmsx.exe: CROSS_COMPILE := i686-w64-mingw32-
+asmsx.exe: asmsx32.exe
+asmsx32.exe: CROSS_COMPILE := i686-w64-mingw32-
+asmsx64.exe: CROSS_COMPILE := x86_64-w64-mingw32-
 asmsx.arm: CROSS_COMPILE := arm-linux-gnueabi-
 asmsx.arm: CFLAGS += -march=armv6
 asmsx-debug: CFLAGS := -Og -ggdb
