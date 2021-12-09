@@ -69,7 +69,7 @@ asmsx.arm: CFLAGS += -march=armv6
 asmsx-debug: CFLAGS := -Og -ggdb
 asmsx-debug: FLEX_FLAGS += -d
 asmsx-debug: BISON_FLAGS += --graph -t
-asmsx asmsx.osx asmsx.exe asmsx.arm: $(ALL_FILES) $(HEADERS)
+asmsx asmsx.osx asmsx.exe asmsx32.exe asmsx64.exe asmsx.arm: $(ALL_FILES) $(HEADERS)
 	$(CROSS_COMPILE)$(CC) $(ALL_FILES) -o$@ $(LDFLAGS) $(CFLAGS) $(LIBS) $(OPTS)
 
 asmsx-debug: $(ALL_FILES) $(HEADERS) src/dura.y src/lex.l

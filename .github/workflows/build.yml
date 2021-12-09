@@ -19,6 +19,7 @@ jobs:
     name: windows ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: i686
