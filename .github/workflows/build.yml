@@ -120,5 +120,5 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: 'assets/*'
+        files: 'assets/asmsx-**'
 
