@@ -1,4 +1,4 @@
-name-template: "asMSX v.$NEXT_PATCH_VERSION"
+name-template: "asMSX v$NEXT_PATCH_VERSION"
 tag-template: "$NEXT_PATCH_VERSION"
 version-template: "$MAJOR.$MINOR.$PATCH"
 change-template: "* #$NUMBER - $TITLE , thanks to @$AUTHOR!"
