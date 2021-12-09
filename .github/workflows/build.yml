@@ -25,7 +25,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
-        sudo apt install -y gcc-mingw-w64-i686-win32
+        sudo apt install -y gcc-mingw-w64-i686 g++-mingw-w64-i686
     - name: make
       run: make asmsx.exe
     - name: upload artifact
