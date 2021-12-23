@@ -33,6 +33,20 @@ The asMSX team is a undefined collective that has worked on this program or has 
 - vim
 - The game
 
+# List of related projects
+
+Contact us to include yours!
+
+## Projects done using asMSX
+
+- (TPMSX-Engine)[https://github.com/jamque/TPMSX-Engine]: The Pets Mode Engine. An engine born from TPM projects like Bitlogic.
+- (MSX_ngine)[https://github.com/knightfox75/msx_ngine]: A set of MSX libraries by KnightFox75.
+
+
+## Projects that may be interesting for you if you use asMSX!
+
+- (Santiago Ontañon's mdlz80optimizer)[https://github.com/santiontanon/mdlz80optimizer]: A great Z80 code optimizer compatible with asMSX syntax.
+
 
 # Original Spanish README
 
