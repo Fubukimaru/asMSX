@@ -39,8 +39,8 @@ Contact us to include yours!
 
 ## Projects done using asMSX
 
-- (TPMSX-Engine)[https://github.com/jamque/TPMSX-Engine]: The Pets Mode Engine. An engine born from TPM projects like Bitlogic.
-- (MSX_ngine)[https://github.com/knightfox75/msx_ngine]: A set of MSX libraries by KnightFox75.
+- [TPMSX-Engine](https://github.com/jamque/TPMSX-Engine): The Pets Mode Engine. An engine born from TPM projects like Bitlogic.
+- [MSX_ngine](https://github.com/knightfox75/msx_ngine): A set of MSX libraries by KnightFox75.
 
 
 ## Projects that may be interesting for you if you use asMSX!
