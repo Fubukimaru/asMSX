@@ -45,7 +45,7 @@ Contact us to include yours!
 
 ## Projects that may be interesting for you if you use asMSX!
 
-- (Santiago Ontañon's mdlz80optimizer)[https://github.com/santiontanon/mdlz80optimizer]: A great Z80 code optimizer compatible with asMSX syntax.
+- [Santiago Ontañon's mdlz80optimizer](https://github.com/santiontanon/mdlz80optimizer): A great Z80 code optimizer compatible with asMSX syntax.
 
 
 # Original Spanish README
