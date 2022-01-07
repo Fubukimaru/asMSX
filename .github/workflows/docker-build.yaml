@@ -89,5 +89,5 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: |
-          echo "IMAGE_NAME_LOWER=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+          export IMAGE_NAME_LOWER=${IMAGE_NAME,,}
           cosign sign ${{ env.REGISTRY }}/${IMAGE_NAME_LOWER}@${{ steps.build-and-push.outputs.digest }}
