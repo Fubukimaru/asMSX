@@ -7,10 +7,12 @@
 
 ### 1.1. Description
 
-asMSX is an assembler for the Z80 processor with a number of extensions to make programming for MSX easy.
+asMSX is an assembler for the Z80 processor with a number of extensions
+to make programming for MSX easy.
 It is a cross-assembler that runs on Windows, Linux and MacOS.
 Compile time on a modern PC is near instant comparing to native MSX assemblers.
-There is no size limit on source file size. Source can be edited in any text editor.
+There is no size limit on source file size.
+Source can be edited in any text editor.
 
 
 ### 1.2. Features
@@ -20,17 +22,20 @@ There is no size limit on source file size. Source can be edited in any text edi
 - accepts standard Z80 syntax (implicit accumulator);
 - works with decimal, hexadecimal, octal and binary numbers;
 - supports arithmetic and logic operations in source code;
-- supports floating point decimal values by converting them to 16-bit fixed point values;
+- supports floating point decimal values by converting them
+  to 16-bit fixed point values;
 - math functions: trigonometric, potential etc.
 - supports multiple files through inclusion, nesting is allowed;
 - supports complete or partial direct inclusion of binary files;
 - supports local and global labels;
-- supports official MSX BIOS subroutines and system variables using documented names;
+- supports official MSX BIOS subroutines and
+  system variables using documented names;
 - generates binary files loadable from MSX BASIC;
 - generates ROM image files;
 - supports four MegaROM types: Konami, Konami SCC, ASCII8 and ASCII16;
 - generates COM files for MSX-DOS;
-- generates CAS files for emulators and WAV files for loading on real MSX computers;
+- generates CAS files for emulators and WAV files
+  for loading on real MSX computers;
 - uses internal Assembler variables;
 - generates export symbol table (SYM);
 - writes PRINT directive messages to text file (TXT);
@@ -40,8 +45,9 @@ There is no size limit on source file size. Source can be edited in any text edi
 
 ### 1.3. Project goal
 
-asMSX project goal was to create Z80 cross assembler that is flexible, easy to use, reliable
-and designed from ground up for the development of MSX ROM and MegaROM programs.
+asMSX project goal was to create Z80 cross assembler that is flexible,
+easy to use, reliable and designed from ground up for the development 
+of MSX ROM and MegaROM programs.
 This goal is fully achieved in current version.
 
 asMSX is a small console program that works very fast.
@@ -51,8 +57,10 @@ It uses standard libraries present on all PCs.
 ### 1.4. Syntax
 
 asMSX implements Z80 assembly language slightly differently from standard Zilog syntax.
-Major difference is that square brackets `[ ]`, not parentheses `( )` are used for indirect address mode.
-This design decision allows us to support complex mathematical expressions that use parentheses to order evaluation precedence.
+Major difference is that square brackets `[ ]`,
+not parentheses `( )` are used for indirect address mode.
+This design decision allows us to support complex mathematical expressions
+that use parentheses to order evaluation precedence.
 
 asMSX supports ZILOG directive to retain source level compatibility for existing code.
 It switches indirect address mode to use parentheses.
@@ -70,7 +78,8 @@ asmsx [Optional parameters] filename.asm
 
 If the extension is not provided, asMSX will assume ".asm" as default.
 Source code files are expected to be plain 8-bit ASCII text files.
-asMSX supports text files generated on both Windows and Linux (CR/LF end of line or just LF).
+asMSX supports text files generated on both Windows and Linux
+(CR/LF end of line or just LF).
 On Windows you can assemble a source file by dragging it to asMSX desktop icon.
 This method is not recommended, since long file name support may not work well.
 Also please try to avoid dots and other special characters in file names.
@@ -250,7 +259,8 @@ A numeric expression is a number or a result of operation on numbers.
 There are several popular numeric systems (radices, plural form of radix).
 Here are a few examples of syntax for such systems:
 
-__DECIMAL INTEGER__: radix 10 numbers are usually expressed as a group of one or more decimal digits.
+__DECIMAL INTEGER__: radix 10 numbers are usually expressed as
+a group of one or more decimal digits.
 The only restriction is that you must explicitly express zeroes.
 This is the numeric system that people use in everyday life.
 
@@ -269,7 +279,7 @@ __OCTAL__: radix 8 numbers could be specified using two conventions.
 First convention is similar to C, C++ and Java.
 The number starts with `0` and continues with octal digits `0`..`7`.
 The second convention is native to assemblers
-and is a number with octal digits followed by letter O, lower case or upper case.
+and is a number with octal digits followed by letter O, lowercase or uppercase.
 Second mode is included for compatibility, but is not recommended.
 Upper case letter `O` is easy to confuse with number zero `0`.
 
@@ -298,7 +308,8 @@ $8a $ff $10
 8ah 0ffh 10h
 ```
 
-__BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
+__BINARY__: radix 2 numbers are specified as a group of
+binary digits `0` and `1`, followed by letter `b` or `B`.
 
 **Example**:
 
@@ -322,42 +333,31 @@ Less common operators borrow from C/C++:
 
 - `<<` left bit shift: shifts specified number of bits left.
 It is equivalent to a number of multiplications by 2;
-
 - `>>` right bit shift: shifts specified number of bits right.
 It is equivalent to a number of divisions by 2;
-
 - `|` bit-level OR;
-
 - `&` bit-level AND;
-
 - `^` bit-level XOR;
-
 - `NOT` unary negation;
-
 - `~` logical negation: returns complementing binary number;
-
 - `||` logical OR;
-
 - `&&` logical AND;
-
 - `==` logical equivalent;
-
 - `!=` logical non-equivalent;
-
 - `<`  less-than;
-
 - `<=` less-then or equal;
-
 - `>`  greater-then;
-
 - `>=` greater-then or equal.
 
 The precedence order is same as in C/C++.
-Parentheses can be used to explicitly specify parsing precedence in arithmetic expressions.
+Parentheses can be used to explicitly specify
+parsing precedence in arithmetic expressions.
 
 **Example**:
 
-    ((2*8)/(1+3))<<2
+```python
+((2*8)/(1+3))<<2
+```
 
 Same rules apply to all numbers, including non decimal.
 Additionally following functions are supported:
@@ -437,7 +437,8 @@ of conventional sizes, such as byte and word:
 ### 2.5. Directives
 
 Directives are predefined instructions that help control the code and enable
-additional asMSX features. **Remember, you can use them without first point character.**
+additional asMSX features.
+**Remember, you can use them without first point character.**
 
 `.ZILOG` This directive will switch the use of square brackets and parentheses
 from the point it is defined on. Parentheses will be used for "memory content
@@ -487,18 +488,20 @@ directive will also set start address to sub-page 0 of selected mapper, so
 using `ORG`, `PAGE` or `SUBPAGE` directives is not necessary.
 Supported mapper types are:
 
-- `Konami`: sub-page size is 8 KB, up to 32 sub-pages. Maximum MegaROM size is
-256 KB (2 megabits). Page 1 (4000h - 5FFFh) should be mapped to MegaROM
+- `Konami`: sub-page size is 8 KB, up to 32 sub-pages.
+Maximum MegaROM size is 256 KB (2 megabits).
+Page 1 (4000h - 5FFFh) should be mapped to MegaROM
 sup-page 0 and should not be changed while the program runs.
 
-- `KonamiSCC`: sub-page size is 8 KB, up to 64 sub-pages. Maximum MegaROM size is
-512 KB (4 megabits). Supports access to SCC, Konami Sound Custom Chip.
+- `KonamiSCC`: sub-page size is 8 KB, up to 64 sub-pages.
+Maximum MegaROM size is 512 KB (4 megabits).
+Supports access to SCC, Konami Sound Custom Chip.
 
-- `ASCII8`: sub-page size is 8 KB, up to 256 sub-pages. Maximum MegaROM size is
-2048 KB (16 megabits, 2 megabytes).
+- `ASCII8`: sub-page size is 8 KB, up to 256 sub-pages.
+Maximum MegaROM size is 2048 KB (16 megabits, 2 megabytes).
 
-- `ASCII16`: sub-page size is 16 KB, up to 256 sub-pages. Maximum MegaROM size is
-4096 KB (32 megabits, 4 megabytes).
+- `ASCII16`: sub-page size is 16 KB, up to 256 sub-pages.
+Maximum MegaROM size is 4096 KB (32 megabits, 4 megabytes).
 
 `.BASIC` Generates the header for a loadable binary MSX-BASIC file. It is
 important to use .ORG directive to indicate the intended start address for the
@@ -511,9 +514,9 @@ because COM files are always loaded at 0100h.
 `.START X` Indicates the starting execution address for ROM, MegaROM and BIN
 files, if it is not at the beginning of the file.
 
-`.SEARCH` For ROMs and MegaROMs to that start on page 1 (4000h), it automatically
-finds and sets slot and subslot on page 2 (8000h). It is equivalent to the
-following code:
+`.SEARCH` For ROMs and MegaROMs to that start on page 1 (4000h),
+it automatically finds and sets slot and subslot on page 2 (8000h).
+It is equivalent to the following code:
 
 ```assembly
 call 0138h ;RSLREG
@@ -643,8 +646,9 @@ port.
 If not explicitly specified, source file name will be used, plus appropriate
 extension.
 
-`.SINCLAIR` **Currently broken** This directive sets the output file type to TAP format with
-appropriate header. It is intended for loading on ZX Spectrum emulators or real
+`.SINCLAIR` :warning: **Currently broken** 
+This directive sets the output file type to TAP format with appropriate header.
+It is intended for loading on ZX Spectrum emulators or real
 hardware if you have a working playback application.
 
 
@@ -666,8 +670,8 @@ C99.
     /* Comments */
     { Comments }
 	
-C/C++ and Pascal style multi line comments. All text between the delimiters is
-skipped during assembly.
+C/C++ and Pascal style multi line comments. All text between the delimiters
+is skipped during assembly.
 
     -- Comment
 
