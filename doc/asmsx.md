@@ -265,31 +265,39 @@ This is the numeric system that people use in everyday life.
 
 **Example**:
 
-    0 10 25 1 255 2048
+```assembly
+0 10 25 1 255 2048
+```
 
 __DECIMAL FLOATING POINT__: a decimal number with dot separating integer from fraction.
 Syntax requires dot to be present for the constant to be recognized as a floating point value.
 
 **Example**:
 
-    3.14 1.25 0.0 32768.0 -0.50 15.2
+```assembly
+3.14 1.25 0.0 32768.0 -0.50 15.2
+```
 
-__OCTAL__: radix 8 numbers could be specified using two conventions.
-First convention is similar to C, C++ and Java.
+__OCTAL__: radix 8 numbers can be specified using two conventions.
+
+- C, C++ and Java convention:
 The number starts with `0` and continues with octal digits `0`..`7`.
-The second convention is native to assemblers
-and is a number with octal digits followed by letter O, lowercase or uppercase.
+
+- The second convention is native to assemblers,
+and is a number with octal digits followed by letter `o`, lowercase or uppercase.
 Second mode is included for compatibility, but is not recommended.
 Upper case letter `O` is easy to confuse with number zero `0`.
 
 **Example**:
 
-    01 077 010 1o 77o 10o
+```assembly
+01 077 010 1o 77o 10o
+```
 
 __HEXADECIMAL__: radix 16 numbers, very popular in assembly programming.
 They can be specified using three different conventions.
 
-- C, C++ and Java convention is a number that starts with 0x prefix and
+- C, C++ and Java convention: a number that starts with `0x` prefix and
 continues with one or more hexadecimal digits: `0`..`9`, `a`..`f` or `A`..`F`.
 
 - Second convention is borrowed from Pascal: a group of hexadecimal digits prefixed with `$`.
