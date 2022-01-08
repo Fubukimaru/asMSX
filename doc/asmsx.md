@@ -105,13 +105,13 @@ Use `BLOAD"CAS:",R` in MSX BASIC.
 
 asMSX accepts the following parameters:
 
-- -z: enable standard Z80 Zilog syntax without having .zilog directive in the code.
-- -s: silent mode - suppress messages.
-- -vv: verbose mode - print more troubleshooting messages.
+- `-z`: enable standard Z80 Zilog syntax without having .zilog directive in the code.
+- `-s`: silent mode - suppress messages.
+- `-vv`: verbose mode - print more troubleshooting messages.
 
-If you build asMSX from source with YYDEBUG=1, there is one more parameter available:
+If you build asMSX from source with `YYDEBUG=1`, there is one more parameter available:
 
-- -d: print bison debug messages
+- `-d`: print bison debug messages
 
 
 ## 2. Assembly language
@@ -381,9 +381,9 @@ If a hexadecimal number starts with letter, you should prefix the number with '0
 ##### Example
 
 ```assembly
-  0x8a 0xff 0x10
-  $8a $ff $10
-  8ah 0ffh 10h
+0x8a 0xff 0x10
+$8a $ff $10
+8ah 0ffh 10h
 ```
 
 __BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
@@ -391,7 +391,7 @@ __BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1
 ##### Example
 
 ```assembly
-  1000000b 11110000b 0010101b 1001b
+1000000b 11110000b 0010101b 1001b
 ```
 
 
@@ -470,7 +470,7 @@ It can be used in numeric expressions.
 ##### Example
 
 ```python
-    sin(pi*45.0/180.0)
+sin(pi*45.0/180.0)
 ```
 
 It is useful to support non-integer values in Z80 assembler programs
@@ -492,25 +492,25 @@ during execution it is equal to `PC` register.
 You can include data in your assembler program using four different directives:
 
 ```assembly
-  db data,[data...]
-  defb data,[data...]
-  dt "text"
-  deft "text"
+db data,[data...]
+defb data,[data...]
+dt "text"
+deft "text"
 ```
 
 These instructions define data as 8-bit byte values. dt was included for
 compatibility with other Z80 assemblers. All four directives are equivalent.
 
 ```assembly
-  dw data,[data...]
-  defw data,[data...]
+dw data,[data...]
+defw data,[data...]
 ```
 
 This will define 16-bit word data.
 
 ```assembly
-  ds X
-  defs X
+ds X
+defs X
 ```
 
 This will reserve X bytes in memory starting with current memory address.
@@ -550,11 +550,11 @@ arithmetic operations with variables.
 ##### Example
 
 ```assembly
-  Value1=0
-  Value1=Value1+1
-  ld a,Value1
-  Value1=Value1*2
-  ld b,Value1
+Value1=0
+Value1=Value1+1
+ld a,Value1
+Value1=Value1*2
+ld b,Value1
 ```
 
 `.BIOS` Predefined call address for common BIOS routines, including those
@@ -604,33 +604,33 @@ finds and sets slot and subslot on page 2 (8000h). It is equivalent to the
 following code:
 
 ```assembly
-  call 0138h ;RSLREG
-  rrca
-  rrca
-  and 03h
+call 0138h ;RSLREG
+rrca
+rrca
+and 03h
 
-  ; Secondary Slot
-  ld c,a
-  ld hl,0FCC1h
-  add a,l
-  ld l,a
-  ld a,[hl]
-  and 80h
-  or c
-  ld c,a
-  inc l
-  inc l
-  inc l
-  inc l
-  ld a,[hl]
+; Secondary Slot
+ld c,a
+ld hl,0FCC1h
+add a,l
+ld l,a
+ld a,[hl]
+and 80h
+or c
+ld c,a
+inc l
+inc l
+inc l
+inc l
+ld a,[hl]
 
-  ; Define slot ID
-  and 0ch
-  or c
-  ld h,80h
+; Define slot ID
+and 0ch
+or c
+ld h,80h
 
-  ; Enable
-  call 0024h ;ENASLT
+; Enable
+call 0024h ;ENASLT
 ```
 
 `.SUBPAGE n AT X` This macro is used to define different sub-pages in a MegaROM.
@@ -654,16 +654,16 @@ normal, although ORG, PAGE or SUBPAGE will have the same effect.
 following code:
 
 ```assembly
-  LD IY,[EXPTBL-1]
-  LD IX,ROUTINE
-  CALL CALSLT
+LD IY,[EXPTBL-1]
+LD IX,ROUTINE
+CALL CALSLT
 ```
 
 `.CALLDOS X` Calls MSX-DOS function. It is equivalent to following code:
 
 ```assembly
-  LD C,CODE
-  CALL 0005h
+LD C,CODE
+CALL 0005h
 ```
 
 `.SIZE X` Sets the output file size in Kilobytes.
@@ -694,19 +694,19 @@ numeric expression.
 ##### Example
 
 ```assembly
-  REPT 16
-    OUTI
-  ENDR
+REPT 16
+  OUTI
+ENDR
 
-  X=0
-  Y=0
+X=0
+Y=0
+REPT 10
   REPT 10
-    REPT 10
-      DB X*Y
-      X=X+1
-    ENDR
-    Y=Y+1
+    DB X*Y
+    X=X+1
   ENDR
+  Y=Y+1
+ENDR
 ```
 
 `.PRINTTEXT "text"` / `.PRINTSTRING "text"` Prints a text in the output text file.
@@ -768,11 +768,11 @@ asMSX includes preliminary support for conditional assembly.
 The format of a conditional assembly block is as follows:
 
 ```assembly
-  IF condition
-    Instruction
-  ELSE
-    Instruction
-  ENDIF
+IF condition
+  Instruction
+ELSE
+  Instruction
+ENDIF
 ```
 
 The condition can be of any type, consistent with C/C++ rules.
@@ -785,57 +785,61 @@ If the condition is false, code after `ELSE` will be assembled.
 
 `ENDIF` is mandatory, it closes conditional block.
 
-Current IF nesting limit is 15.
+:information: Current IF nesting limit is 15.
 It may become unlimited in future rewrite.
 
 ##### Example
 
 ```assembly
-  IF (computer==MSX)
-    call MSX1_Init
+IF (computer==MSX)
+  call MSX1_Init
+ELSE
+  IF (computer==MSX2)
+    call MSX2_Init
   ELSE
-    IF (computer==MSX2)
-      call MSX2_Init
+    IF (computer==MSX2plus)
+      call MSX2plus_Init
     ELSE
-      IF (computer==MSX2plus)
-        call MSX2plus_Init
-      ELSE
-        call TurboR_Init
-      ENDIF
+      call TurboR_Init
     ENDIF
   ENDIF
+ENDIF
 ```
 
 In addition, all code, directives and macros will be executed according to
 conditions, this enables creation of the following structures:
 
-    CARTRIDGE=1
-    BINARY=2
-    format=CARTRIDGE
-    IF (format==CARTRIDGE)
-      .page 2
-      .ROM
-    ELSE
-      .org 8800h
-      .Basic
-    ENDIF
-    .START Init
+```assembly
+CARTRIDGE=1
+BINARY=2
+format=CARTRIDGE
+IF (format==CARTRIDGE)
+  .page 2
+  .ROM
+ELSE
+  .org 8800h
+  .Basic
+ENDIF
+.START Init
+```
 
-There is a limitation on conditional instructions:
-`IF` condition, `ELSE` and `ENDIF` must appear on their own separate lines.
-They can't be mixed with any other instructions or macros.
-The following code will fail with current asMSX:
+There is a limitation on conditional instructions:  
+`IF` condition, `ELSE` and `ENDIF` must appear on their own **separate lines**.
+They can't be mixed with any other instructions or macros.  
+:x: The following code will fail with current asMSX:
 
-    IF (variable) nop ELSE inc a ENDIF
+```assembly
+IF (variable) nop ELSE inc a ENDIF
+```
 
 It should be written as follows:
 
 ```assembly
-  IF (variable)
-    nop
-  ELSE
-    inc a
-  ENDIF
+IF (variable)
+  nop
+ELSE
+  inc a
+ENDIF
 ```
 
 `IFDEF` condition could be used to branch code assembly
@@ -844,15 +848,15 @@ using a defined symbol as argument.
 ##### Example
 
 ```assembly
-  IFDEF tests
-    .WAV "Test"
-  ENDIF
+IFDEF tests
+  .WAV "Test"
+ENDIF
 ```
 
 This snippet will generate a WAV file only if the label or variable
 tests was previously defined in the source code.
 
-**BEWARE!**
+:warning: **BEWARE!**
 
 - **`IFDEF` will only recognize a label if it is defined before `IFDEF`.**
 - **Don't use `INCLUDE` inside an `IFDEF` or an `IF`. It doesn't work.**
