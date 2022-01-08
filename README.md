@@ -10,7 +10,13 @@ MRC wiki has an entry for [asMSX](https://www.msx.org/wiki/asMSX).
 
 Please read [asMSX manual](doc/asmsx.md) to learn more.
 
-**DOWNLOAD:** You can find latest release [here](https://github.com/Fubukimaru/asMSX/releases/).
+**DOWNLOAD:** You can find latest binary release [here](https://github.com/Fubukimaru/asMSX/releases/).
+
+Also you can use Docker image from GitHub Packages:
+
+```sh
+docker pull ghcr.io/fubukimaru/asmsx:master
+```
 
 If you'd like to contribute to this project, please take a look at our [coding style guide](doc/coding-style.md).
 
