@@ -64,7 +64,9 @@ Mathematical expression evaluation is switched to square brackets as separators.
 asMSX is a command-line program, so the easiest way to use it is from command prompt.
 To assemble a file use the following command:
 
-    asmsx [Optional parameters] filename.asm
+```shell
+asmsx [Optional parameters] filename.asm
+```
 
 If the extension is not provided, asMSX will assume ".asm" as default.
 Source code files are expected to be plain 8-bit ASCII text files.
@@ -130,7 +132,7 @@ White space (tabs, spaces and empty lines) are ignored.
 
 ##### Example
 
-```
+```assembly
 loop:
         ld a,[0ffffh]   ; reads the master record
 
@@ -169,7 +171,7 @@ so you don't have to invent a bunch of different names.
 It simplifies programming and improves code readability.
 The following is valid code:
 
-```
+```assemblyu
 Function1:
         ...
 @@loop: 
@@ -182,7 +184,7 @@ Function2:
 
 OR
 
-```
+```assembly
 Function1:
         ...
 .loop:	
@@ -378,15 +380,19 @@ If a hexadecimal number starts with letter, you should prefix the number with '0
 
 ##### Example
 
-    0x8a 0xff 0x10
-    $8a $ff $10
-    8ah 0ffh 10h
+```assembly
+  0x8a 0xff 0x10
+  $8a $ff $10
+  8ah 0ffh 10h
+```
 
 __BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
 
 ##### Example
 
-    1000000b 11110000b 0010101b 1001b
+```assembly
+  1000000b 11110000b 0010101b 1001b
+```
 
 
 #### 2.3.2. Operators
@@ -463,7 +469,9 @@ It can be used in numeric expressions.
 
 ##### Example
 
+```python
     sin(pi*45.0/180.0)
+```
 
 It is useful to support non-integer values in Z80 assembler programs
 by providing simple floating to fixed point conversion mechanism.
@@ -483,26 +491,26 @@ during execution it is equal to `PC` register.
 
 You can include data in your assembler program using four different directives:
 
-```
-        db data,[data...]
-        defb data,[data...]
-        dt "text"
-        deft "text"
+```assembly
+  db data,[data...]
+  defb data,[data...]
+  dt "text"
+  deft "text"
 ```
 
 These instructions define data as 8-bit byte values. dt was included for
 compatibility with other Z80 assemblers. All four directives are equivalent.
 
-```
-        dw data,[data...]
-        defw data,[data...]
+```assembly
+  dw data,[data...]
+  defw data,[data...]
 ```
 
 This will define 16-bit word data.
 
-```
-        ds X
-        defs X
+```assembly
+  ds X
+  defs X
 ```
 
 This will reserve X bytes in memory starting with current memory address.
@@ -541,11 +549,13 @@ arithmetic operations with variables.
 
 ##### Example
 
-    Value1=0
-    Value1=Value1+1
-    ld a,Value1
-    Value1=Value1*2
-    ld b,Value1
+```assembly
+  Value1=0
+  Value1=Value1+1
+  ld a,Value1
+  Value1=Value1*2
+  ld b,Value1
+```
 
 `.BIOS` Predefined call address for common BIOS routines, including those
 specified in the MSX, MSX2, MSX2+ and Turbo-R standards. The usual names are
@@ -565,17 +575,17 @@ directive will also set start address to sub-page 0 of selected mapper, so
 using `ORG`, `PAGE` or `SUBPAGE` directives is not necessary.
 Supported mapper types are:
 
-  - `Konami`: sub-page size is 8 KB, up to 32 sub-pages. Maximum MegaROM size is
+- `Konami`: sub-page size is 8 KB, up to 32 sub-pages. Maximum MegaROM size is
 256 KB (2 megabits). Page 1 (4000h - 5FFFh) should be mapped to MegaROM
 sup-page 0 and should not be changed while the program runs.
 
-  - `KonamiSCC`: sub-page size is 8 KB, up to 64 sub-pages. Maximum MegaROM size is
+- `KonamiSCC`: sub-page size is 8 KB, up to 64 sub-pages. Maximum MegaROM size is
 512 KB (4 megabits). Supports access to SCC, Konami Sound Custom Chip.
 
-  - `ASCII8`: sub-page size is 8 KB, up to 256 sub-pages. Maximum MegaROM size is
+- `ASCII8`: sub-page size is 8 KB, up to 256 sub-pages. Maximum MegaROM size is
 2048 KB (16 megabits, 2 megabytes).
 
-  - `ASCII16`: sub-page size is 16 KB, up to 256 sub-pages. Maximum MegaROM size is
+- `ASCII16`: sub-page size is 16 KB, up to 256 sub-pages. Maximum MegaROM size is
 4096 KB (32 megabits, 4 megabytes).
 
 `.BASIC` Generates the header for a loadable binary MSX-BASIC file. It is
@@ -593,34 +603,34 @@ files, if it is not at the beginning of the file.
 finds and sets slot and subslot on page 2 (8000h). It is equivalent to the
 following code:
 
-```
-        call 0138h ;RSLREG
-        rrca
-        rrca
-        and 03h
-        
-        ; Secondary Slot
-        ld c,a
-        ld hl,0FCC1h
-        add a,l
-        ld l,a
-        ld a,[hl]
-        and 80h
-        or c
-        ld c,a
-        inc l
-        inc l
-        inc l
-        inc l
-        ld a,[hl]
-        
-        ; Define slot ID
-        and 0ch
-        or c
-        ld h,80h
-        
-        ; Enable
-        call 0024h ;ENASLT
+```assembly
+  call 0138h ;RSLREG
+  rrca
+  rrca
+  and 03h
+
+  ; Secondary Slot
+  ld c,a
+  ld hl,0FCC1h
+  add a,l
+  ld l,a
+  ld a,[hl]
+  and 80h
+  or c
+  ld c,a
+  inc l
+  inc l
+  inc l
+  inc l
+  ld a,[hl]
+
+  ; Define slot ID
+  and 0ch
+  or c
+  ld h,80h
+
+  ; Enable
+  call 0024h ;ENASLT
 ```
 
 `.SUBPAGE n AT X` This macro is used to define different sub-pages in a MegaROM.
@@ -643,17 +653,17 @@ normal, although ORG, PAGE or SUBPAGE will have the same effect.
 `.CALLBIOS X` Calls a BIOS routine from MSX-DOS program. It is equivalent to
 following code:
 
-```
-        LD IY,[EXPTBL-1]
-        LD IX,ROUTINE
-        CALL CALSLT
+```assembly
+  LD IY,[EXPTBL-1]
+  LD IX,ROUTINE
+  CALL CALSLT
 ```
 
 `.CALLDOS X` Calls MSX-DOS function. It is equivalent to following code:
 
-```
-        LD C,CODE
-        CALL 0005h
+```assembly
+  LD C,CODE
+  CALL 0005h
 ```
 
 `.SIZE X` Sets the output file size in Kilobytes.
@@ -683,20 +693,20 @@ numeric expression.
 
 ##### Example
 
-```
-    REPT 16
-      OUTI
-    ENDR
-  
-    X=0
-    Y=0
+```assembly
+  REPT 16
+    OUTI
+  ENDR
+
+  X=0
+  Y=0
+  REPT 10
     REPT 10
-      REPT 10
-        DB X*Y
-        X=X+1
-      ENDR
-      Y=Y+1
+      DB X*Y
+      X=X+1
     ENDR
+    Y=Y+1
+  ENDR
 ```
 
 `.PRINTTEXT "text"` / `.PRINTSTRING "text"` Prints a text in the output text file.
@@ -757,11 +767,13 @@ Ada-style single line comment.
 asMSX includes preliminary support for conditional assembly.
 The format of a conditional assembly block is as follows:
 
-    IF condition
-      Instruction
-    ELSE
-      Instruction
-    ENDIF
+```assembly
+  IF condition
+    Instruction
+  ELSE
+    Instruction
+  ENDIF
+```
 
 The condition can be of any type, consistent with C/C++ rules.
 A condition is considered true if evaluation result is non-zero.
@@ -778,19 +790,21 @@ It may become unlimited in future rewrite.
 
 ##### Example
 
-    IF (computer==MSX)
-      call MSX1_Init
+```assembly
+  IF (computer==MSX)
+    call MSX1_Init
+  ELSE
+    IF (computer==MSX2)
+      call MSX2_Init
     ELSE
-      IF (computer==MSX2)
-        call MSX2_Init
+      IF (computer==MSX2plus)
+        call MSX2plus_Init
       ELSE
-        IF (computer==MSX2plus)
-          call MSX2plus_Init
-        ELSE
-          call TurboR_Init
-        ENDIF
+        call TurboR_Init
       ENDIF
     ENDIF
+  ENDIF
+```
 
 In addition, all code, directives and macros will be executed according to
 conditions, this enables creation of the following structures:
@@ -816,20 +830,24 @@ The following code will fail with current asMSX:
 
 It should be written as follows:
 
-    IF (variable)
-      nop
-    ELSE
-      inc a
-    ENDIF
+```assembly
+  IF (variable)
+    nop
+  ELSE
+    inc a
+  ENDIF
+```
 
 `IFDEF` condition could be used to branch code assembly
 using a defined symbol as argument.
 
 ##### Example
 
-    IFDEF tests
-      .WAV "Test"
-    ENDIF
+```assembly
+  IFDEF tests
+    .WAV "Test"
+  ENDIF
+```
 
 This snippet will generate a WAV file only if the label or variable
 tests was previously defined in the source code.
