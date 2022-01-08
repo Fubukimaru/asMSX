@@ -121,6 +121,38 @@ If you build asMSX from source with `YYDEBUG=1`, there is one more parameter ava
 
 - `-d` print bison debug messages
 
+### 1.6. Build
+
+If you want to build asMSX from source code,
+ensure to install the following dependencies:
+
+#### GNU/Linux (Ubuntu based)
+
+```sh
+sudo apt install -y make gcc flex bison git build-essential \
+libbison-dev libfl-dev libpthread-stubs0-dev
+```
+
+Then you can run `make` to build from `Makefile`.
+More options are available, check the file for more information.
+
+### 1.7. Docker
+
+You can run asMSX as a Docker container available from GitHub Packages:
+
+```sh
+docker run -v $PWD:/src ghcr.io/fubukimaru/asmsx:master FILE.ASM
+```
+
+Also you can integrate asMSX in GitHub Actions Workflow by using
+the container image, useful for CI/CD processes (testing your code):
+
+```yaml
+- name: Run asMSX
+  uses: docker://ghcr.io/fubukimaru/asmsx:master
+  with:
+    args: FILE.ASM
+```
 
 ## 2. Assembly language
 
