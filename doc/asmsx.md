@@ -200,41 +200,41 @@ Function2:
 
 asMSX supports the following predefined labels:
 
-| label  | value | label  | value | label  | value | label  | value |
-|:-------|------:|:-------|------:|:-------|------:|:-------|------:|
-| CHKRAM | 0000h | SETT32 | 007bh | GTPDL  | 00deh | SNSMAT | 0141h |
-| SYNCHR | 0008h | SETGRP | 007eh | TAPION | 00e1h | PHYDIO | 0144h |
-| RDSLT  | 000ch | SETMLT | 0081h | TAPIN  | 00e4h | FORMAT | 0147h |
-| CHRGTR | 0010h | CALPAT | 0084h | TAPIOF | 00e7h | ISFLIO | 014ah |
-| WRSLT  | 0014h | CALATR | 0087h | TAPOON | 00eah | OUTDLP | 014dh |
-| OUTDO  | 0018h | GSPSIZ | 008ah | TAPOUT | 00edh | GETVCP | 0150h |
-| CALSLT | 001ch | GRPPRT | 008dh | TAPOOF | 00f0h | GETVC2 | 0153h |
-| DCOMPR | 0020h | GICINI | 0090h | STMOTR | 00f3h | KILBUF | 0156h |
-| ENASLT | 0024h | WRTPSG | 0093h | LFTQ   | 00f6h | CALBAS | 0159h |
-| GETYPR | 0028h | RDPSG  | 0096h | PUTQ   | 00f9h | SUBROM | 015ch |
-| CALLF  | 0030h | STRTMS | 0099h | RIGHTC | 00fch | EXTROM | 015fh |
-| KEYINT | 0038h | CHSNS  | 009ch | LEFTC  | 00ffh | CHKSLZ | 0162h |
-| INITIO | 003bh | CHGET  | 009fh | UPC    | 0102h | CHKNEW | 0165h |
-| INIFNK | 003eh | CHPUT  | 00a2h | TUPC   | 0105h | EOL    | 0168h |
-| DISSCR | 0041h | LPTOUT | 00a5h | DOWNC  | 0108h | BIGFIL | 016bh |
-| ENASCR | 0044h | LPTSTT | 00a8h | TDOWNC | 010bh | NSETRD | 016eh |
-| WRTVDP | 0047h | CNVCHR | 00abh | SCALXY | 010eh | NSTWRT | 0171h |
-| RDVRM  | 004ah | PINLIN | 00aeh | MAPXYC | 0111h | NRDVRM | 0174h |
-| WRTVRM | 004dh | INLIN  | 00b1h | FETCHC | 0114h | NWRVRM | 0177h |
-| SETRD  | 0050h | QINLIN | 00b4h | STOREC | 0117h | RDBTST | 017ah |
-| SETWRT | 0053h | BREAKX | 00b7h | SETATR | 011ah | WRBTST | 017dh |
-| FILVRM | 0056h | ISCNTC | 00bah | READC  | 011dh | CHGCPU | 0180h |
-| LDIRMV | 0059h | CKCNTC | 00bdh | SETC   | 0120h | GETCPU | 0183h |
-| LDIRVM | 005ch | BEEP   | 00c0h | NSETCX | 0123h | PCMPLY | 0186h |
-| CHGMOD | 005fh | CLS    | 00c3h | GTASPC | 0126h | PCMREC | 0189h |
-| CHGCLR | 0062h | POSIT  | 00c6h | PNTINI | 0129h |||
-| NMI    | 0066h | FNKSB  | 00c9h | SCANR  | 012ch |||
-| CLRSPR | 0069h | ERAFNK | 00cch | SCANL  | 012fh |||
-| INITXT | 006ch | DSPFNK | 00cfh | CHGCAP | 0132h |||
-| INIT32 | 006fh | TOTEXT | 00d2h | CHGSND | 0135h |||
-| INIGRP | 0072h | GTSTCK | 00d5h | RSLREG | 0138h |||
-| INIMLT | 0075h | GTTRIG | 00d8h | WSLREG | 013bh |||
-| SETTXT | 0078h | GTPAD  | 00dbh | RDVDP  | 013eh |||
+| label  | value || label  | value || label  | value || label  | value |
+|:-------|------:||:-------|------:||:-------|------:||:-------|------:|
+| CHKRAM | 0000h || SETT32 | 007bh || GTPDL  | 00deh || SNSMAT | 0141h |
+| SYNCHR | 0008h || SETGRP | 007eh || TAPION | 00e1h || PHYDIO | 0144h |
+| RDSLT  | 000ch || SETMLT | 0081h || TAPIN  | 00e4h || FORMAT | 0147h |
+| CHRGTR | 0010h || CALPAT | 0084h || TAPIOF | 00e7h || ISFLIO | 014ah |
+| WRSLT  | 0014h || CALATR | 0087h || TAPOON | 00eah || OUTDLP | 014dh |
+| OUTDO  | 0018h || GSPSIZ | 008ah || TAPOUT | 00edh || GETVCP | 0150h |
+| CALSLT | 001ch || GRPPRT | 008dh || TAPOOF | 00f0h || GETVC2 | 0153h |
+| DCOMPR | 0020h || GICINI | 0090h || STMOTR | 00f3h || KILBUF | 0156h |
+| ENASLT | 0024h || WRTPSG | 0093h || LFTQ   | 00f6h || CALBAS | 0159h |
+| GETYPR | 0028h || RDPSG  | 0096h || PUTQ   | 00f9h || SUBROM | 015ch |
+| CALLF  | 0030h || STRTMS | 0099h || RIGHTC | 00fch || EXTROM | 015fh |
+| KEYINT | 0038h || CHSNS  | 009ch || LEFTC  | 00ffh || CHKSLZ | 0162h |
+| INITIO | 003bh || CHGET  | 009fh || UPC    | 0102h || CHKNEW | 0165h |
+| INIFNK | 003eh || CHPUT  | 00a2h || TUPC   | 0105h || EOL    | 0168h |
+| DISSCR | 0041h || LPTOUT | 00a5h || DOWNC  | 0108h || BIGFIL | 016bh |
+| ENASCR | 0044h || LPTSTT | 00a8h || TDOWNC | 010bh || NSETRD | 016eh |
+| WRTVDP | 0047h || CNVCHR | 00abh || SCALXY | 010eh || NSTWRT | 0171h |
+| RDVRM  | 004ah || PINLIN | 00aeh || MAPXYC | 0111h || NRDVRM | 0174h |
+| WRTVRM | 004dh || INLIN  | 00b1h || FETCHC | 0114h || NWRVRM | 0177h |
+| SETRD  | 0050h || QINLIN | 00b4h || STOREC | 0117h || RDBTST | 017ah |
+| SETWRT | 0053h || BREAKX | 00b7h || SETATR | 011ah || WRBTST | 017dh |
+| FILVRM | 0056h || ISCNTC | 00bah || READC  | 011dh || CHGCPU | 0180h |
+| LDIRMV | 0059h || CKCNTC | 00bdh || SETC   | 0120h || GETCPU | 0183h |
+| LDIRVM | 005ch || BEEP   | 00c0h || NSETCX | 0123h || PCMPLY | 0186h |
+| CHGMOD | 005fh || CLS    | 00c3h || GTASPC | 0126h || PCMREC | 0189h |
+| CHGCLR | 0062h || POSIT  | 00c6h || PNTINI | 0129h ||||
+| NMI    | 0066h || FNKSB  | 00c9h || SCANR  | 012ch ||||
+| CLRSPR | 0069h || ERAFNK | 00cch || SCANL  | 012fh ||||
+| INITXT | 006ch || DSPFNK | 00cfh || CHGCAP | 0132h ||||
+| INIT32 | 006fh || TOTEXT | 00d2h || CHGSND | 0135h ||||
+| INIGRP | 0072h || GTSTCK | 00d5h || RSLREG | 0138h ||||
+| INIMLT | 0075h || GTTRIG | 00d8h || WSLREG | 013bh ||||
+| SETTXT | 0078h || GTPAD  | 00dbh || RDVDP  | 013eh ||||
 
 ### 2.3. Numeric expression
 
