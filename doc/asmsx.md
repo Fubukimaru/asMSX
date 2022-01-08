@@ -130,7 +130,7 @@ Each block in brackets is optional.
 There is no limit on maximum line length.
 White space (tabs, spaces and empty lines) are ignored.
 
-##### Example
+**Example**:
 
 ```assembly
 loop:
@@ -153,7 +153,7 @@ Label name should always end with a colon `:`.
 Label name is case sensitive:
 `LABEL:` and `Label:` are treated as two separate labels.
 
-##### Example
+**Example**:
 
 ```
 LABEL:
@@ -254,14 +254,14 @@ __DECIMAL INTEGER__: radix 10 numbers are usually expressed as a group of one or
 The only restriction is that you must explicitly express zeroes.
 This is the numeric system that people use in everyday life.
 
-##### Example
+**Example**:
 
     0 10 25 1 255 2048
 
 __DECIMAL FLOATING POINT__: a decimal number with dot separating integer from fraction.
 Syntax requires dot to be present for the constant to be recognized as a floating point value.
 
-##### Example
+**Example**:
 
     3.14 1.25 0.0 32768.0 -0.50 15.2
 
@@ -273,7 +273,7 @@ and is a number with octal digits followed by letter O, lower case or upper case
 Second mode is included for compatibility, but is not recommended.
 Upper case letter `O` is easy to confuse with number zero `0`.
 
-##### Example
+**Example**:
 
     01 077 010 1o 77o 10o
 
@@ -290,7 +290,7 @@ a group of hexadecimal digits, followed by letter `h` or `H`.
 This convention requires first digit to always be numeric.
 If a hexadecimal number starts with letter, you should prefix the number with '0'.
 
-##### Example
+**Example**:
 
 ```assembly
 0x8a 0xff 0x10
@@ -300,7 +300,7 @@ $8a $ff $10
 
 __BINARY__: radix 2 numbers are specified as a group of binary digits `0` and `1`, followed by letter `b` or `B`.
 
-##### Example
+**Example**:
 
 ```assembly
 1000000b 11110000b 0010101b 1001b
@@ -355,7 +355,7 @@ It is equivalent to a number of divisions by 2;
 The precedence order is same as in C/C++.
 Parentheses can be used to explicitly specify parsing precedence in arithmetic expressions.
 
-##### Example
+**Example**:
 
     ((2*8)/(1+3))<<2
 
@@ -379,7 +379,7 @@ Additionally following functions are supported:
 `PI` is predefined as a double precision floating point constant.
 It can be used in numeric expressions.
 
-##### Example
+**Example**:
 
 ```python
 sin(pi*45.0/180.0)
@@ -459,7 +459,7 @@ same as for labels. There are no local constants.
 initialized by assigning them an integer values. It is possible to perform
 arithmetic operations with variables.
 
-##### Example
+**Example**:
 
 ```assembly
 Value1=0
@@ -603,7 +603,7 @@ Nesting allows generation of complex tables. There is a restriction: the number
 of repetitions must be defined as integer number, it can't be calculated from a
 numeric expression.
 
-##### Example
+**Example**:
 
 ```assembly
 REPT 16
@@ -700,7 +700,7 @@ If the condition is false, code after `ELSE` will be assembled.
 :information_source: Current IF nesting limit is 15.
 It may become unlimited in future rewrite.
 
-##### Example
+**Example**:
 
 ```assembly
 IF (computer==MSX)
@@ -757,7 +757,7 @@ ENDIF
 `IFDEF` condition could be used to branch code assembly
 using a defined symbol as argument.
 
-##### Example
+**Example**:
 
 ```assembly
 IFDEF tests
