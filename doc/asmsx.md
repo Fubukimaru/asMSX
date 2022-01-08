@@ -258,7 +258,9 @@ A numeric expression is a number or a result of operation on numbers.
 There are several popular numeric systems (radices, plural form of radix).
 Here are a few examples of syntax for such systems:
 
-__DECIMAL INTEGER__: radix 10 numbers are usually expressed as
+##### DECIMAL INTEGER
+
+Radix 10 numbers are usually expressed as
 a group of one or more decimal digits.
 The only restriction is that you must explicitly express zeroes.
 This is the numeric system that people use in everyday life.
@@ -269,7 +271,9 @@ This is the numeric system that people use in everyday life.
 0 10 25 1 255 2048
 ```
 
-__DECIMAL FLOATING POINT__: a decimal number with dot separating integer from fraction.
+##### DECIMAL FLOATING POINT
+
+A decimal number with dot separating integer from fraction.
 Syntax requires dot to be present for the constant to be recognized as a floating point value.
 
 **Example**:
@@ -278,7 +282,9 @@ Syntax requires dot to be present for the constant to be recognized as a floatin
 3.14 1.25 0.0 32768.0 -0.50 15.2
 ```
 
-__OCTAL__: radix 8 numbers can be specified using two conventions.
+##### OCTAL
+
+Radix 8 numbers can be specified using two conventions.
 
 - C, C++ and Java convention:
 The number starts with `0` and continues with octal digits `0`..`7`.
@@ -294,7 +300,9 @@ Upper case letter `O` is easy to confuse with number zero `0`.
 01 077 010 1o 77o 10o
 ```
 
-__HEXADECIMAL__: radix 16 numbers, very popular in assembly programming.
+##### HEXADECIMAL
+
+Radix 16 numbers, very popular in assembly programming.
 They can be specified using three different conventions.
 
 - C, C++ and Java convention: a number that starts with `0x` prefix and
@@ -315,7 +323,9 @@ $8a $ff $10
 8ah 0ffh 10h
 ```
 
-__BINARY__: radix 2 numbers are specified as a group of
+##### BINARY
+
+Radix 2 numbers are specified as a group of
 binary digits `0` and `1`, followed by letter `b` or `B`.
 
 **Example**:
@@ -323,7 +333,6 @@ binary digits `0` and `1`, followed by letter `b` or `B`.
 ```assembly
 1000000b 11110000b 0010101b 1001b
 ```
-
 
 #### 2.3.2. Operators
 
