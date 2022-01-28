@@ -5,7 +5,6 @@ bin/
 asmsx.exe
 /asmsx
 /asmsx-debug
-/test
 *.o
 *.dot
 *.tab.h

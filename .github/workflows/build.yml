@@ -55,14 +55,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
-    - name: make
-      run: make
-    - name: test
-      run: make test
-    - name: cleanup and build again
-      run: |
-        make clean
-        make
+    - run: make
     - name: upload artifact
       uses: actions/upload-artifact@v2
       with:
@@ -109,6 +102,24 @@ jobs:
       with:
         name: asmsx-osx
         path: asmsx
+
+  test:
+    runs-on: ubuntu-latest
+    needs: linux
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: asmsx-linux-x86_64
+        path: asmsx
+    - name: Install Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        pip3 install --upgrade pip behave
+    - run: behave test
 
   release:
     name: Upload to Release
