@@ -14,9 +14,16 @@ def step_impl(context, folder):
     os.chdir(folder)
 
 @given('file {file} exists')
+@when('file {file} exists')
 @then('file {file} exists')
 def step_impl(context, file):
     assert os.path.isfile(file), f"File {file} does not exist"
+
+@given('I write to {file}')
+@given('I write the code to {file}')
+def step_impl(context, file):
+    with open(file, 'w') as f:
+        f.write(context.text)
 
 @when('I build {file}')
 def step_impl(context, file):
@@ -28,6 +35,8 @@ def step_impl(context, file):
         check=True,
         env=env
     )
+    context.build = True
+    context.build_file = file
 
 @then('{file} matches sha {expected_hash}')
 def step_impl(context, file, expected_hash):
