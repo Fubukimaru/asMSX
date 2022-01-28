@@ -784,7 +784,9 @@ pseudo_instruction: PSEUDO_ORG value
 			if (!fname_msx[0])
 			{
 				strncpy(fname_msx, fname_bin, PATH_MAX - 1);
-				fname_msx[strlen(fname_msx) - 1] = 0;
+				// set last char as NULL.
+				// NOTE: strlen starts at 1!
+				fname_msx[strlen(fname_msx)] = 0;
 			}
 			cassette |= $1;
 		}
