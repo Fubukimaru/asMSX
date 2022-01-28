@@ -71,3 +71,21 @@ Feature: Fixing issues
     When I invalid build test.asm
     Then error code is 13
     # undefined identifier
+
+  Scenario: Issue #92 Directive .FILENAME does not work
+    Given I write the code to testlongfile.asm
+      """
+      .MSXDOS
+      .BIOS
+      .FILENAME "outfile"
+
+      TERM0  EQU	$00	//Program terminate
+
+        LD	A,1
+        .CALLBIOS CHGMOD
+
+        .CALLDOS TERM0
+      """
+    When I build testlongfile.asm
+    Then file outfile.com exists
+    And file outfile.sym exists
