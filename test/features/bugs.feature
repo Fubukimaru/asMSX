@@ -40,3 +40,34 @@ Feature: Fixing issues
     When I invalid build test.asm
     Then error code is 37
     # megaROM mapper subpage out of range
+
+  Scenario: Issue #76 Sometimes undefined identifier
+    Given I write the code to test.asm
+      """
+        ZILOG
+        nop
+        ;ld	A,(RUNEVENTS_EVENTSDONE)
+      ;------------------------------------
+      ; RAM
+      ;------------------------------------
+        PAGE	3
+      ___RAM___:
+      PILA0:
+        ds	256
+      PILA:	byte
+
+        INCLUDE "runevents.ram"
+      """
+    Then I run command unix2dos test.asm
+    Given I write to runevents.ram
+      """
+      ;RUNEVENTS Variables en RAM
+
+      RUNEVENTS_MAX_EVENTSDONE	equ	EVENTS_TOTAL
+      RUNEVENTS_EVENTSDONE:		ds	2 * RUNEVENTS_MAX_EVENTSDONE
+      RUNEVENTS_EVENTSDONE_END:
+      """
+    Then I run command unix2dos runevents.ram
+    When I invalid build test.asm
+    Then error code is 13
+    # undefined identifier

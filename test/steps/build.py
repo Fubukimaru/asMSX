@@ -50,6 +50,10 @@ def step_impl(context, file):
     )
     assert context.build_program.returncode > 0, "Program did not fail"
 
+@then('I run command {command}')
+def step_impl(context, command):
+    subprocess.run(command.split(' '), check=False)
+
 @then('error code is {error_code:d}')
 def step_impl(context, error_code):
     assert context.build_program, "Program did not run"
