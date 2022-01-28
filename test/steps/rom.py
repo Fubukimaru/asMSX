@@ -15,7 +15,8 @@ def step_impl(context, page: int, check: bool):
     page = int(page)
     check = (not "no" in check)
     assert context.build, "There's no build done!"
-    file = context.build_file.replace(".asm", ".rom")
+    assert context.build_rom, "There's no binary file!"
+    file = context.build_rom
 
     with open(file, 'rb') as rom:
         rom.seek(0x4000 * page, 0)
@@ -29,7 +30,8 @@ def step_impl(context, page: int, check: bool):
 @then(u'sym contains (?P<name>.+)')
 def step_impl(context, name):
     assert context.build, "There's no build done!"
-    file = context.build_file.replace(".asm", ".sym")
+    assert context.build_sym, "There's no symbols file!"
+    file = context.build_sym
 
     symbol = re.compile(r'^(?P<address>[0-9A-F]{4})h (?P<label>.+)$')
     with open(file, 'r') as sym:
@@ -44,7 +46,8 @@ def step_impl(context, name):
 @then(u'stored init matches sym (?P<name>.+)')
 def step_impl(context, name):
     assert context.build, "There's no build done!"
-    file = context.build_file.replace(".asm", ".sym")
+    assert context.build_sym, "There's no symbols file!"
+    file = context.build_sym
 
     symbol = re.compile(r'^(?P<address>[0-9A-F]{4})h (?P<label>.+)$')
     with open(file, 'r') as sym:

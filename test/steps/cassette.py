@@ -1,11 +1,11 @@
 from behave import *
 import os
-#import struct
 
 @then(u'cassette tape name equals {name}')
 def step_impl(context, name):
     assert context.build, "There's no build done!"
-    file = context.build_file.replace(".asm", ".cas")
+    assert context.build_cas, "There's no cassette file!"
+    file = context.build_cas
 
     # remove forced quotes
     name = name.replace('"', '')

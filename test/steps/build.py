@@ -2,6 +2,7 @@ from behave import *
 import os
 import subprocess
 import hashlib
+import re
 
 env = dict(os.environ)
 env["PATH"] = os.getcwd() + ":" + env["PATH"]
@@ -37,6 +38,23 @@ def step_impl(context, file):
     )
     context.build = True
     context.build_file = file
+
+    output_list = {
+        "txt": "Output text file {} saved",
+        "bin": "Binary file {} saved",
+        "rom": "Binary file {} saved",
+        "cas": "cas file {}",
+        "wav": "Audio file {} saved",
+        "sym": "Symbol file {} saved",
+    }
+
+    for ext, text in output_list.items():
+        outfile = re.search(
+            text.format('(?P<file>.+)'),
+            context.build_program.stdout
+        )
+        if outfile:
+            setattr(context, f"build_{ext}", outfile.group('file'))
 
 @when('I invalid build {file}')
 def step_impl(context, file):

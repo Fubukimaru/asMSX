@@ -1,6 +1,7 @@
 Feature: Test program functions
 
   Build a valid MSX tape file name from any input string
+  Tape name must be lenght 6.
   Scenario Outline: Build tape file name
     Given I write the code to test.asm
       """
@@ -21,3 +22,24 @@ Feature: Test program functions
     | "123   "     | "123   " |
     | "   e      " | "   e  " |
     | "'     "     | "'     " |
+    |              | "test  " |
+
+  Scenario Outline: Build tape with filename function
+    Given I write the code to test.asm
+      """
+      .PAGE 2
+      .ROM
+      .FILENAME "<name>"
+      .CASSETTE
+      .START INIT
+      INIT:
+        ret
+      """
+    When I build test.asm
+    Then file <name>.cas exists
+    And cassette tape name equals <expect>
+
+  Examples:
+    | name     | expect   |
+    | test2    | "test2 " |
+    | test1234 | "test12" |
