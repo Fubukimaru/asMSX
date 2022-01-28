@@ -77,6 +77,15 @@ def step_impl(context, error_code):
     assert context.build_program, "Program did not run"
     assert context.build_program.returncode == error_code, f"Program exited with code {context.build_program.returncode}"
 
+@then('build output {should} contain {output}')
+def step_impl(context, should, output):
+    assert context.build_program, "Program did not run"
+    should = (not "no" in should)
+    if should:
+        assert output in context.build_program.stdout, "Output not found"
+    else:
+        assert output not in context.build_program.stdout, "Output found"
+
 @then('{file} matches sha {expected_hash}')
 def step_impl(context, file, expected_hash):
     buffer_size = 64*1024

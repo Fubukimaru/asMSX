@@ -121,7 +121,7 @@ jobs:
         sudo apt install -y dos2unix
         pip3 install --upgrade pip behave
         chmod a+x asmsx
-    - run: behave test
+    - run: make test
 
   release:
     name: Upload to Release

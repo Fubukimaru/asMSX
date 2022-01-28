@@ -89,3 +89,45 @@ Feature: Fixing issues
     When I build test.asm
     Then file outfile.com exists
     And file outfile.sym exists
+
+  @wip
+  Scenario: Issue #58 INCLUDE inside an IF is not ignored
+    Given I write the code to test.asm
+      """
+      USE_SCREEN = 2
+
+      IF USE_SCREEN == 2
+        .INCLUDE "screen2.com"
+      ENDIF
+
+      IF USE_SCREEN == 4
+        .INCLUDE "screen4.com"
+      ENDIF
+      """
+    And I write to screen2.com
+      """
+      .db "SCREEN2"
+
+      """
+    And I write to screen4.com
+      """
+      .db "SCREEN4"
+
+      """
+    When I build test.asm
+    Then build output should not contain Including file screen4.com
+
+  @wip
+  Scenario: Issue #106 Include a file without newline breaks
+    Given I write the code to test.asm
+      """
+      .db "HELLO"
+      .INCLUDE "include.com"
+      .db "BYE"
+      """
+    And I write to include.com
+      """
+      .db "WORLD"
+      """
+    When I build test.asm
+    Then build output should contain Including file include.com

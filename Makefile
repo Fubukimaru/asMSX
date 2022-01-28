@@ -85,7 +85,7 @@ clean:
 	rm -vf src/*.o $(BUILD_FILES) asmsx asmsx-debug *.exe ~* *.osx asmsx_*.zip
 
 test: asmsx
-	behave test
+	behave test --tags=-wip
 
 .PHONY: test
 
