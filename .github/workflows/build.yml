@@ -35,7 +35,7 @@ jobs:
     - name: install deps
       run: |
         sudo apt update
-        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
+        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev
         sudo apt install -y gcc-mingw-w64-${{ matrix.target }} g++-mingw-w64-${{ matrix.target }}
     - name: make
       run: make asmsx${{ matrix.bits }}.exe
@@ -54,7 +54,7 @@ jobs:
     - name: install deps
       run: |
         sudo apt update
-        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
+        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev
     - run: make
     - name: upload artifact
       uses: actions/upload-artifact@v2
@@ -76,7 +76,7 @@ jobs:
     - name: install deps
       run: |
         sudo apt update
-        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev libgtest-dev
+        sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev
         wget https://developer.arm.com/-/media/Files/downloads/gnu-a/${{ env.GCC_VERSION }}/binrel/${{ env.GCC_NAME }}.tar.xz
         tar xvf ${{ env.GCC_NAME }}.tar.xz
     - name: make

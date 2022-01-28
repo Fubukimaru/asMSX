@@ -73,7 +73,7 @@ Feature: Fixing issues
     # undefined identifier
 
   Scenario: Issue #92 Directive .FILENAME does not work
-    Given I write the code to testlongfile.asm
+    Given I write the code to test.asm
       """
       .MSXDOS
       .BIOS
@@ -86,6 +86,6 @@ Feature: Fixing issues
 
         .CALLDOS TERM0
       """
-    When I build testlongfile.asm
+    When I build test.asm
     Then file outfile.com exists
     And file outfile.sym exists
