@@ -1,5 +1,5 @@
-Feature: Fix issue #5
-  Scenario: .rom directive not suitable for 48kB ROM
+Feature: Fixing issues
+  Scenario: Issue #5 .rom directive not suitable for 48kB ROM
     Given I write the code to test.asm
       """
       .page 1
@@ -23,3 +23,20 @@ Feature: Fix issue #5
     And sym contains INIT
     And stored init matches sym INIT
 
+  Scenario: Issue #52 MegaROM Konami SCC big than 512k
+    Given I write the code to test.asm
+      """
+      .MEGAROM Konamiscc
+      .SUBPAGE 63 AT 06000h
+      """
+    When I build test.asm
+    Then file test.rom exists
+
+    Given I write the code to test.asm
+      """
+      .MEGAROM Konamiscc
+      .SUBPAGE 64 AT 06000h
+      """
+    When I invalid build test.asm
+    Then error code is 37
+    # megaROM mapper subpage out of range

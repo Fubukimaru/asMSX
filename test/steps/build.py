@@ -28,7 +28,7 @@ def step_impl(context, file):
 @when('I build {file}')
 def step_impl(context, file):
     fullpath = os.path.abspath(file)
-    process = subprocess.run(
+    context.build_program = subprocess.run(
         ['asmsx', fullpath],
         stdout=subprocess.PIPE,
         universal_newlines=True,
@@ -37,6 +37,23 @@ def step_impl(context, file):
     )
     context.build = True
     context.build_file = file
+
+@when('I invalid build {file}')
+def step_impl(context, file):
+    fullpath = os.path.abspath(file)
+    context.build_program = subprocess.run(
+        ['asmsx', fullpath],
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
+        check=False,
+        env=env
+    )
+    assert context.build_program.returncode > 0, "Program did not fail"
+
+@then('error code is {error_code:d}')
+def step_impl(context, error_code):
+    assert context.build_program, "Program did not run"
+    assert context.build_program.returncode == error_code, f"Program exited with code {context.build_program.returncode}"
 
 @then('{file} matches sha {expected_hash}')
 def step_impl(context, file, expected_hash):
