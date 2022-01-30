@@ -60,6 +60,7 @@ def step_impl(context, file):
     context.build_program = subprocess.run(
         ['asmsx', fullpath],
         stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         universal_newlines=True,
         check=False,
         env=env
@@ -80,9 +81,9 @@ def step_impl(context, should, output):
     assert context.build_program, "Program did not run"
     should = (not "no" in should)
     if should:
-        assert output in context.build_program.stdout, "Output not found"
+        assert output in context.build_program.stdout, "Output not found: {context.build_program.stdout}"
     else:
-        assert output not in context.build_program.stdout, "Output found"
+        assert output not in context.build_program.stdout, "Output found: {context.build_program.stdout}"
 
 @then('{file} matches sha {expected_hash}')
 def step_impl(context, file, expected_hash):

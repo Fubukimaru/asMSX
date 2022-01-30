@@ -57,6 +57,7 @@ Feature: Fixing issues
       PILA:	byte
 
         INCLUDE "runevents.ram"
+
       """
     Then I run command unix2dos test.asm
     Given I write to runevents.ram
@@ -70,7 +71,7 @@ Feature: Fixing issues
     Then I run command unix2dos runevents.ram
     When I invalid build test.asm
     Then error code is 13
-    # undefined identifier
+    And build output should contain undefined identifier
 
   Scenario: Issue #92 Directive .FILENAME does not work
     Given I write the code to test.asm
