@@ -31,7 +31,7 @@ static struct
 extern int prompt_error1(int);
 %}
 
-%option yylineno noinput nounput noyywrap
+%option yylineno noinput noyywrap
 
 %s comment
 %s pascal_comment
@@ -77,9 +77,9 @@ extern int prompt_error1(int);
       }
     }
 
-    p1_include_stack[p1_include_index].name = malloc(1024);
+    p1_include_stack[p1_include_index].name = malloc(P1_TEXT_SIZE);
     strcpy(p1_include_stack[p1_include_index].name, p1_name);
-    p1_include_stack[p1_include_index].line = yylineno;
+    p1_include_stack[p1_include_index].line = yylineno - 1; // as we add LF later, -1 gets exact position back
     p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
 
     yyin = fopen(p1_tmpstr, "r");
@@ -87,6 +87,8 @@ extern int prompt_error1(int);
       prompt_error1(3);
       exit(3);
     }
+    // force file to end with LF, fixes #106
+    unput('\n');
 
     if (verbose) {
       printf("Including file %s\n", p1_tmpstr);
