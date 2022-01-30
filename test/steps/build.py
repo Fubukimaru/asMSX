@@ -30,10 +30,12 @@ def step_impl(context, file):
     context.build_program = subprocess.run(
         ['asmsx', fullpath],
         stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         universal_newlines=True,
-        check=True,
+        check=False,
         env=env
     )
+    assert context.build_program.returncode == 0, f"Program exited with code {context.build_program.returncode}"
     context.build = True
     context.build_file = file
 
@@ -81,9 +83,9 @@ def step_impl(context, should, output):
     assert context.build_program, "Program did not run"
     should = (not "no" in should)
     if should:
-        assert output in context.build_program.stdout, "Output not found: {context.build_program.stdout}"
+        assert output in context.build_program.stdout, f"Output not found:\n{context.build_program.stdout}"
     else:
-        assert output not in context.build_program.stdout, "Output found: {context.build_program.stdout}"
+        assert output not in context.build_program.stdout, f"Output found:\n{context.build_program.stdout}"
 
 @then('{file} matches sha {expected_hash}')
 def step_impl(context, file, expected_hash):
@@ -98,3 +100,21 @@ def step_impl(context, file, expected_hash):
             sha1.update(data)
 
     assert sha1.hexdigest() == expected_hash, f"Hash {sha1.hexdigest()} does not match"
+
+@then('text file contains {text}')
+def step_impl(context, text):
+    assert context.build_txt, "There's no output text file!"
+
+    with open(context.build_txt, 'r') as text_file:
+        if text in text_file.read():
+            return True
+    assert False, "Text not found in output text"
+
+@then('text file does not contain {text}')
+def step_impl(context, text):
+    assert context.build_txt, "There's no output text file!"
+
+    with open(context.build_txt, 'r') as text_file:
+        if text in text_file.read():
+            assert False, "Found text in output text"
+    return True

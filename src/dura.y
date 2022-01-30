@@ -3770,9 +3770,10 @@ void register_label(char *name)
     }
 
     // Find if the label is already registered
-    i = search_label(id_list, name, 0, total_global);
-    if (i != -1) error_message(14, fname_src, lines); // If label found - Error, redefine, fname_src, linesd!
-
+    if (is_defined_symbol(name)) {
+      // If label found - Error, redefine, fname_src, linesd!
+      error_message(14, fname_src, lines);
+    }
 
 	if (++total_global == MAX_ID)
 		error_message(11, fname_src, lines);
@@ -3814,7 +3815,6 @@ void register_local(char *name)
 
 void register_symbol(char *name, int n, int _rom_type)
 {
-	int i;
 	char *_name;
 
 	if (pass == 2)
@@ -3825,9 +3825,9 @@ void register_symbol(char *name, int n, int _rom_type)
     }
 
     // Search if the symbol is defined. Error if found
-    i = search_label(id_list, name, 0, total_global);
-	if (i != -1) error_message(14, fname_src, lines);
-
+    if (is_defined_symbol(name)) {
+      error_message(14, fname_src, lines);
+    }
 
     // If maximum number of label names is exceeded, crash!
 	if (++total_global == MAX_ID)
@@ -4597,6 +4597,7 @@ int main(int argc, char *argv[]) {
   fname_msx = malloc(PATH_MAX);
   fname_msx[0] = 0;
   register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
+  register_symbol("ASMSX", 0, 0);
 
   fname_asm = malloc(PATH_MAX);    assert(fname_asm != NULL);
   fname_src = malloc(PATH_MAX);    assert(fname_src != NULL);
