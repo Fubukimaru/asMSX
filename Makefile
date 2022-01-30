@@ -82,15 +82,12 @@ release: asmsx asmsx.exe asmsx.osx asmsx.arm
 	zip asmsx_$(VERSION)_armv6.zip asmsx.arm
 
 clean:
-	rm -vf src/*.o $(BUILD_FILES) asmsx asmsx-debug test *.exe ~* *.osx asmsx_*.zip
+	rm -vf src/*.o $(BUILD_FILES) asmsx asmsx-debug *.exe ~* *.osx asmsx_*.zip
 
-test: LIBS += -lgtest -lgtest_main -lpthread -lstdc++
-test: LDFLAGS += -L$(prefix)/lib
-test:	asmsx src/test.cpp $(C_FILES:.c=.o) $(HEADERS)
-	./code/test.sh
-	@echo "Building gtest"
-	$(CROSS_COMPILE)$(CC) -o test $(C_FILES:.c=.o) src/test.cpp $(LDFLAGS) $(LIBS) $(OPTS)
-	./test
+test: asmsx
+	behave test --tags=-wip
+
+.PHONY: test
 
 install: asmsx
 	@install -v $< $(DESTDIR)/bin
