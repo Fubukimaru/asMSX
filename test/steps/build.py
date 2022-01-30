@@ -14,9 +14,7 @@ def step_impl(context, folder):
     assert os.path.isdir(folder), "Folder does not exist"
     os.chdir(folder)
 
-@given('file {file} exists')
-@when('file {file} exists')
-@then('file {file} exists')
+@step('file {file} exists')
 def step_impl(context, file):
     assert os.path.isfile(file), f"File {file} does not exist"
 
@@ -68,7 +66,7 @@ def step_impl(context, file):
     )
     assert context.build_program.returncode > 0, "Program did not fail"
 
-@then('I run command {command}')
+@step('I run command {command}')
 def step_impl(context, command):
     subprocess.run(command.split(' '), check=False)
 
