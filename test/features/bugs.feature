@@ -129,3 +129,64 @@ Feature: Fixing issues
       """
     When I build test.asm
     Then build output should contain Including file include.com
+
+  @wip
+  Scenario: Issue #90 Conditional assembly does not avoid tag definitions
+    Given I write the code to test.asm
+      """
+      USE_SCREEN=5
+      ZILOG
+      BIOS
+      ROM
+      START    GAME
+
+      GAME:
+
+      IF USE_SCREEN == 4
+        call SCREEN4RENDER
+      ENDIF
+
+      IF USE_SCREEN == 5
+        call SCREEN5RENDER
+      ENDIF
+
+      SCREEN5RENDER:
+        ret
+      """
+    When I build test.asm
+    Then file test.rom exists
+
+  @wip
+  Scenario: Issue #88 Local label semantics
+    Given I write the code to test.asm
+      """
+      label1:
+        jp @@local
+
+      label2:
+      @@local:
+        jp @@local
+
+      label3:
+      @@local:
+        jp @@local
+      """
+    When I invalid build test.asm
+
+  @wip
+  Scenario: Issue #81 Rework how labels work
+    Given I write the code to test.asm
+      """
+      LOCO: MACRO #a, #b
+          jpnz .nothing
+          ld  a, #a
+          ld  a, #b
+      .nothing:
+          xor a
+      ENDMACRO
+
+      LOCO 1, 2
+      LOCO 3, 4
+      ;
+      """
+    When I build test.asm
