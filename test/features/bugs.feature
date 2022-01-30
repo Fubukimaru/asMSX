@@ -107,17 +107,14 @@ Feature: Fixing issues
     And I write to screen2.com
       """
       .db "SCREEN2"
-
       """
     And I write to screen4.com
       """
       .db "SCREEN4"
-
       """
     When I build test.asm
     Then build output should not contain Including file screen4.com
 
-  @wip
   Scenario: Issue #106 Include a file without newline breaks
     Given I write the code to test.asm
       """
