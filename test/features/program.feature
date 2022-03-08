@@ -43,3 +43,17 @@ Feature: Test program functions
     | name     | expect   |
     | test2    | "test2 " |
     | test1234 | "test12" |
+
+  Scenario: Test asMSX defined code
+    Given I write the code to test.asm
+      """
+      IFDEF ASMSX
+        PRINTTEXT "Hello ASMSX!"
+      ELSE
+        PRINTTEXT "Hello unknown assembler!"
+      ENDIF
+      .db "HELLO"
+      """
+    When I build test.asm
+    Then text file contains Hello ASMSX
+    And text file does not contain unknown assembler
