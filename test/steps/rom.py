@@ -43,6 +43,22 @@ def step_impl(context, name):
                 return True
     raise(f"Label {name} not found")
 
+@then(u'sym (?:does )?not contains? (?P<name>.+)')
+def step_impl(context, name):
+    assert context.build, "There's no build done!"
+    assert context.build_sym, "There's no symbols file!"
+    file = context.build_sym
+
+    symbol = re.compile(r'^(?P<address>[0-9A-F]{4})h (?P<label>.+)$')
+    with open(file, 'r') as sym:
+        for line in sym:
+            data = symbol.match(line)
+            if data and data.group('label') == name:
+                context.sym_address = int(data.group('address'), 16)
+                context.sym_label = data.group('label')
+                assert False, f"Label {name} exists"
+    return True
+
 @then(u'stored init matches sym (?P<name>.+)')
 def step_impl(context, name):
     assert context.build, "There's no build done!"
