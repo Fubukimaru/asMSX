@@ -190,3 +190,27 @@ Feature: Fixing issues
       ;
       """
     When I build test.asm
+
+  @wip
+  Scenario: Issue #111 Label should not be registered
+    Given I write the code to test.asm
+      """
+      VARIABLE = 1
+      .zilog
+      .rom
+      .start INIT
+
+      INIT:
+        nop
+
+      IF VARIABLE == 3
+      LABEL1:
+        .ds 8
+      ENDIF
+
+      LABEL2:
+        .ds 8
+        ret
+      """
+    When I build test.asm
+    Then sym does not contain LABEL1
