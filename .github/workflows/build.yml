@@ -29,7 +29,7 @@ jobs:
           - target: x86-64
             bits: "64"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: install deps
@@ -40,7 +40,7 @@ jobs:
     - name: make
       run: make asmsx${{ matrix.bits }}.exe
     - name: upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: asmsx-win-${{ matrix.target }}
         path: asmsx*.exe
@@ -48,7 +48,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: install deps
@@ -57,7 +57,7 @@ jobs:
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev
     - run: make
     - name: upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: asmsx-linux-x86_64
         path: asmsx
@@ -70,7 +70,7 @@ jobs:
       BUILD_TARGET: arm-none-linux-gnueabihf
       GCC_NAME: "gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf"
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: install deps
@@ -82,7 +82,7 @@ jobs:
     - name: make
       run: make CC=${{ env.GCC_NAME }}/bin/${{ env.BUILD_TARGET }}-gcc LDFLAGS="-static"
     - name: upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: asmsx-${{ env.BUILD_TARGET }}
         path: asmsx
@@ -90,7 +90,7 @@ jobs:
   osx:
     runs-on: macos-10.15
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: install deps
@@ -98,7 +98,7 @@ jobs:
     - name: make
       run: make
     - name: upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: asmsx-osx
         path: asmsx
@@ -107,12 +107,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: linux
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
+    - uses: actions/checkout@v3
+    - uses: actions/download-artifact@v3
       with:
         name: asmsx-linux-x86_64
     - name: Install Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
     - name: Install dependencies and fix permissions
@@ -130,7 +130,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         path: assets
     - name: Rename artifacts
