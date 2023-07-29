@@ -4,10 +4,12 @@ RUN apt update && \
     libbison-dev libfl-dev build-essential \
     flex bison git libpthread-stubs0-dev
 COPY . /workdir/
+RUN useradd -u 1000 --no-create-home asmsx
 RUN make -C /workdir CFLAGS="-static" 
 
 FROM scratch
 COPY --from=build /workdir/asmsx /bin/asmsx
+COPY --from=build /etc/passwd /etc/passwd
 
 WORKDIR /src
 ENTRYPOINT ["/bin/asmsx"]
