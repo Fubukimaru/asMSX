@@ -15,7 +15,7 @@ Please read [asMSX manual](doc/asmsx.md) to learn more.
 Also you can use Docker image from GitHub Packages:
 
 ```sh
-docker pull ghcr.io/fubukimaru/asmsx:master
+docker pull ghcr.io/fubukimaru/asmsx
 ```
 
 If you'd like to contribute to this project, please take a look at our [coding style guide](doc/coding-style.md).
