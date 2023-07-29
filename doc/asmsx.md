@@ -141,7 +141,7 @@ More options are available, check the file for more information.
 You can run asMSX as a Docker container available from GitHub Packages:
 
 ```sh
-docker run -v $PWD:/src ghcr.io/fubukimaru/asmsx:master FILE.ASM
+docker run --rm -v $PWD:/src -w /src -u $(id -u):$(id -g) ghcr.io/fubukimaru/asmsx FILE.ASM
 ```
 
 Also you can integrate asMSX in GitHub Actions Workflow by using
