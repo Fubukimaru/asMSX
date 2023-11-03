@@ -320,11 +320,15 @@ line: pseudo_instruction EOL
 
 label: IDENTIFICATOR ':'
 	{
-		register_label(strtok($1, ":"));
+		if (conditional[conditional_level]) {
+            register_label(strtok($1, ":"));
+        }
 	}
 	| LOCAL_IDENTIFICATOR ':'
 	{
-		register_local(strtok($1, ":"));
+		if (conditional[conditional_level]) {
+		    register_local(strtok($1, ":"));
+        }
 	}
 ;
 
