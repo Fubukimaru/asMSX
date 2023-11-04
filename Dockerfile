@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.4
+
 FROM ubuntu:22.04 as build
 RUN apt update && \
     apt install -y \
