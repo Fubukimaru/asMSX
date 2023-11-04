@@ -750,7 +750,9 @@ If the condition is false, code after `ELSE` will be assembled.
 
 `ENDIF` is mandatory, it closes conditional block.
 
-You can use `INCLUDE` in conditional blocks.
+You can use `INCLUDE` in conditional blocks. Notice that you will receive a
+message that your file has been included, but the conditional block will still
+be effective and the code will not be processed.
 
 :information_source: Current IF nesting limit is 15.
 It may become unlimited in future rewrite.
