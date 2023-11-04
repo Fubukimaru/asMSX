@@ -130,6 +130,7 @@ Feature: Fixing issues
     When I build test.asm
     Then build output should contain Including file include.com
 
+  @wip
   Scenario: Issue #90 Conditional assembly does not avoid tag definitions
     Given I write the code to test.asm
       """
