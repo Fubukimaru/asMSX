@@ -156,6 +156,7 @@ Feature: Fixing issues
     Then file test.rom exists
     And sym does not contain SCREEN4RENDER
     And sym contains SCREEN5RENDER
+    And build has no warnings
 
   Scenario: Issue #90 Label should not be registered
     Given I write the code to test.asm
@@ -180,6 +181,7 @@ Feature: Fixing issues
     When I build test.asm
     Then sym does not contain LABEL1
     And sym does not contain If it's a label, it may not be defined.
+    And build has no warnings
 
   @wip
   Scenario: Issue #88 Local label semantics

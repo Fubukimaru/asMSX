@@ -87,6 +87,15 @@ def step_impl(context, should, output):
     else:
         assert output not in context.build_program.stdout, f"Output found:\n{context.build_program.stdout}"
 
+@then(u'build {has} warnings')
+def step_impl(context, has):
+    assert context.build_program, "Program did not run"
+    check = ("no" in has)
+    if check:
+        assert "Warning:" not in context.build_program.stdout, f"Warnings found:\n{context.build_program.stdout}"
+    else:
+        assert "Warning:" in context.build_program.stdout, f"No warnings found:\n{context.build_program.stdout}"
+
 @then('{file} matches sha {expected_hash}')
 def step_impl(context, file, expected_hash):
     buffer_size = 64*1024
