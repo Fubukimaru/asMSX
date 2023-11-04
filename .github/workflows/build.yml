@@ -29,7 +29,7 @@ jobs:
           - target: x86-64
             bits: "64"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: install deps
@@ -48,7 +48,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: install deps
@@ -70,7 +70,7 @@ jobs:
       BUILD_TARGET: arm-none-linux-gnueabihf
       GCC_NAME: "gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: install deps
@@ -84,13 +84,13 @@ jobs:
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: asmsx-${{ env.BUILD_TARGET }}
+        name: asmsx-linux-armhf
         path: asmsx
 
   osx:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: install deps
@@ -100,14 +100,14 @@ jobs:
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: asmsx-osx
+        name: asmsx-darwin
         path: asmsx
 
   test:
     runs-on: ubuntu-latest
     needs: linux
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: actions/download-artifact@v3
       with:
         name: asmsx-linux-x86_64
