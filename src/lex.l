@@ -420,14 +420,14 @@ random  return PSEUDO_RANDOM;
 
 [a-z_][a-z0-9_]*  {
     // TODO: FREE THE TXT BEFORE?
-    /* v.1 NOP bug was due to not copying the array. */
+    /* v1 NOP bug was due to not copying the array. */
     yylval.txt = strdup(yytext);
     return IDENTIFICATOR;
 }
 
 
 ("@@"|".")[a-z0-9_]+  {
-    /* v.0.18.2 Labels are checked the last, therfore we can use "." freely */
+    /* v0.18.2 Labels are checked the last, therfore we can use "." freely */
     // yylval.txt = yytext;
     yylval.txt = strdup(yytext);
     return LOCAL_IDENTIFICATOR;
