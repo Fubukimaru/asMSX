@@ -179,6 +179,7 @@ Feature: Fixing issues
       """
     When I build test.asm
     Then sym does not contain LABEL1
+    And sym does not contain If it's a label, it may not be defined.
 
   @wip
   Scenario: Issue #88 Local label semantics
