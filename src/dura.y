@@ -3340,26 +3340,32 @@ value_real: REAL
 
 value_3bits: value
 	{
-		if (($1 < 0) || ($1 > 7))
-			warning_message(3, fname_src, lines, pass, &warnings);
-		$$ = $1 & 0x07;
+	    if (conditional[conditional_level]) {
+            if (($1 < 0) || ($1 > 7))
+                warning_message(3, fname_src, lines, pass, &warnings);
+            $$ = $1 & 0x07;
+        }
 	}
 ;
 
 value_8bits: value
 	{
-        if (($1 > 255) || ($1 < -128)) {
-            warning_message(2, fname_src, lines, pass, &warnings);
+	    if (conditional[conditional_level]) {
+            if (($1 > 255) || ($1 < -128)) {
+                warning_message(2, fname_src, lines, pass, &warnings);
+            }
+            $$ = $1 & 0xff;
         }
-		$$ = $1 & 0xff;
 	}
 ;
 
 value_16bits: value
 	{
-		if (($1 > 65535) || ($1 < -32768))
-			warning_message(1, fname_src, lines, pass, &warnings);
-		$$ = $1 & 0xffff;
+	    if (conditional[conditional_level]) {
+            if (($1 > 65535) || ($1 < -32768))
+                warning_message(1, fname_src, lines, pass, &warnings);
+            $$ = $1 & 0xffff;
+        }
 	}
 ;
 
@@ -3693,7 +3699,8 @@ void msx_bios_vars()
 void write_byte(int b)
 {
 	/* If the condition of this block is fulfilled, create the code */
-	if ((!conditional_level) || (conditional[conditional_level]))
+	// if ((!conditional_level) || (conditional[conditional_level]))
+	if (conditional[conditional_level])
 	{
 		if (rom_type != MEGAROM)
 		{
