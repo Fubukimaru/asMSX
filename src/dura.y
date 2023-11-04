@@ -3082,12 +3082,15 @@ value: NUMBER
 	}
 	| IDENTIFICATOR
 	{
-		$$ = read_label($1);
+		if (conditional[conditional_level]) {
+		    $$ = read_label($1);
+        }
 	}
 	| LOCAL_IDENTIFICATOR
 	{
-		$$ = read_local($1);
-
+		if (conditional[conditional_level]) {
+		    $$ = read_local($1);
+        }
 	}
 	| '-' value %prec NEGATIVE
 	{
@@ -3746,14 +3749,16 @@ void write_word(int w)
 
 void relative_jump(int direction)
 {
-	int jump;
+	if (conditional[conditional_level]) {
+        int jump;
 
-	jump = direction - ePC - 1;
+        jump = direction - ePC - 1;
 
-	if ((jump > 127) || (jump < -128))
-		error_message(8, fname_src, lines);
+        if ((jump > 127) || (jump < -128))
+            error_message(8, fname_src, lines);
 
-	write_byte(jump);
+        write_byte(jump);
+    }
 }
 
 void register_label(char *name)
