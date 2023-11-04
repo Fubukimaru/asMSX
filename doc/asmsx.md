@@ -40,6 +40,7 @@ Source can be edited in any text editor.
 - generates export symbol table (SYM);
 - writes PRINT directive messages to text file (TXT);
 - supports conditional assembly;
+- supports assembly macros;
 - integrates with BlueMSX emulator debugger.
 
 
@@ -749,6 +750,8 @@ If the condition is false, code after `ELSE` will be assembled.
 
 `ENDIF` is mandatory, it closes conditional block.
 
+You can use `INCLUDE` in conditional blocks.
+
 :information_source: Current IF nesting limit is 15.
 It may become unlimited in future rewrite.
 
@@ -823,4 +826,162 @@ tests was previously defined in the source code.
 :warning: **BEWARE!**
 
 - **`IFDEF` will only recognize a label if it is defined before `IFDEF`.**
-- **Don't use `INCLUDE` inside an `IFDEF` or an `IF`. It doesn't work.**
+
+
+### 2.8. Macros (version 1.0.1 or above)
+
+asMSX can use macros. Macros are useful to write little pieces
+of code (snippets). Macros are not functions. When you use a Macro,
+its code will be copied there growing result file's size.
+
+Macros can use parameters to use diferent const values, 
+registers or tag names. All this is possible because
+these macro system only makes a search and replace action of 
+parameter name with the value of that parameter when macro is invoked.
+
+#### 2.8.1 Directives associated to macros
+
+`MACRO #param, #param,...` Declares a macro. 
+
+`ENDM` Finalizes a macro definition.
+
+#### 2.8.2 Macros examples
+
+Use this examples in order to know how to declare and use macros
+
+**Example: A simple macro**:
+```assembly
+; Declare Macro to add one to a variable
+m_INC16: MACRO #VARIABLE
+	push	HL
+	ld	HL,#VARIABLE
+	inc	(HL)
+	pop	HL
+ENDM
+
+; Example of use of this macro
+m_INC16 VARNAME
+; RAM variables
+VARNAME byte
+```
+
+**Example: A multiparameter macro with variables as parameters**:
+```assembly
+; Declare Macro to load same patterns and colors bank
+;   to VRAM in Screen 2
+m_LOAD_3BANKS: MACRO #PATTERNS,#COLORS
+	ld 	HL,#PATTERNS
+	ld 	DE,VRM_PAT
+	call 	LOADTOVRAM
+	ld 	HL,#PATTERNS
+	ld 	DE,VRM_PAT+2048
+	call 	LOADTOVRAM
+	ld 	HL,#PATTERNS
+	ld 	DE,VRM_PAT+4096
+	call 	LOADTOVRAM
+	ld 	HL,#COLORS
+	ld 	DE,VRM_COL
+	call 	LOADTOVRAM
+	ld 	HL,#COLORS
+	ld 	DE,VRM_COL+2048
+	call 	LOADTOVRAM
+	ld 	HL,#COLORS
+	ld 	DE,VRM_COL+4096
+	call 	LOADTOVRAM
+ENDM
+; Example of use of this macro
+m_LOAD_3BANKS MYPATTERS, MYCOLORS
+; My own function
+LOADTOVRAM:
+	...
+	ret
+; RAM variables
+MYPATTERS	ds 2048
+MYCOLORS	ds 2048
+```
+
+**Example: A multiparameter macro with a register as parameter**:
+```assembly
+; Declare Macro to create a command to copy a rectangle VRAM VRAM
+m_COPY_SC5: MACRO #X,#Y,#DEST_PAG
+	ld	B,#X ; X
+	ld	C,#Y ; Y
+	ld	IX,VDPCOMDATA
+	ld	A,(IY)
+	ld	(IX+0), A		;SXL
+	ld	(IX+1), 0		;SXH
+	ld	A,(IY+1)
+	ld	(IX+2), A		;SYL
+	ld	A,(IY+4)
+	ld	(IX+3), A		;SYH Page
+	ld	(IX+4), B		;DXL
+	ld	(IX+5), 0		;DXH
+	ld	(IX+6), C		;DYL
+	ld	(IX+7), #DEST_PAG	;DYH Page
+	ld	A,(IY+2)
+	ld	(IX+8), A		;INCXL
+	ld	(IX+9), 0		;INCXH
+	ld	A,(IY+3)
+	ld	(IX+10), A		;INCYL
+	ld	(IX+11), 0		;INCYH
+	ld	(IX+13), 0		;ARG
+	ld	(IX+14), CMDCOPY	; Copy Rectangle VRAM->VRAM
+	ld	HL,VDPCOMDATA		; send to CMD
+	call	_VDPCMD
+ENDM
+; Example of use of this macro
+; In this macro invoke, a register is used as parameter
+	ld	A,(POSITION)
+	add	A,5
+m_COPY_SC5	0,A,1
+; My own function
+_VDPCMD:
+	...
+	ret
+; RAM variables
+POSITION:	byte
+VDPCOMDATA:	ds	15
+```
+
+**Example: A multiparameter macro with variable and a const value as parameters**:
+```assembly
+; Declare Macro to play diferent sounds
+; Parameters are a variable and a const value
+m_SOUND: MACRO #DATASOUND,#DURATION
+	push	HL
+	push	BC
+	ld	C,#DURATION
+	ld	HL,#DATASOUND
+	call	PLAYFX
+	pop	BC
+	pop	HL
+ENDM
+; Example of use of this macro
+m_SOUND SOUND1,30
+; My own function
+PLAYFX:
+	...
+	ret
+; RAM variables
+SOUND1	ds	7
+SOUND2	ds	7
+```
+
+**Example: A multiparameter macro using a parameter as a local tag**:
+```assembly
+; Declare Macro to increments a value until a max value and reset to a value
+m_INCVALUE_MAX_RESET: MACRO #VARIABLE,#MAX,#RESETVALUE
+	ld	A,(#VARIABLE)
+	inc	A
+	cp	#MAX
+	jr	nz,.noreset_#VARIABLE
+	ld	A,#RESETVALUE
+.noreset_#VARIABLE:
+	ld	(#VARIABLE),A
+ENDM
+; Example of use of this macro
+; VARNAME increments until 99 and resets to zero if try to overflow
+m_INCVALUE_MAX_RESET	VARNAME,100,0
+; RAM variables
+VARNAME byte
+```
