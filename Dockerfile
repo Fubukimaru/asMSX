@@ -2,7 +2,7 @@
 
 FROM ubuntu:22.04 as build
 RUN apt update && \
-    apt install -y \
+    apt install --no-install-recommends -y \
     libbison-dev libfl-dev build-essential \
     flex bison git libpthread-stubs0-dev
 COPY . /workdir/
