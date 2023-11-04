@@ -130,7 +130,6 @@ Feature: Fixing issues
     When I build test.asm
     Then build output should contain Including file include.com
 
-  @wip
   Scenario: Issue #90 Conditional assembly does not avoid tag definitions
     Given I write the code to test.asm
       """
@@ -155,6 +154,31 @@ Feature: Fixing issues
       """
     When I build test.asm
     Then file test.rom exists
+    And sym does not contain SCREEN4RENDER
+    And sym contains SCREEN5RENDER
+
+  Scenario: Issue #90 Label should not be registered
+    Given I write the code to test.asm
+      """
+      VARIABLE = 1
+      .zilog
+      .rom
+      .start INIT
+
+      INIT:
+        nop
+
+      IF VARIABLE == 3
+      LABEL1:
+        .ds 8
+      ENDIF
+
+      LABEL2:
+        .ds 8
+        ret
+      """
+    When I build test.asm
+    Then sym does not contain LABEL1
 
   @wip
   Scenario: Issue #88 Local label semantics
@@ -190,27 +214,3 @@ Feature: Fixing issues
       ;
       """
     When I build test.asm
-
-  @wip
-  Scenario: Issue #111 Label should not be registered
-    Given I write the code to test.asm
-      """
-      VARIABLE = 1
-      .zilog
-      .rom
-      .start INIT
-
-      INIT:
-        nop
-
-      IF VARIABLE == 3
-      LABEL1:
-        .ds 8
-      ENDIF
-
-      LABEL2:
-        .ds 8
-        ret
-      """
-    When I build test.asm
-    Then sym does not contain LABEL1
