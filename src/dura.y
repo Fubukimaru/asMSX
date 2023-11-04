@@ -3699,7 +3699,6 @@ void msx_bios_vars()
 void write_byte(int b)
 {
 	/* If the condition of this block is fulfilled, create the code */
-	// if ((!conditional_level) || (conditional[conditional_level]))
 	if (conditional[conditional_level])
 	{
 		if (rom_type != MEGAROM)
