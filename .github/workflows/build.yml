@@ -84,7 +84,7 @@ jobs:
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: asmsx-${{ env.BUILD_TARGET }}
+        name: asmsx-linux-armhf
         path: asmsx
 
   osx:
@@ -100,7 +100,7 @@ jobs:
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: asmsx-osx
+        name: asmsx-darwin
         path: asmsx
 
   test:
