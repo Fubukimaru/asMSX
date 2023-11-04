@@ -1,4 +1,9 @@
+# version 1.0.3: [04/11/2023]
+
+- QuesadaSX Fixes defining labels when they don't have to be excluded by an if
+
 # version 1.0.1: [17/08/2021]
+
 
 - Implemented the first version of the macro system
 - Improved error messaging
