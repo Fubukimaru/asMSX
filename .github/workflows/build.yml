@@ -139,7 +139,7 @@ jobs:
         for FOLDER in *; do
           cd $FOLDER
           chmod a+x *
-          if [[ "$FOLDER" == *"win"* ]]; then
+          if [[ "$FOLDER" == *"-win"* ]]; then
             mv * $(basename $PWD).exe
           else
             mv * $(basename $PWD)
