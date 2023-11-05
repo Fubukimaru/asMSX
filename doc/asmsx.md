@@ -530,7 +530,10 @@ code at the function `msx_bios_vars()` in `dura.y`.
 
 `.ROM` Indicates that a ROM header should be generated. It is important to use
 .PAGE directive first to define start address. .START directive can be used to
-indicate the start address for the program.
+indicate the start address for the program and it should be used *before* the
+.ROM directive. Use this directive **after** relocating the program counter with
+.ORG or .PAGE directives. This is needed as ROM will write the header of the ROM
+which is already ROM data.
 
 `.MegaROM [mapper]` Generates header for specified MegaROM mapper. This
 directive will also set start address to sub-page 0 of selected mapper, so
@@ -561,7 +564,8 @@ program. The default extension of the output file is BIN.
 because COM files are always loaded at 0100h.
 
 `.START X` Indicates the starting execution address for ROM, MegaROM and BIN
-files, if it is not at the beginning of the file.
+files, if it is not at the beginning of the file. Use it before any .ROM-like
+directive.
 
 `.SEARCH` For ROMs and MegaROMs to that start on page 1 (4000h),
 it automatically finds and sets slot and subslot on page 2 (8000h).
