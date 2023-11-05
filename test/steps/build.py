@@ -18,6 +18,24 @@ def step_impl(context, folder):
 def step_impl(context, file):
     assert os.path.isfile(file), f"File {file} does not exist"
 
+def human_size_to_int(size: str) -> int:
+    size = size.lower()
+    if size[-1] == 'k':
+        return int(size[:-1]) * 1024
+    elif size[-1] == 'm':
+        return int(size[:-1]) * 1024 * 1024
+    elif size.isnumeric():
+        return int(size)
+    else:
+        raise("Value not valid")
+
+@step('file {file} size is {size}')
+@step('file size of {file} is {size}')
+def step_impl(context, file, size: str):
+    expected_size = human_size_to_int(size)
+    file_size = os.path.getsize(file)
+    assert file_size == expected_size, f"File {file} has size {file_size} (expected {expected_size})"
+
 @given('I write to {file}')
 @given('I write the code to {file}')
 def step_impl(context, file):

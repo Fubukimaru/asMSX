@@ -57,3 +57,35 @@ Feature: Test program functions
     When I build test.asm
     Then text file contains Hello ASMSX
     And text file does not contain unknown assembler
+
+  # START and ROM directives have different behaviours
+  # depending if you put them after or before PAGE 1
+  Scenario: Expected ROM file size (#121) - 8k
+    Given I write the code to test.asm
+      """
+      ZILOG
+      BIOS
+      PAGE 1
+      START MAIN
+      ROM
+      MAIN:
+        ld  A,1
+      """
+    When I build test.asm
+    Then file test.rom exists
+    And file test.rom size is 8k
+
+  Scenario: Expected ROM file size (#121) - 24k
+    Given I write the code to test.asm
+      """
+      ZILOG
+      BIOS
+      START MAIN
+      ROM
+      PAGE 1
+      MAIN:
+        ld  A,1
+      """
+    When I build test.asm
+    Then file test.rom exists
+    And file test.rom size is 24k
