@@ -18,6 +18,7 @@ Feature: Fixing issues
       """
     When I build test.asm
     And file test.rom exists
+    And file test.rom size is 48k
     Then page 0 has no cartridge header
     And page 1 has cartridge header
     And sym contains INIT
@@ -31,6 +32,7 @@ Feature: Fixing issues
       """
     When I build test.asm
     Then file test.rom exists
+    And file test.rom size is 512k
 
     Given I write the code to test.asm
       """
