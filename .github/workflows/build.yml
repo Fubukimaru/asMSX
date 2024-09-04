@@ -40,7 +40,7 @@ jobs:
     - name: make
       run: make asmsx${{ matrix.bits }}.exe
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: asmsx-win-${{ matrix.target }}
         path: asmsx*.exe
@@ -57,7 +57,7 @@ jobs:
         sudo apt install -y libbison-dev libfl-dev build-essential cmake flex bison libpthread-stubs0-dev
     - run: make
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: asmsx-linux-x86_64
         path: asmsx
@@ -82,7 +82,7 @@ jobs:
     - name: make
       run: make CC=${{ env.GCC_NAME }}/bin/${{ env.BUILD_TARGET }}-gcc LDFLAGS="-static"
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: asmsx-linux-armhf
         path: asmsx
@@ -98,7 +98,7 @@ jobs:
     - name: make
       run: make
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: asmsx-darwin
         path: asmsx
@@ -108,7 +108,7 @@ jobs:
     needs: linux
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: asmsx-linux-x86_64
     - name: Install Python
@@ -130,7 +130,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: assets
     - name: Rename artifacts
@@ -147,7 +147,7 @@ jobs:
           cd ..
         done
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: 'assets/asmsx-*/*'
 
