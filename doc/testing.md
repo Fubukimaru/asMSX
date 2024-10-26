@@ -4,10 +4,12 @@ We use [behave](https://behave.readthedocs.io/en/stable/) framework for testing.
 
 ### Setup
 
-Install `behave`. You may use a virtualenv.
+Install `behave`. You may use a virtualenv.<br>
+You also need `unix2dos` to fix files.
 
 ```sh
 pip install behave
+sudo apt install dos2unix
 ```
 
 ### Testing
