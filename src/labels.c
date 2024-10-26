@@ -1,5 +1,10 @@
 #include "labels.h"
 
+// Function to check if a label is local
+int is_local_label(char *name) {
+  return name[0] == '.';
+}
+
 // Function that searches for a label in id_list
 int search_label(labels *id_list, char *name, int start, int end) {
   int i;
