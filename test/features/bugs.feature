@@ -194,3 +194,25 @@ Feature: Fixing issues
       ;
       """
     When I build test.asm
+
+  Scenario: Issue #129 Segmentation fault when no permission to write files
+    Given I write the code to test.asm
+      """
+      .page 1
+      .rom
+      .size 48
+      .db "PAGE 1"
+      .start INIT
+      INIT:
+      ret
+
+      .page 2
+      .db "PAGE 2"
+
+      .page 0
+      .db "PAGE 0"
+      """
+    When I run command chmod -w .
+    And I invalid build test.asm
+    Then error code is 7
+    And build output should contain Cannot write to file

@@ -75,6 +75,11 @@ int preprocessor3(int zilogVal) {
   yyin = input;
   p3_output = fopen("~tmppre.1","w");
 
+  if (p3_output == NULL) {
+    fprintf(stderr, "ERROR: cannot create file ~tmppre.1 in %s\n", __func__);
+    exit(1);
+  }
+
   if(zilogVal) {
     printf("Using standard Zilog syntax\n");
     BEGIN(zilog);

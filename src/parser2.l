@@ -113,7 +113,7 @@ int prompt_error2(int c) {
     default:
       fprintf(stderr, "Unknown error in prompt_error2()\n");
   }
-  fclose(p2_output);
+  if(p2_output != NULL) fclose(p2_output);
   exit(c);
 }
 
@@ -145,6 +145,10 @@ int preprocessor2() {
     snprintf(filename, PATH_MAX - 1, "~tmppre.%i", loop + 2);
 
     p2_output = fopen(filename, "w");
+    if (p2_output == NULL) {
+      fprintf(stderr, "ERROR: cannot write to file %s\n", filename);
+      exit(1);
+    }
     p2_level = 0;
     p2_nested = 0;
 

@@ -194,10 +194,13 @@ int prompt_error1(int c)
     case 6:
       fprintf(stderr, "Unterminated C-like multiline comment\n");
       break;
+    case 7:
+      fprintf(stderr, "Cannot write to file\n");
+      break;
     default:
       fprintf(stderr, "Unknown error in prompt_error1()\n");
   }
-  fclose(p1_output_file);
+  if(p1_output_file != NULL) fclose(p1_output_file);
   exit(c);
 }
 
@@ -244,6 +247,10 @@ int preprocessor1(char *input_name)
 
   /* Create p1_output_file file */
   p1_output_file = fopen("~tmppre.0", "w");
+  if (p1_output_file == NULL) {
+    prompt_error1(7);
+    return 1;
+  }
   fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
 
   /* Start lexical scanner */
