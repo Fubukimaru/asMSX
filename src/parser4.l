@@ -412,6 +412,11 @@ int preprocessor4() {
   yyin = input;
   p4_output = fopen("~tmppre.2","w");
 
+  if (p4_output == NULL) {
+    fprintf(stderr, "ERROR: cannot create file ~tmppre.2\n");
+    exit(1);
+  }
+
   yylex();
 
   fclose(input);
