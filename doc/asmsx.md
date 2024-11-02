@@ -117,6 +117,8 @@ asMSX accepts the following parameters:
 - `-z` enable standard Z80 Zilog syntax without having .zilog directive in the code.
 - `-s` silent mode - suppress messages.
 - `-vv` verbose mode - print more troubleshooting messages.
+- `-r` relative path to asm file - Set the root path of the project assembly to
+where the assembly file is found.
 
 If you build asMSX from source with `YYDEBUG=1`, there is one more parameter available:
 
