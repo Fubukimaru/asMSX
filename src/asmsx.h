@@ -7,6 +7,8 @@
 #include <math.h>
 #include <assert.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <libgen.h>
 
 #ifndef PATH_MAX
 #ifdef WIN32
