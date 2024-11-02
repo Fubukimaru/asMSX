@@ -4631,22 +4631,20 @@ int main(int argc, char *argv[]) {
 
   if (relative_path) {
     // Reusing array to change dir, latter it will have the correct values
-    strncpy(fname_no_ext, fname_asm, PATH_MAX);
-    for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '/' && fname_no_ext[t] != '\\') && t; t--);
-    if (t) {
-      // Change dir to asm folder
-      fname_no_ext[t] = 0; // Set the last / of the filepath to end of string
+    strncpy(fname_no_ext, fname_asm, PATH_MAX); 
+    dirname(fname_no_ext); // Get the dirname in the same array
+    if (isDirectory(fname_no_ext)) {  // If there's a folder path
       chdir(fname_no_ext); // Change directory to asm file path   
       printf("Changed base directory to %s\n", fname_no_ext);
-      // Leave only the asm filename
+      // Leave only the asm filename in fname_asm
       strncpy(fname_asm, basename(fname_asm), PATH_MAX);
       printf("Base ASM file is %s\n", fname_asm);
     } else{
-      printf("You're using -r flag and you may not need it. Read the docs!");
+      printf("You're using -r flag and you might not need it. Read the docs!\n");
     }
-    
   }
 
+  // Get the filename
   strncpy(fname_no_ext, fname_asm, PATH_MAX);
 
   // Find the '.' and remove it if it's there. If not, add it to the full name
