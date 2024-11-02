@@ -20,10 +20,11 @@ def after_scenario(context, scenario):
     if os.path.isfile("test.asm"):
         os.remove("test.asm")
 
-    # Clean test folder
-    if os.path.isdir("behave_test"):
-        shutil.rmtree("behave_test")
-
+    # Clean created test folder
+    if hasattr(context, 'created_folders'):
+        for folder in context.created_folders:
+            if os.path.isdir(folder):
+                shutil.rmtree(folder)
 
     for file in os.listdir(this_folder):
         for extension in extensions:
