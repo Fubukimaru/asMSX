@@ -4598,7 +4598,7 @@ int main(int argc, char *argv[]) {
     printf("Syntax: asMSX [-z|-s|-vv|-r] [file.asm]\n");
   #endif
 
-    exit(0);
+    exit(2);
   }
 
   clock();
