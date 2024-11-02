@@ -4632,7 +4632,7 @@ int main(int argc, char *argv[]) {
   if (relative_path) {
     // Reusing array to change dir, latter it will have the correct values
     strncpy(fname_no_ext, fname_asm, PATH_MAX);
-    for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '/') && t; t--);
+    for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '/' && fname_no_ext[t] != '\\') && t; t--);
     if (t) {
       // Change dir to asm folder
       fname_no_ext[t] = 0; // Set the last / of the filepath to end of string
