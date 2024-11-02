@@ -1,5 +1,6 @@
 from behave import fixture, use_fixture
 import os
+import shutil
 
 
 def after_scenario(context, scenario):
@@ -15,8 +16,15 @@ def after_scenario(context, scenario):
     if not os.access(this_folder, os.W_OK):
         os.chmod(this_folder, os.stat(this_folder).st_mode | 0o200)
 
+    # Clean test ASM file
     if os.path.isfile("test.asm"):
         os.remove("test.asm")
+
+    # Clean created test folder
+    if hasattr(context, 'created_folders'):
+        for folder in context.created_folders:
+            if os.path.isdir(folder):
+                shutil.rmtree(folder)
 
     for file in os.listdir(this_folder):
         for extension in extensions:

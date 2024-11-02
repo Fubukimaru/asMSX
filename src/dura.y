@@ -12,10 +12,10 @@
 #include "asmsx.h"
 
 #ifndef VERSION
-#define VERSION "1.0.0-beta"
+#define VERSION "Compile with Docker :)"
 #endif
 #ifndef DATE
-#define DATE "2020-12-01"
+#define DATE "2024-11-02"
 #endif
 
 #define MAX_ID 32000
@@ -78,6 +78,7 @@ int maxpage[4] = {32, 64, 256, 256};
 
 // Flags
 char verbose;
+char relative_path;
 char zilog;
 
 labels id_list[MAX_ID];
@@ -4560,6 +4561,7 @@ int main(int argc, char *argv[]) {
   // External vars init
   zilog = 0;
   verbose = 1;
+  relative_path = 0;
 
   for (option = 0; option < argc - 1; option++) {
 
@@ -4574,13 +4576,14 @@ int main(int argc, char *argv[]) {
     // Very verbose
     } else if (strcmp(argv[option], "-vv") == 0) {
       verbose = 2;
-
-    #if YYDEBUG == 1
+    } else if (strcmp(argv[option], "-r") == 0) {
+      // Make all paths relative to the main asm file
+      relative_path = 1;
     // DEBUG
+    #if YYDEBUG == 1
     } else if (strcmp(argv[option], "-d") == 0) {
       yydebug = 1;
     #endif
-
     // Invalid option
     } else if (strncmp(argv[option], "-", 1) == 0){
       fileArg = 0;
@@ -4590,9 +4593,9 @@ int main(int argc, char *argv[]) {
   // If invalid option or not valid arguments, show help
   if (fileArg == 0) {
   #if YYDEBUG == 1
-    printf("Syntax: asMSX [-z|-s|-vv|-d] [file.asm]\n");
+    printf("Syntax: asMSX [-z|-s|-vv|-r|-d] [file.asm]\n");
   #else
-    printf("Syntax: asMSX [-z|-s|-vv] [file.asm]\n");
+    printf("Syntax: asMSX [-z|-s|-vv|-r] [file.asm]\n");
   #endif
 
     exit(0);
@@ -4611,8 +4614,9 @@ int main(int argc, char *argv[]) {
 
   fname_msx = malloc(PATH_MAX);
   fname_msx[0] = 0;
-  register_symbol("Eduardo_A_Robsy_Petrus_2007", 0, 0);
+  register_symbol("asMSX Team", 0, 0);
   register_symbol("ASMSX", 0, 0);
+
 
   fname_asm = malloc(PATH_MAX);    assert(fname_asm != NULL);
   fname_src = malloc(PATH_MAX);    assert(fname_src != NULL);
@@ -4622,14 +4626,33 @@ int main(int argc, char *argv[]) {
   fname_txt = malloc(PATH_MAX);    assert(fname_txt != NULL);
   fname_no_ext = malloc(PATH_MAX); assert(fname_no_ext != NULL);
 
-  strncpy(fname_no_ext, argv[fileArg], PATH_MAX);
-  strncpy(fname_asm, fname_no_ext, PATH_MAX);
+  // Getting last file as src file (using fileArg, counter of files)
+  strncpy(fname_asm, argv[fileArg], PATH_MAX);
 
+  if (relative_path) {
+    // Reusing array to change dir, latter it will have the correct values
+    strncpy(fname_no_ext, fname_asm, PATH_MAX); 
+    dirname(fname_no_ext); // Get the dirname in the same array
+    if (isDirectory(fname_no_ext)) {  // If there's a folder path
+      chdir(fname_no_ext); // Change directory to asm file path   
+      printf("Changed base directory to %s\n", fname_no_ext);
+      // Leave only the asm filename in fname_asm
+      strncpy(fname_asm, basename(fname_asm), PATH_MAX);
+      printf("Base ASM file is %s\n", fname_asm);
+    } else{
+      printf("You're using -r flag and you might not need it. Read the docs!\n");
+    }
+  }
+
+  // Get the filename
+  strncpy(fname_no_ext, fname_asm, PATH_MAX);
+
+  // Find the '.' and remove it if it's there. If not, add it to the full name
   for (t = strlen(fname_no_ext) - 1; (fname_no_ext[t] != '.') && t; t--);
-
   if (t) {
-    fname_no_ext[t] = 0;
+    fname_no_ext[t] = 0; // Set the . of the filepath to end of string
   } else {
+    // If file does not have .asm, add it to the fname_asm
     strcat(fname_asm, ".asm");
   }
 

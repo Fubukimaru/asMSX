@@ -13,10 +13,22 @@ def step_impl(context, folder):
     os.chdir(parent_dir)
     assert os.path.isdir(folder), "Folder does not exist"
     os.chdir(folder)
+    
+@given('I create folder {folder}')
+def step_impl(context, folder):
+    os.makedirs(folder, exist_ok=True)
+    if not hasattr(context, 'created_folders'):
+        context.created_folders = []
+    context.created_folders.append(folder)
 
 @step('file {file} exists')
-def step_impl(context, file):
-    assert os.path.isfile(file), f"File {file} does not exist"
+@step('file {file} does {should} exist')
+def step_impl(context, file, should: str = ""):
+    should = (not "no" in should)
+    if should:
+        assert os.path.isfile(file), f"File {file} does not exist"
+    else:
+        assert not os.path.isfile(file), f"File {file} does exist"
 
 def human_size_to_int(size: str) -> int:
     size = size.lower()
@@ -43,10 +55,12 @@ def step_impl(context, file):
         f.write(context.text)
 
 @when('I build {file}')
-def step_impl(context, file):
+@when('I build {file} with flag {flag}')
+def step_impl(context, file, flag = ""):
     fullpath = os.path.abspath(file)
+    command = ['asmsx', flag, fullpath]
     context.build_program = subprocess.run(
-        ['asmsx', fullpath],
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         universal_newlines=True,

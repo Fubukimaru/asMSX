@@ -7,6 +7,9 @@
 #include <math.h>
 #include <assert.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <libgen.h>
+#include <sys/stat.h>
 
 #ifndef PATH_MAX
 #ifdef WIN32
@@ -54,3 +57,4 @@ extern char* safe_strcat(char* dest, char* orig, unsigned int max_size, char* fn
 extern void error_message(int n, char* fname_src, int lines);
 extern void warning_message(int n, char* fname_src, int lines, int pass, int* warnings);
 extern char* replaceWord(const char* s, const char* oldW, const char* newW, int* count); 
+extern int isDirectory(const char *path);
