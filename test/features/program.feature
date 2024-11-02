@@ -89,3 +89,41 @@ Feature: Test program functions
     When I build test.asm
     Then file test.rom exists
     And file test.rom size is 24k
+
+  Scenario: Issue #133 Change working directory to .asm file path (crashes)
+    Given I write the code to base.asm
+      """
+      START MAIN
+      ROM
+      INCLUDE "inc/inc.asm"	
+      MAIN:
+          ld	A,1
+      """
+    Given I write the code to inc.asm
+      """
+          xor	A
+      """
+    And I run command mkdir -p behave_test/inc
+    And I run command mv base.asm behave_test
+    And I run command mv inc.asm behave_test/inc
+    When I invalid build behave_test/base.asm
+    Then error code is 3
+    
+
+  Scenario: Issue #133 Change working directory to .asm file path (works)
+    Given I write the code to base.asm
+      """
+      START MAIN
+      ROM
+      INCLUDE "inc/inc.asm"	
+      MAIN:
+          ld	A,1
+      """
+    Given I write the code to inc.asm
+      """
+          xor	A
+      """
+    And I run command mkdir -p behave_test/inc
+    And I run command mv base.asm behave_test
+    And I run command mv inc.asm behave_test/inc
+    When I build behave_test/base.asm with flag -r

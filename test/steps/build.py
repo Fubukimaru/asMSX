@@ -43,10 +43,12 @@ def step_impl(context, file):
         f.write(context.text)
 
 @when('I build {file}')
-def step_impl(context, file):
+@when('I build {file} with flag {flag}')
+def step_impl(context, file, flag = ""):
     fullpath = os.path.abspath(file)
+    command = ['asmsx'] + [flag] + [fullpath]
     context.build_program = subprocess.run(
-        ['asmsx', fullpath],
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         universal_newlines=True,
