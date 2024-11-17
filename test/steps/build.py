@@ -57,8 +57,12 @@ def step_impl(context, file):
 @when('I build {file}')
 @when('I build {file} with flag {flag}')
 def step_impl(context, file, flag = ""):
-    fullpath = os.path.abspath(file)
-    command = ['asmsx', flag, fullpath]
+    # Fullpath is not needed, we always use relatives to the project
+    # fullpath = os.path.abspath(file)
+    command = ['asmsx']
+    if flag:
+        command.extend(flag.split(" "))
+    command.append(file)
     context.build_program = subprocess.run(
         command,
         stdout=subprocess.PIPE,

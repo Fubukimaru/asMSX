@@ -64,7 +64,7 @@ void write_bin();
 int d_rand();
 
 FILE *fmsg, *fbin, *fwav;
-char *rom_buf, *fname_src, *fname_msx, *fname_bin, *fname_no_ext;
+char *rom_buf, *fname_src, *fname_msx, *fname_bin, *fname_no_ext, *fname_out;
 char *fname_txt, *fname_sym, *fname_asm, *fname_p2;
 int cassette = 0, size = 0, ePC = 0, PC = 0;
 int subpage, pagesize, lastpage, mapper, pageinit;
@@ -80,6 +80,7 @@ int maxpage[4] = {32, 64, 256, 256};
 char verbose;
 char relative_path;
 char zilog;
+char custom_out;
 
 labels id_list[MAX_ID];
 
@@ -810,8 +811,11 @@ pseudo_instruction: PSEUDO_ORG value
 	}
 	| PSEUDO_FILENAME TEXT
 	{
-		strncpy(fname_no_ext, $2, PATH_MAX - 1);
-		strncpy(fname_bin, fname_no_ext, PATH_MAX);
+        if (!custom_out) {
+            // If there's no -o argument in the calling command
+            strncpy(fname_no_ext, $2, PATH_MAX - 1);
+            strncpy(fname_bin, fname_no_ext, PATH_MAX);
+        }
 	}
 ;
 
@@ -4562,6 +4566,7 @@ int main(int argc, char *argv[]) {
   zilog = 0;
   verbose = 1;
   relative_path = 0;
+  custom_out = 0;
 
   for (option = 0; option < argc - 1; option++) {
 
@@ -4579,6 +4584,13 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(argv[option], "-r") == 0) {
       // Make all paths relative to the main asm file
       relative_path = 1;
+    } else if (strcmp(argv[option], "-o") == 0) {
+      option++;
+      printf("Redefining output name (Overrides .FILENAME): %s\n", argv[option]);
+      // Init fname_out
+      fname_out = malloc(PATH_MAX);    assert(fname_out != NULL);
+      strncpy(fname_out, argv[option], PATH_MAX);
+      custom_out = 1;
     // DEBUG
     #if YYDEBUG == 1
     } else if (strcmp(argv[option], "-d") == 0) {
@@ -4593,9 +4605,9 @@ int main(int argc, char *argv[]) {
   // If invalid option or not valid arguments, show help
   if (fileArg == 0) {
   #if YYDEBUG == 1
-    printf("Syntax: asMSX [-z|-s|-vv|-r|-d] [file.asm]\n");
+    printf("Syntax: asMSX [-z|-s|-vv|-r|-d] [-o {output file/folder}] [file.asm]\n");
   #else
-    printf("Syntax: asMSX [-z|-s|-vv|-r] [file.asm]\n");
+    printf("Syntax: asMSX [-z|-s|-vv|-r|-o {output file/folder}] [file.asm]\n");
   #endif
 
     exit(2);
@@ -4657,6 +4669,21 @@ int main(int argc, char *argv[]) {
   }
 
   /* Generate the name of binary file */
+
+  // If -o, put the output name to everything
+  if (custom_out) {
+    printf("Using custom output path: %s\n", fname_out);
+    if (isDirectory(fname_out)) {
+        printf("- File is directory, using asm name for output.\n");
+        // cat directory to current f_name
+        strncpy(fname_bin, fname_no_ext, PATH_MAX); //Using _bin as temporal
+        strncpy(fname_no_ext, fname_out, PATH_MAX - 1);
+        fname_no_ext = safe_strcat(fname_no_ext, fname_bin, PATH_MAX, "", 0);
+        printf("- Output file: %s\n", fname_no_ext);
+    } else {
+        strncpy(fname_no_ext, fname_out, PATH_MAX - 1);
+    }
+  }
   strncpy(fname_bin, fname_no_ext, PATH_MAX);
 
   preprocessor1(fname_asm); // INCLUDES & spaces
