@@ -56,7 +56,6 @@ def step_impl(context, file):
 
 @when('I build {file}')
 @when('I build {file} with flag {flag}')
-@when('I build {file} with flag {flag}')
 def step_impl(context, file, flag = ""):
     # Fullpath is not needed, we always use relatives to the project
     # fullpath = os.path.abspath(file)
