@@ -4605,9 +4605,9 @@ int main(int argc, char *argv[]) {
   // If invalid option or not valid arguments, show help
   if (fileArg == 0) {
   #if YYDEBUG == 1
-    printf("Syntax: asMSX [-z|-s|-vv|-r|-d] [file.asm]\n");
+    printf("Syntax: asMSX [-z|-s|-vv|-r|-d|-o {output file/folder}] [file.asm]\n");
   #else
-    printf("Syntax: asMSX [-z|-s|-vv|-r] [file.asm]\n");
+    printf("Syntax: asMSX [-z|-s|-vv|-r|-o {output file/folder}] [file.asm]\n");
   #endif
 
     exit(2);
