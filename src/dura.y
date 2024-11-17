@@ -4585,7 +4585,7 @@ int main(int argc, char *argv[]) {
       // Make all paths relative to the main asm file
       relative_path = 1;
     } else if (strcmp(argv[option], "-o") == 0) {
-      option += 1;
+      option++;
       printf("Redefining output name (Overrides .FILENAME): %s\n", argv[option]);
       // Init fname_out
       fname_out = malloc(PATH_MAX);    assert(fname_out != NULL);
