@@ -120,6 +120,13 @@ code.
 - `-vv` verbose mode - print more troubleshooting messages.
 - `-r` relative path to asm file - Set the root path of the project working
 directory to where the assembly file is found.
+- -o {path or file} output to - If the path along the file is a filename
+(without extension) it will use it as output for all files (e.g. .rom, .txt and
+.sym). It can also do this inside a folder, e.g., `-o test/cookies` will produce
+a `cookies.rom` inside the `test` folder. In case it is a folder as in `test/`,
+it will put the files with the base filename on the folder `test`. Notice that
+you must always use `'\'` or `'/'` (depending if you're using linux or windows)
+always after the folder name.
 
 If you build asMSX from source with `YYDEBUG=1`, there is one more parameter available:
 
