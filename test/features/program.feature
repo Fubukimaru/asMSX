@@ -127,7 +127,7 @@ Feature: Test program functions
     Then file behave_test/test.rom exists
     And file test.rom does not exist
 
-  Scenario: Issue #132 Custom output file (-o folder/)
+  Scenario: Issue #132 Custom output file (File to Folder with -o folder/)
     Given I create folder behave_test
     Given I write the code to test.asm
       """
@@ -140,7 +140,7 @@ Feature: Test program functions
     Then file behave_test/test.rom exists
     And file test.rom does not exist
 
-  Scenario: Issue #132 Custom output file (-o folder/file)
+  Scenario: Issue #132 Custom output file (Folder with -o folder/file)
     Given I create folder behave_test
     Given I write the code to test.asm
       """
@@ -150,5 +150,33 @@ Feature: Test program functions
           ld	A,1
       """
     When I build test.asm with flag -o behave_test/test_name
+    Then file behave_test/test_name.rom exists
+    And file test_name.rom does not exist
+
+  Scenario: Issue #132 Custom output file (File with .FILENAME pseudo)
+    Given I create folder behave_test
+    Given I write the code to test.asm
+      """
+      .FILENAME "test2"
+      START MAIN
+      ROM
+      MAIN:
+          ld	A,1
+      """
+    When I build test.asm
+    Then file test2.rom exists
+    And file test.rom does not exist
+
+  Scenario: Issue #132 Custom output file (Folder with .FILENAME pseudo)
+    Given I create folder behave_test
+    Given I write the code to test.asm
+      """
+      .FILENAME "behave_test/test_name"
+      START MAIN
+      ROM
+      MAIN:
+          ld	A,1
+      """
+    When I build test.asm
     Then file behave_test/test_name.rom exists
     And file test_name.rom does not exist
