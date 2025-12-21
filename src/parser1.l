@@ -55,6 +55,9 @@ extern int prompt_error1(int);
     // 0.18.4 Hotfix Unterminated string (Spaces at the end of the the include)
     // - Bad fix. Fix with flex grammar properly
     int i;
+    char *resolved_path = NULL;
+    int used_resolved_path = 0;
+    
     if (p1_tmpstr == NULL) {
       p1_tmpstr = strtok(yytext, "\"");
     }
@@ -82,19 +85,74 @@ extern int prompt_error1(int);
     p1_include_stack[p1_include_index].line = yylineno - 1; // as we add LF later, -1 gets exact position back
     p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
 
-    yyin = fopen(p1_tmpstr, "r");
+    // Try to resolve include path relative to the directory of the current file
+    // Check if path is not absolute (doesn't start with / on Unix or drive letter on Windows)
+    if (p1_tmpstr[0] != '/' && !(strlen(p1_tmpstr) >= 2 && p1_tmpstr[1] == ':')) {
+      // Extract directory from current file path
+      char *dir_path = malloc(P1_TEXT_SIZE);
+      if (dir_path) {
+        strcpy(dir_path, p1_name);
+        char *last_slash = strrchr(dir_path, '/');
+        char *last_backslash = strrchr(dir_path, '\\');
+        char *separator = last_slash > last_backslash ? last_slash : last_backslash;
+        
+        if (separator != NULL) {
+          // Terminate at the separator to get directory path
+          *(separator + 1) = '\0';
+          
+          // Build full path: directory + include file
+          resolved_path = malloc(P1_TEXT_SIZE);
+          if (resolved_path) {
+            strcpy(resolved_path, dir_path);
+            strcat(resolved_path, p1_tmpstr);
+            
+            // Try to open with resolved path first
+            yyin = fopen(resolved_path, "r");
+            if (yyin) {
+              used_resolved_path = 1;
+            }
+          }
+        }
+        free(dir_path);
+      }
+    }
+    
+    // If file not found with resolved path, try original path (CWD-relative or absolute)
     if (!yyin) {
+      yyin = fopen(p1_tmpstr, "r");
+      // If we opened with original path, we don't need the resolved path
+      if (yyin && resolved_path) {
+        free(resolved_path);
+        resolved_path = NULL;
+      }
+    }
+    
+    if (!yyin) {
+      if (resolved_path) free(resolved_path);
       prompt_error1(3);
       exit(3);
     }
+    
     // force file to end with LF, fixes #106
     unput('\n');
 
     if (verbose) {
-      printf("Including file %s\n", p1_tmpstr);
+      if (used_resolved_path) {
+        printf("Including file %s\n", resolved_path);
+      } else {
+        printf("Including file %s\n", p1_tmpstr);
+      }
     }
     yylineno = 1;
-    strcpy(p1_name, p1_tmpstr);
+    
+    // Use resolved path if it was used to open the file
+    if (used_resolved_path) {
+      strcpy(p1_name, resolved_path);
+      free(resolved_path);
+    } else {
+      strcpy(p1_name, p1_tmpstr);
+    }
+    
     fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
 
