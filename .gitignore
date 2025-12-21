@@ -7,6 +7,7 @@ asmsx.exe
 /asmsx-debug
 *.o
 *.dot
+*.gv
 *.tab.h
 *.tab.c
 lex.*.c
@@ -23,6 +24,9 @@ code/**/*.z80
 *.wav
 *.sym
 *.rom
+
+# Test artifacts
+/behave_test/
 
 # Private code for testing that cannot be in the repo
 
