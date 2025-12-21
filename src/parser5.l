@@ -50,7 +50,7 @@ static inline int is_output_enabled() {
 
 %%
 
-"#"file[ \t]*\"[a-z_][a-z0-9_]*"."[a-z_][a-z0-9_]*\"\n {
+"#"file[ \t]*\"[a-zA-Z_][a-zA-Z0-9_]*"."[a-zA-Z_][a-zA-Z0-9_]*\"\n {
     // Always output file markers
     fprintf(p5_output, "%s", yytext);
 
@@ -71,7 +71,7 @@ static inline int is_output_enabled() {
     p5_lines = atoi(&yytext[5]);
 }
 
-"."?ifdef[ \t]+[a-z_][a-z0-9_]*[ \t]*\n {
+"."?ifdef[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\n {
     // Extract symbol name
     char *line_copy = strdup(yytext);
     char *name_start = line_copy;
@@ -160,7 +160,7 @@ static inline int is_output_enabled() {
     }
 }
 
-[a-z_][a-z0-9_]*:[ \t]*\n {
+[a-zA-Z_][a-zA-Z0-9_]*:[ \t]*\n {
     // Label definition - track it
     char *label = strdup(yytext);
     char *colon = strchr(label, ':');
@@ -174,7 +174,7 @@ static inline int is_output_enabled() {
     }
 }
 
-[a-z_][a-z0-9_]*[ \t]+equ[ \t]+ {
+[a-zA-Z_][a-zA-Z0-9_]*[ \t]+equ[ \t]+ {
     // EQU definition - track the symbol name
     char *label = strdup(yytext);
     char *space = label;
@@ -189,7 +189,7 @@ static inline int is_output_enabled() {
     }
 }
 
-[a-z_][a-z0-9_]*[ \t]*"="[ \t]* {
+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*"="[ \t]* {
     // Assignment definition - track the symbol name
     // Handles both "VAR = value" and "VAR=value"
     char *label = strdup(yytext);
@@ -254,7 +254,8 @@ int is_symbol_defined(char* name) {
 
 void define_symbol(char* name) {
     if (num_symbols >= MAX_SYMBOLS) {
-        return; // Silently ignore overflow
+        fprintf(stderr, "WARNING: Symbol table overflow in preprocessor5, symbol '%s' not tracked for IFDEF\n", name);
+        return;
     }
     
     // Check if already defined
