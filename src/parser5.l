@@ -71,7 +71,7 @@ static inline int is_output_enabled() {
     p5_lines = atoi(&yytext[5]);
 }
 
-"."?ifdef[ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\n {
+"."?[iI][fF][dD][eE][fF][ \t]+[a-zA-Z_][a-zA-Z0-9_]*[ \t]*\n {
     // Extract symbol name
     char *line_copy = strdup(yytext);
     char *name_start = line_copy;
@@ -105,7 +105,7 @@ static inline int is_output_enabled() {
     // Don't output the IFDEF directive itself
 }
 
-"."?if[ \t]+ {
+"."?[iI][fF][ \t]+ {
     // For IF with expression, pass through to main parser
     // But track it so we know to pass through corresponding ELSE/ENDIF
     if (conditional_level >= MAX_CONDITIONALS - 1) {
@@ -123,7 +123,7 @@ static inline int is_output_enabled() {
     }
 }
 
-"."?else[ \t]*\n {
+"."?[eE][lL][sS][eE][ \t]*\n {
     if (conditional_level == 0) {
         prompt_error5(2, p5_name, p5_lines);
     }
@@ -142,7 +142,7 @@ static inline int is_output_enabled() {
     }
 }
 
-"."?endif[ \t]*\n {
+"."?[eE][nN][dD][iI][fF][ \t]*\n {
     if (conditional_level == 0) {
         prompt_error5(3, p5_name, p5_lines);
     }
@@ -174,7 +174,7 @@ static inline int is_output_enabled() {
     }
 }
 
-[a-zA-Z_][a-zA-Z0-9_]*[ \t]+equ[ \t]+ {
+[a-zA-Z_][a-zA-Z0-9_]*[ \t]+[eE][qQ][uU][ \t]+ {
     // EQU definition - track the symbol name
     char *label = strdup(yytext);
     char *space = label;
@@ -316,7 +316,7 @@ int preprocessor5(const char* input_filename) {
         for (int i = 1; i <= conditional_level; i++) {
             if (conditional_stack[i].type == COND_IFDEF) {
                 fprintf(stderr, "ERROR: Unmatched IFDEF directive\n");
-                exit(45);
+                exit(45);  // Error code 45: Unmatched IF/IFDEF directive
             }
         }
     }
