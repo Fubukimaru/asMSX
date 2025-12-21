@@ -58,8 +58,8 @@ static FILE* resolve_and_open_include(const char *include_name, const char *curr
             // Terminate at the separator to get directory path
             *(separator + 1) = '\0';
             
-            // Check if combined path will fit in buffer
-            if (strlen(dir_path) + strlen(include_name) + 1 < P1_TEXT_SIZE) {
+            // Check if combined path will fit in buffer (including null terminator)
+            if (strlen(dir_path) + strlen(include_name) + 1 <= P1_TEXT_SIZE) {
                 // Build full path: directory + include file
                 char full_path[P1_TEXT_SIZE];
                 strcpy(full_path, dir_path);
@@ -156,7 +156,8 @@ static FILE* resolve_and_open_include(const char *include_name, const char *curr
       printf("Including file %s\n", resolved_include_path);
     }
     yylineno = 1;
-    strcpy(p1_name, resolved_include_path);
+    strncpy(p1_name, resolved_include_path, P1_TEXT_SIZE - 1);
+    p1_name[P1_TEXT_SIZE - 1] = '\0';
     fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
 
