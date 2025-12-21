@@ -94,22 +94,33 @@ extern int prompt_error1(int);
         strcpy(dir_path, p1_name);
         char *last_slash = strrchr(dir_path, '/');
         char *last_backslash = strrchr(dir_path, '\\');
-        char *separator = last_slash > last_backslash ? last_slash : last_backslash;
+        // Find the last separator, handling NULL pointers correctly
+        char *separator = NULL;
+        if (last_slash != NULL && last_backslash != NULL) {
+          separator = last_slash > last_backslash ? last_slash : last_backslash;
+        } else if (last_slash != NULL) {
+          separator = last_slash;
+        } else if (last_backslash != NULL) {
+          separator = last_backslash;
+        }
         
         if (separator != NULL) {
           // Terminate at the separator to get directory path
           *(separator + 1) = '\0';
           
-          // Build full path: directory + include file
-          resolved_path = malloc(P1_TEXT_SIZE);
-          if (resolved_path) {
-            strcpy(resolved_path, dir_path);
-            strcat(resolved_path, p1_tmpstr);
-            
-            // Try to open with resolved path first
-            yyin = fopen(resolved_path, "r");
-            if (yyin) {
-              used_resolved_path = 1;
+          // Check if combined path will fit in buffer
+          if (strlen(dir_path) + strlen(p1_tmpstr) < P1_TEXT_SIZE) {
+            // Build full path: directory + include file
+            resolved_path = malloc(P1_TEXT_SIZE);
+            if (resolved_path) {
+              strcpy(resolved_path, dir_path);
+              strcat(resolved_path, p1_tmpstr);
+              
+              // Try to open with resolved path first
+              yyin = fopen(resolved_path, "r");
+              if (yyin) {
+                used_resolved_path = 1;
+              }
             }
           }
         }
