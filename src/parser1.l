@@ -158,10 +158,12 @@ extern int prompt_error1(int);
     
     // Use resolved path if it was used to open the file
     if (used_resolved_path) {
-      strcpy(p1_name, resolved_path);
+      strncpy(p1_name, resolved_path, P1_TEXT_SIZE - 1);
+      p1_name[P1_TEXT_SIZE - 1] = '\0';
       free(resolved_path);
     } else {
-      strcpy(p1_name, p1_tmpstr);
+      strncpy(p1_name, p1_tmpstr, P1_TEXT_SIZE - 1);
+      p1_name[P1_TEXT_SIZE - 1] = '\0';
     }
     
     fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
