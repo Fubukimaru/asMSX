@@ -189,12 +189,18 @@ static inline int is_output_enabled() {
     }
 }
 
-[a-z_][a-z0-9_]*[ \t]+"="[ \t]+ {
+[a-z_][a-z0-9_]*[ \t]*"="[ \t]* {
     // Assignment definition - track the symbol name
+    // Handles both "VAR = value" and "VAR=value"
     char *label = strdup(yytext);
-    char *space = label;
-    while (*space && *space != ' ' && *space != '\t') space++;
-    *space = '\0';
+    char *eq = strchr(label, '=');
+    if (eq) *eq = '\0';
+    // Trim trailing spaces
+    char *end = label + strlen(label) - 1;
+    while (end > label && (*end == ' ' || *end == '\t')) {
+        *end = '\0';
+        end--;
+    }
     
     define_symbol(label);
     free(label);
@@ -260,8 +266,7 @@ void define_symbol(char* name) {
     num_symbols++;
 }
 
-int preprocessor5() {
-    const char* input_file = "~tmppre.2";
+int preprocessor5(const char* input_filename) {
     FILE *input;
 
     // Initialize
@@ -279,16 +284,27 @@ int preprocessor5() {
     p5_name[0] = 0;
     p5_lines = 0;
 
-    if ((input = fopen(input_file, "r")) == NULL) {
-        fprintf(stderr, "Fatal: cannot process file %s\n", input_file);
+    if ((input = fopen(input_filename, "r")) == NULL) {
+        fprintf(stderr, "Fatal: cannot process file %s\n", input_filename);
         exit(1);
     }
 
     yyin = input;
-    p5_output = fopen("~tmppre.3", "w");
+    
+    // Determine output filename by incrementing the input number
+    char output_filename[PATH_MAX];
+    int file_num;
+    if (sscanf(input_filename, "~tmppre.%d", &file_num) == 1) {
+        snprintf(output_filename, PATH_MAX, "~tmppre.%d", file_num + 1);
+    } else {
+        // Fallback
+        snprintf(output_filename, PATH_MAX, "~tmppre.3");
+    }
+    
+    p5_output = fopen(output_filename, "w");
 
     if (p5_output == NULL) {
-        fprintf(stderr, "ERROR: cannot create file ~tmppre.3 in %s\n", __func__);
+        fprintf(stderr, "ERROR: cannot create file %s in %s\n", output_filename, __func__);
         exit(1);
     }
 
@@ -314,5 +330,5 @@ int preprocessor5() {
         free(defined_symbols[i]);
     }
 
-    return 0;
+    return file_num + 1;
 }
