@@ -90,7 +90,7 @@ Feature: Test program functions
     Then file test.rom exists
     And file test.rom size is 24k
 
-  Scenario: Issue #133 Change working directory to .asm file path (crashes)
+  Scenario: Issue #133 Change working directory to .asm file path (now works without -r)
     Given I create folder behave_test
     And I create folder behave_test/inc
     Given I write the code to behave_test/test.asm
@@ -105,8 +105,8 @@ Feature: Test program functions
       """
           xor	A
       """
-    When I invalid build behave_test/test.asm
-    Then error code is 3
+    When I build behave_test/test.asm
+    Then file behave_test/test.rom exists
     
   Scenario: Issue #133 Change working directory to .asm file path (works)
     Given I create folder behave_test
