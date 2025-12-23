@@ -589,7 +589,7 @@ void error_message(int n, char *fname_src, int lines) {
   } else {
     fprintf(stderr, "%s", error_buffer);
   }
-  remove("~tmppre.?");
+  remove_temporary_files();
   exit(n + 1);
 }
 
@@ -693,4 +693,20 @@ int isDirectory(const char *path) {
    if (stat(path, &statbuf) != 0)
        return 0;
    return S_ISDIR(statbuf.st_mode);
+}
+
+/* Remove temporary preprocessor files created during assembly
+ * These files are created with these names: ~tmppre.0, ~tmppre.1, ~tmppre.2, ~tmppre.3
+ * and are no longer needed after assembly is complete.
+ */
+void remove_temporary_files(void) {
+  char filename[PATH_MAX];
+  int i;
+  
+  for (i = 0; i <= 3; i++) {
+    snprintf(filename, PATH_MAX - 1, "~tmppre.%d", i);
+    if (remove(filename) == 0 && verbose) {
+      printf("Removed temporary file: %s\n", filename);
+    }
+  }
 }

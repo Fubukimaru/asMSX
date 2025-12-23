@@ -4337,7 +4337,7 @@ void finalize()
 	else
 		printf("\n");
 
-	remove("~tmppre.*");
+	remove_temporary_files();
 	exit(0);
 }
 
@@ -4699,6 +4699,6 @@ int main(int argc, char *argv[]) {
 
   yyparse();
 
-  remove("~tmppre.?");
+  remove_temporary_files();
   return 0;
 }

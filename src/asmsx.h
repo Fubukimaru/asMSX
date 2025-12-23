@@ -58,3 +58,4 @@ extern void error_message(int n, char* fname_src, int lines);
 extern void warning_message(int n, char* fname_src, int lines, int pass, int* warnings);
 extern char* replaceWord(const char* s, const char* oldW, const char* newW, int* count); 
 extern int isDirectory(const char *path);
+extern void remove_temporary_files(void);
