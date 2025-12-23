@@ -20,7 +20,8 @@ BUILD_FILES = src/dura.tab.c \
               src/lex.parser1.c \
               src/lex.parser2.c \
               src/lex.parser3.c \
-              src/lex.parser4.c
+              src/lex.parser4.c \
+              src/lex.parser5.c
 
 C_FILES := src/asmsx.c src/labels.c
 

@@ -32,6 +32,7 @@ int preprocessor1(char *);	/* defined in parser1.l */
 int preprocessor2();		/* defined in parser2.l */
 int preprocessor3(int);		/* defined in parser3.l */
 int preprocessor4();		/* defined in parser4.l */
+int preprocessor5(const char*);		/* defined in parser5.l */
 
 /* forward function declarations to address GCC -Wimplicit-function-declaration warnings */
 void yyerror(char *);
@@ -4690,6 +4691,7 @@ int main(int argc, char *argv[]) {
   preprocessor3(zilog);     // Zilog
   preprocessor4();          //Macros
   snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor2()); // REPT
+  snprintf(fname_p2, PATH_MAX - 1, "~tmppre.%i", preprocessor5(fname_p2)); // Conditional compilation (IFDEF/ELSE/ENDIF)
   printf("Assembling source file %s\n", fname_asm);
 
   conditional[0] = 1;
