@@ -160,6 +160,50 @@ Feature: Fixing issues
     And sym does not contain If it's a label, it may not be defined.
     And build has no warnings
 
+  Scenario: IFDEF with invalid syntax in false block should not cause error
+    Given I write the code to test.asm
+      """
+      .BIOS
+      .BIOSVARS
+      .FILENAME "TESTIFD.ROM"
+      
+      LABELEXIST:
+      
+      ; Case 1: The Label does not exist. The ELSE must be processed.
+      IFDEF THISLABELNOTEXIST
+          CONSTANT1:	EQU $01
+          CONSTANT2:	EQU $02
+      ELSE
+      CONSTANT1	EQU $01
+      CONSTANT2	EQU $02
+      ENDIF
+      
+      ; Case 2: The Label exist. The ELSE does not have to be processed.
+      IFDEF LABELEXIST
+      CONSTANT3	EQU $03
+      CONSTANT4	EQU $04
+      ELSE
+          CONSTANT3:	EQU $03
+          CONSTANT4:	EQU $04
+      ENDIF
+      
+      .PAGE	1
+      .ROM
+      
+      MAIN:
+        DI
+        EI
+        ret
+      """
+    When I build test.asm
+    Then file TESTIFD.ROM.rom exists
+    And sym contains CONSTANT1
+    And sym contains CONSTANT2
+    And sym contains CONSTANT3
+    And sym contains CONSTANT4
+    And sym contains LABELEXIST
+    And build has no warnings
+
   @wip
   Scenario: Issue #88 Local label semantics
     Given I write the code to test.asm
