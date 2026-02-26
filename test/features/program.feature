@@ -107,6 +107,7 @@ Feature: Test program functions
       """
     When I build behave_test/test.asm
     Then file behave_test/test.rom exists
+    And file test.rom does not exist
     
   Scenario: Issue #133 Change working directory to .asm file path (works)
     Given I create folder behave_test
