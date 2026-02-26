@@ -29,6 +29,63 @@ static struct
 } p1_include_stack[MAX_INCLUDE_LEVEL];
 
 extern int prompt_error1(int);
+
+/* Helper function to resolve include file path */
+static FILE* resolve_and_open_include(const char *include_name, const char *current_file, char *resolved_name, size_t resolved_name_size) {
+    FILE *file = NULL;
+    
+    // Check if path is not absolute (doesn't start with / on Unix or drive letter on Windows)
+    if (include_name[0] != '/' && !(strlen(include_name) >= 2 && include_name[1] == ':')) {
+        // Extract directory from current file path
+        char dir_path[P1_TEXT_SIZE];
+        strncpy(dir_path, current_file, P1_TEXT_SIZE - 1);
+        dir_path[P1_TEXT_SIZE - 1] = '\0';
+        
+        char *last_slash = strrchr(dir_path, '/');
+        char *last_backslash = strrchr(dir_path, '\\');
+        
+        // Find the last separator, handling NULL pointers correctly
+        char *separator = NULL;
+        if (last_slash != NULL && last_backslash != NULL) {
+            separator = last_slash > last_backslash ? last_slash : last_backslash;
+        } else if (last_slash != NULL) {
+            separator = last_slash;
+        } else if (last_backslash != NULL) {
+            separator = last_backslash;
+        }
+        
+        if (separator != NULL) {
+            // Terminate at the separator to get directory path
+            *(separator + 1) = '\0';
+            
+            // Check if combined path will fit in buffer (including null terminator)
+            if (strlen(dir_path) + strlen(include_name) + 1 <= P1_TEXT_SIZE) {
+                // Build full path: directory + include file
+                char full_path[P1_TEXT_SIZE];
+                strcpy(full_path, dir_path);
+                strcat(full_path, include_name);
+                
+                // Try to open with resolved path first
+                file = fopen(full_path, "r");
+                if (file) {
+                    // Copy the resolved path to the output
+                    strncpy(resolved_name, full_path, resolved_name_size - 1);
+                    resolved_name[resolved_name_size - 1] = '\0';
+                    return file;
+                }
+            }
+        }
+    }
+    
+    // If file not found with resolved path, try original path (CWD-relative or absolute)
+    file = fopen(include_name, "r");
+    if (file) {
+        strncpy(resolved_name, include_name, resolved_name_size - 1);
+        resolved_name[resolved_name_size - 1] = '\0';
+    }
+    
+    return file;
+}
 %}
 
 %option yylineno noinput noyywrap
@@ -55,6 +112,8 @@ extern int prompt_error1(int);
     // 0.18.4 Hotfix Unterminated string (Spaces at the end of the the include)
     // - Bad fix. Fix with flex grammar properly
     int i;
+    char resolved_include_path[P1_TEXT_SIZE];
+    
     if (p1_tmpstr == NULL) {
       p1_tmpstr = strtok(yytext, "\"");
     }
@@ -82,19 +141,23 @@ extern int prompt_error1(int);
     p1_include_stack[p1_include_index].line = yylineno - 1; // as we add LF later, -1 gets exact position back
     p1_include_stack[p1_include_index++].buffer = YY_CURRENT_BUFFER;
 
-    yyin = fopen(p1_tmpstr, "r");
+    // Use helper function to resolve and open the include file
+    yyin = resolve_and_open_include(p1_tmpstr, p1_name, resolved_include_path, P1_TEXT_SIZE);
+    
     if (!yyin) {
       prompt_error1(3);
       exit(3);
     }
+    
     // force file to end with LF, fixes #106
     unput('\n');
 
     if (verbose) {
-      printf("Including file %s\n", p1_tmpstr);
+      printf("Including file %s\n", resolved_include_path);
     }
     yylineno = 1;
-    strcpy(p1_name, p1_tmpstr);
+    strncpy(p1_name, resolved_include_path, P1_TEXT_SIZE - 1);
+    p1_name[P1_TEXT_SIZE - 1] = '\0';
     fprintf(p1_output_file, "#file \042%s\042\n", p1_name);
     yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
 

@@ -118,8 +118,7 @@ asMSX accepts the following parameters:
 code.
 - `-s` silent mode - suppress messages.
 - `-vv` verbose mode - print more troubleshooting messages.
-- `-r` relative path to asm file - Set the root path of the project working
-directory to where the assembly file is found.
+- `-r` relative path to asm file - **[DEPRECATED]** This flag is no longer needed as relative include paths now work automatically from the source file's directory.
 - -o {path or file} output to - If the path along the file is a filename
 (without extension) it will use it as output for all files (e.g. .rom, .txt and
 .sym). It can also do this inside a folder, e.g., `-o test/cookies` will produce
